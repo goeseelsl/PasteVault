@@ -8,39 +8,56 @@ struct ClipboardNoteCard: View {
     let isSelected: Bool
     let onTap: () -> Void
     
+    @State private var isHovering = false
+    
     var body: some View {
         VStack(spacing: 0) {
             // Note-style card
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 // Header with app and time
-                HStack {
-                    // Source color indicator
-                    Circle()
-                        .fill(ColorHelper.colorForString(item.sourceApp ?? "Unknown"))
-                        .frame(width: 6, height: 6)
-                    
-                    Text(item.sourceApp ?? "Unknown")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.secondary)
+                HStack(spacing: 8) {
+                    // Source app icon
+                    HStack(spacing: 6) {
+                        if let appIcon = AppIconHelper.shared.getAppIcon(for: item.sourceApp ?? "Unknown") {
+                            Image(nsImage: appIcon)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 16, height: 16)
+                                .cornerRadius(3)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                                )
+                        } else {
+                            // Fallback to colored circle if icon not available
+                            Circle()
+                                .fill(ColorHelper.colorForString(item.sourceApp ?? "Unknown"))
+                                .frame(width: 12, height: 12)
+                        }
+                        
+                        Text(item.sourceApp ?? "Unknown")
+                            .font(.system(size: 11, weight: .medium, design: .default))
+                            .foregroundColor(.secondary)
+                    }
                     
                     Spacer()
                     
                     // Status indicators
-                    HStack(spacing: 3) {
+                    HStack(spacing: 4) {
                         if item.isPinned {
                             Image(systemName: "pin.fill")
-                                .font(.system(size: 8))
+                                .font(.system(size: 9, weight: .medium))
                                 .foregroundColor(.orange)
                         }
                         if item.isFavorite {
                             Image(systemName: "star.fill")
-                                .font(.system(size: 8))
+                                .font(.system(size: 9, weight: .medium))
                                 .foregroundColor(.yellow)
                         }
                     }
                     
                     Text(item.createdAt ?? Date(), style: .relative)
-                        .font(.system(size: 9))
+                        .font(.system(size: 10, weight: .regular, design: .default))
                         .foregroundColor(.secondary)
                 }
                 
@@ -52,31 +69,36 @@ struct ClipboardNoteCard: View {
                     // Content text with enhanced formatting
                     VStack(alignment: .leading, spacing: 6) {
                         Text(contentPreview)
-                            .font(.system(size: 12))
+                            .font(.system(size: 12, weight: .regular, design: .default))
                             .lineLimit(3)
+                            .lineSpacing(1.2)
                             .foregroundColor(.primary)
                             .fixedSize(horizontal: false, vertical: true)
                         
-                        // Enhanced metadata
-                        HStack(spacing: 8) {
+                        // Enhanced metadata with better spacing
+                        HStack(spacing: 6) {
                             if let category = item.category {
                                 Text(category)
-                                    .font(.system(size: 9, weight: .medium))
+                                    .font(.system(size: 9, weight: .medium, design: .default))
                                     .foregroundColor(.secondary)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(Color.secondary.opacity(0.1))
-                                    .cornerRadius(4)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .fill(Color.secondary.opacity(0.12))
+                                    )
                             }
                             
                             if let imageData = item.imageData, let image = NSImage(data: imageData) {
                                 Text("\(Int(image.size.width))×\(Int(image.size.height))")
-                                    .font(.system(size: 9, weight: .medium))
+                                    .font(.system(size: 9, weight: .medium, design: .default))
                                     .foregroundColor(.blue)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(Color.blue.opacity(0.1))
-                                    .cornerRadius(4)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .fill(Color.blue.opacity(0.12))
+                                    )
                             }
                             
                             Spacer()
@@ -86,18 +108,39 @@ struct ClipboardNoteCard: View {
                     Spacer()
                 }
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
             .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(isSelected ? Color.accentColor.opacity(0.15) : Color(NSColor.controlBackgroundColor))
-                    .shadow(color: isSelected ? Color.accentColor.opacity(0.3) : .black.opacity(0.06), radius: isSelected ? 4 : 2, x: 0, y: 1)
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(
+                        isSelected ? 
+                        Color.accentColor.opacity(0.15) : 
+                        (isHovering ? Color(NSColor.controlBackgroundColor) : Color(NSColor.windowBackgroundColor))
+                    )
+                    .shadow(
+                        color: isSelected ? Color.accentColor.opacity(0.25) : Color.black.opacity(0.06), 
+                        radius: isSelected ? 6 : 2, 
+                        x: 0, 
+                        y: isSelected ? 2 : 1
+                    )
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(isSelected ? Color.accentColor.opacity(0.5) : Color.secondary.opacity(0.15), lineWidth: isSelected ? 1.5 : 0.5)
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(
+                        isSelected ? 
+                        Color.accentColor.opacity(0.4) : 
+                        Color(NSColor.separatorColor).opacity(0.3), 
+                        lineWidth: isSelected ? 1.5 : 0.5
+                    )
             )
-            .scaleEffect(isSelected ? 1.02 : 1.0)
+            .scaleEffect(isSelected ? 1.02 : (isHovering ? 1.005 : 1.0))
+            .animation(.easeInOut(duration: 0.2), value: isSelected)
+            .animation(.easeInOut(duration: 0.15), value: isHovering)
+            .onHover { hovering in
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    isHovering = hovering
+                }
+            }
             .animation(.easeInOut(duration: 0.2), value: isSelected)
             .onTapGesture {
                 onTap()

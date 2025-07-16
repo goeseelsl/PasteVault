@@ -7,6 +7,7 @@
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView_Enhanced.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView_Modular.swift
@@ -14,6 +15,7 @@
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataClass.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataProperties.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/FoldersView.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ColorHelper.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentHelper.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentPredicateBuilder.swift

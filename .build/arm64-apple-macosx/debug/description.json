@@ -87,6 +87,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift"
         },
         {
@@ -112,6 +116,10 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/FoldersView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift"
         },
         {
           "kind" : "file",
@@ -215,6 +223,7 @@
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/FooterView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/HeaderView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SearchView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SourceFilterView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ContentView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ContentView_Enhanced.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ContentView_Modular.swift.o",
@@ -222,6 +231,7 @@
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/Folder+CoreDataClass.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/Folder+CoreDataProperties.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/FoldersView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppIconHelper.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ColorHelper.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ContentHelper.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ContentPredicateBuilder.swift.o",
@@ -330,6 +340,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SourceFilterView.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ContentView.swift.o"
         },
         {
@@ -355,6 +369,10 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/FoldersView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppIconHelper.swift.o"
         },
         {
           "kind" : "file",
@@ -444,6 +462,7 @@
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView_Enhanced.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView_Modular.swift",
@@ -451,6 +470,7 @@
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataClass.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataProperties.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/FoldersView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ColorHelper.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentHelper.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentPredicateBuilder.swift",
@@ -655,6 +675,7 @@
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView_Enhanced.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView_Modular.swift",
@@ -662,6 +683,7 @@
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataClass.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataProperties.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/FoldersView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ColorHelper.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentHelper.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentPredicateBuilder.swift",
@@ -877,6 +899,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift"
         },
         {
@@ -902,6 +928,10 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/FoldersView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift"
         },
         {
           "kind" : "file",
@@ -992,6 +1022,10 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppIconHelper.swift.o"
         },
         {
           "kind" : "file",
@@ -1108,6 +1142,10 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SimpleSettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SourceFilterView.swift.o"
         },
         {
           "kind" : "file",

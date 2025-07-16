@@ -25,6 +25,8 @@ struct ContentView: View {
     @State private var selectedItem: ClipboardItem?
     @State private var selectedIndex = 0
     @State private var refreshID = UUID()
+    @State private var selectedSourceApp: String?
+    @State private var showSourceFilter = false
 
     var body: some View {
         Group {
@@ -34,15 +36,15 @@ struct ContentView: View {
                 horizontalLayout
             }
         }
-        .background(Color(NSColor.windowBackgroundColor))
+        .background(Color(NSColor.controlBackgroundColor)) // Use solid background for better readability
         .edgesIgnoringSafeArea(.all)
         .frame(maxWidth: .infinity, maxHeight: .infinity) // Ensure the view expands to fill available space
     }
     
     private var verticalLayout: some View {
         VStack(spacing: 0) {
-            // Header with search
-            VStack(spacing: 8) {
+            // Header with search and source filter
+            VStack(spacing: 12) {
                 HeaderView {
                     if let appDelegate = NSApp.delegate as? AppDelegate {
                         appDelegate.openSettings(nil)
@@ -50,42 +52,70 @@ struct ContentView: View {
                 }
                 
                 SearchView(searchText: $searchText)
+                
+                // Source app filter
+                if !sourceApps.isEmpty {
+                    SourceFilterView(
+                        sourceApps: sourceApps,
+                        selectedSourceApp: $selectedSourceApp,
+                        showSourceFilter: $showSourceFilter
+                    )
+                }
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color(NSColor.controlBackgroundColor))
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 16)
+            .background(
+                Rectangle()
+                    .fill(Color(NSColor.windowBackgroundColor))
+                    .overlay(
+                        Rectangle()
+                            .fill(Color(NSColor.separatorColor))
+                            .frame(height: 1),
+                        alignment: .bottom
+                    )
+            )
             
-            Divider()
-            
-            // List of clipboard items
+            // List of clipboard items with better spacing
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(spacing: 4) {
+                    LazyVStack(spacing: 8) {
                         ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
-                            ClipboardNoteCard(
-                                item: item,
-                                isSelected: index == selectedIndex,
-                                onTap: {
-                                    handleItemSelection(item: item, index: index)
-                                }
-                            )
-                            .id(item.id)
-                            .contextMenu {
-                                ContextMenuView(
+                            VStack(spacing: 0) {
+                                ClipboardNoteCard(
                                     item: item,
-                                    folders: Array(folders),
-                                    onSave: saveContext,
-                                    onCreateFolder: { createNewFolder(for: item) },
-                                    onDelete: {
-                                        viewContext.delete(item)
-                                        saveContext()
+                                    isSelected: index == selectedIndex,
+                                    onTap: {
+                                        handleItemSelection(item: item, index: index)
                                     }
                                 )
+                                .id(item.id)
+                                .contextMenu {
+                                    ContextMenuView(
+                                        item: item,
+                                        folders: Array(folders),
+                                        onSave: saveContext,
+                                        onCreateFolder: { createNewFolder(for: item) },
+                                        onDelete: {
+                                            viewContext.delete(item)
+                                            saveContext()
+                                        }
+                                    )
+                                }
+                                
+                                // Add subtle separator between items
+                                if index < filteredItems.count - 1 {
+                                    Rectangle()
+                                        .fill(Color(NSColor.separatorColor).opacity(0.2))
+                                        .frame(height: 0.5)
+                                        .padding(.horizontal, 20)
+                                        .padding(.vertical, 4)
+                                }
                             }
                         }
                     }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 16)
                 }
                 .onChange(of: selectedIndex) { newIndex in
                     scrollToSelectedItem(proxy: proxy, index: newIndex)
@@ -197,10 +227,16 @@ struct ContentView: View {
 
     // MARK: - Computed Properties
     
+    private var sourceApps: [String] {
+        let apps = Set(items.compactMap { $0.sourceApp })
+        return Array(apps).sorted()
+    }
+    
     private var filteredItems: [ClipboardItem] {
         let predicate = ContentPredicateBuilder.buildPredicate(
             searchText: searchText,
-            selectedFolder: selectedFolder
+            selectedFolder: selectedFolder,
+            selectedSourceApp: selectedSourceApp
         )
         
         let fetchRequest = NSFetchRequest<ClipboardItem>(entityName: "ClipboardItem")
@@ -348,12 +384,20 @@ struct ContentView: View {
     }
     
     private func clearAllItems() {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "ClipboardItem")
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        // Delete all items individually to ensure proper UI updates
+        let fetchRequest = NSFetchRequest<ClipboardItem>(entityName: "ClipboardItem")
         
         do {
-            try viewContext.execute(deleteRequest)
+            let allItems = try viewContext.fetch(fetchRequest)
+            for item in allItems {
+                viewContext.delete(item)
+            }
             try viewContext.save()
+            
+            // Reset selection
+            selectedIndex = 0
+            selectedItem = nil
+            
         } catch {
             print("Error clearing all items: \(error)")
         }

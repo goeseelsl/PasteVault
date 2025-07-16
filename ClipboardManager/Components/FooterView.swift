@@ -5,10 +5,12 @@ struct FooterView: View {
     let itemCount: Int
     let onClearAll: () -> Void
     
+    @State private var isHovering = false
+    
     var body: some View {
-        HStack {
+        HStack(spacing: 12) {
             Text("\(itemCount) items")
-                .font(.system(size: 10))
+                .font(.system(size: 11, weight: .medium, design: .default))
                 .foregroundColor(.secondary)
             
             Spacer()
@@ -16,12 +18,31 @@ struct FooterView: View {
             Button("Clear All") {
                 onClearAll()
             }
-            .font(.system(size: 10))
+            .font(.system(size: 11, weight: .medium, design: .default))
             .foregroundColor(.red)
-            .buttonStyle(BorderlessButtonStyle())
+            .buttonStyle(PlainButtonStyle())
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color.red.opacity(isHovering ? 0.12 : 0.08))
+            )
+            .onHover { hovering in
+                isHovering = hovering
+            }
+            .animation(.easeInOut(duration: 0.15), value: isHovering)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(Color(NSColor.controlBackgroundColor))
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            Rectangle()
+                .fill(Color(NSColor.windowBackgroundColor))
+                .overlay(
+                    Rectangle()
+                        .fill(Color(NSColor.separatorColor))
+                        .frame(height: 1),
+                    alignment: .top
+                )
+        )
     }
 }

@@ -8,11 +8,16 @@ class ContentPredicateBuilder {
     /// - Parameters:
     ///   - searchText: The search text to filter by
     ///   - selectedFolder: The folder to filter by (optional)
+    ///   - selectedSourceApp: The source app to filter by (optional)
     /// - Returns: A compound predicate for the search
-    static func buildPredicate(searchText: String, selectedFolder: Folder?) -> NSPredicate {
+    static func buildPredicate(searchText: String, selectedFolder: Folder?, selectedSourceApp: String? = nil) -> NSPredicate {
         let folderPredicate = selectedFolder == nil ? 
             NSPredicate(value: true) : 
             NSPredicate(format: "folder == %@", selectedFolder!)
+        
+        let sourceAppPredicate = selectedSourceApp == nil ?
+            NSPredicate(value: true) :
+            NSPredicate(format: "sourceApp == %@", selectedSourceApp!)
         
         var searchPredicate: NSPredicate
         
@@ -22,7 +27,7 @@ class ContentPredicateBuilder {
             searchPredicate = buildSearchPredicate(searchText: searchText)
         }
         
-        return NSCompoundPredicate(andPredicateWithSubpredicates: [folderPredicate, searchPredicate])
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [folderPredicate, sourceAppPredicate, searchPredicate])
     }
     
     /// Build search predicate based on search text

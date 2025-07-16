@@ -56,6 +56,12 @@
     "swiftmodule": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SearchView~partial.swiftmodule",
     "swift-dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SearchView.swiftdeps"
   },
+  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift": {
+    "dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SourceFilterView.d",
+    "object": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SourceFilterView.swift.o",
+    "swiftmodule": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SourceFilterView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SourceFilterView.swiftdeps"
+  },
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift": {
     "dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ContentView.d",
     "object": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ContentView.swift.o",
@@ -97,6 +103,12 @@
     "object": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/FoldersView.swift.o",
     "swiftmodule": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/FoldersView~partial.swiftmodule",
     "swift-dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/FoldersView.swiftdeps"
+  },
+  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift": {
+    "dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppIconHelper.d",
+    "object": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppIconHelper.swift.o",
+    "swiftmodule": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppIconHelper~partial.swiftmodule",
+    "swift-dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppIconHelper.swiftdeps"
   },
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ColorHelper.swift": {
     "dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ColorHelper.d",

@@ -210,10 +210,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             
             edgeWindow?.contentViewController = controller
             edgeWindow?.delegate = self
-            
-            // Debug: Print window and controller info
-            print("Created EdgeWindow with frame: \(edgeWindow?.frame ?? .zero)")
-            print("Controller view frame: \(controller.view.frame)")
         } else {
             // Update position if the window already exists
             edgeWindow?.updatePosition(position)

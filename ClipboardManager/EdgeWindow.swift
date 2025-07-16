@@ -37,11 +37,61 @@ class EdgeWindow: NSPanel {
         self.hasShadow = true
         self.isOpaque = false // Make the window non-opaque for better visual integration
         
+        // Setup translucent background
+        setupVisualEffects()
+        
         // Position the window
         self.positionOnScreen()
         
         // Setup event monitor to detect clicks outside the window
         setupEventMonitor()
+        
+        // Add fade-in animation
+        setupFadeInAnimation()
+    }
+    
+    private func setupFadeInAnimation() {
+        // Start with the window invisible
+        self.alphaValue = 0.0
+        
+        // Add a gentle fade-in animation when shown
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.25
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                self.animator().alphaValue = 1.0
+            }
+        }
+    }
+    
+    private func setupVisualEffects() {
+        // Create a solid background instead of transparent
+        let backgroundView = NSView()
+        backgroundView.wantsLayer = true
+        backgroundView.layer?.backgroundColor = NSColor.controlBackgroundColor.cgColor
+        backgroundView.layer?.cornerRadius = 12
+        backgroundView.layer?.masksToBounds = true
+        
+        // Add a subtle border for better definition
+        backgroundView.layer?.borderWidth = 0.5
+        backgroundView.layer?.borderColor = NSColor.separatorColor.cgColor
+        
+        // Add a subtle shadow for depth
+        backgroundView.layer?.shadowColor = NSColor.black.cgColor
+        backgroundView.layer?.shadowOffset = NSSize(width: 0, height: 2)
+        backgroundView.layer?.shadowRadius = 8
+        backgroundView.layer?.shadowOpacity = 0.1
+        
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView?.addSubview(backgroundView)
+        
+        // Pin to all edges
+        NSLayoutConstraint.activate([
+            backgroundView.topAnchor.constraint(equalTo: contentView!.topAnchor),
+            backgroundView.leadingAnchor.constraint(equalTo: contentView!.leadingAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: contentView!.trailingAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: contentView!.bottomAnchor)
+        ])
     }
     
     func positionOnScreen() {
@@ -83,16 +133,7 @@ class EdgeWindow: NSPanel {
             )
         }
         
-        // Debug: Print the calculated frame
-        print("EdgeWindow positioning: \(position), calculated frame: \(windowFrame)")
-        print("Screen full frame: \(fullFrame)")
-        print("Screen visible frame: \(visibleFrame)")
-        
         self.setFrame(windowFrame, display: true)
-        
-        // Debug: Print the actual frame after setting
-        print("EdgeWindow actual frame after setting: \(self.frame)")
-        print("EdgeWindow content view frame: \(self.contentView?.frame ?? .zero)")
     }
     
     func updatePosition(_ newPosition: Position) {
