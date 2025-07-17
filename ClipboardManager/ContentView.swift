@@ -65,6 +65,7 @@ struct ContentView: View {
                         },
                         onToggleFolders: {
                             withAnimation(.easeInOut(duration: 0.2)) {
+                                print("🔄 Toggling sidebar: \(showFolderSidebar) → \(!showFolderSidebar)")
                                 showFolderSidebar.toggle()
                             }
                         }
@@ -99,6 +100,7 @@ struct ContentView: View {
                                             print("📋 Sidebar was already closed for copy button")
                                         }
                                         
+                                        // Only copy to clipboard, don't paste (Copy button should only copy)
                                         ClipboardManager.shared.copyToPasteboard(item: item)
                                     },
                                     onDeleteItem: {
@@ -153,6 +155,12 @@ struct ContentView: View {
         }
         .onChange(of: filteredItems) { newItems in
             resetSelection(for: newItems)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .toggleSidebar)) { _ in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                print("🔄 Toggling sidebar via keyboard shortcut: \(showFolderSidebar) → \(!showFolderSidebar)")
+                showFolderSidebar.toggle()
+            }
         }
     }
     
@@ -214,8 +222,20 @@ struct ContentView: View {
             print("📋 Sidebar was already closed for handleItemSelection")
         }
         
+        // Ensure hotkeys are reloaded when window is closed - do this IMMEDIATELY
+        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
+            print("🔑 Instantly reloading hotkeys for handleItemSelection operation")
+            DispatchQueue.main.async { // Use async instead of asyncAfter for immediate execution
+                appDelegate.registerHotkeys()
+            }
+        }
+        
         // Close edge window after sidebar state change
-        NSApp.windows.first { $0.title == "ClipboardManager" }?.close()
+        if let window = NSApp.keyWindow ?? NSApp.mainWindow {
+            window.close()
+        } else {
+            print("⚠️ No key or main window found to close.")
+        }
         
         // Copy to clipboard and paste
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -261,8 +281,18 @@ struct ContentView: View {
             print("📋 Sidebar was already closed for handleEnterKey")
         }
         
+        // Ensure hotkeys are reloaded when window is closed - do this IMMEDIATELY
+        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
+            print("🔑 Instantly reloading hotkeys for handleEnterKey operation")
+            DispatchQueue.main.async { // Use async instead of asyncAfter for immediate execution
+                appDelegate.registerHotkeys()
+            }
+        }
+        
         // Close edge window after sidebar state change
-        NSApp.windows.first { $0.title == "ClipboardManager" }?.close()
+        if let window = NSApp.keyWindow ?? NSApp.mainWindow {
+            window.close()
+        }
         
         // Copy to clipboard and paste
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

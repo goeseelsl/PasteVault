@@ -13,12 +13,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var isEdgeWindowShown = false
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Set up notification observers
+        // Set up notification observers with higher priority for hotkey reload
         NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(reloadHotkeys),
-            name: .reloadHotkeys,
-            object: nil
+            forName: .reloadHotkeys,
+            object: nil,
+            queue: OperationQueue.main, // Force main queue for immediate execution
+            using: { [weak self] _ in
+                self?.registerHotkeys()
+            }
         )
         
         NotificationCenter.default.addObserver(
@@ -113,47 +115,48 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
     
     func registerHotkeys() {
+        // First, unregister all existing hotkeys to ensure a clean state
         HotkeysManager.shared.unregisterAll()
         
-        // Register Open Clipboard History hotkey
-        let openHotkeyData = UserDefaults.standard.data(forKey: "openHotkey")
-        let openHotkey: Hotkey
-        if let data = openHotkeyData,
-           let decodedHotkey = try? JSONDecoder().decode(Hotkey.self, from: data) {
-            openHotkey = decodedHotkey
-        } else {
-            openHotkey = Hotkey(keyCode: UInt32(kVK_ANSI_C), modifiers: UInt32(cmdKey | shiftKey))
+        // Define a helper function to reduce code duplication and improve performance
+        func registerHotkey(key: String, defaultKeyCode: UInt32? = nil, defaultModifiers: UInt32? = nil, handler: @escaping () -> Void) {
+            let hotkeyData = UserDefaults.standard.data(forKey: key)
+            var hotkey: Hotkey?
+            
+            if let data = hotkeyData,
+               let decodedHotkey = try? JSONDecoder().decode(Hotkey.self, from: data) {
+                hotkey = decodedHotkey
+            } else if let defaultKeyCode = defaultKeyCode, let defaultModifiers = defaultModifiers {
+                hotkey = Hotkey(keyCode: defaultKeyCode, modifiers: defaultModifiers)
+            }
+            
+            if let hotkey = hotkey {
+                HotkeysManager.shared.register(keyCode: hotkey.keyCode, modifiers: hotkey.modifiers, handler: handler)
+            }
         }
         
-        HotkeysManager.shared.register(keyCode: openHotkey.keyCode, modifiers: openHotkey.modifiers) { [weak self] in
+        // Register Open Clipboard History hotkey (prioritize this one)
+        registerHotkey(key: "openHotkey", defaultKeyCode: UInt32(kVK_ANSI_C), defaultModifiers: UInt32(cmdKey | shiftKey)) { [weak self] in
             self?.toggleEdgeWindow(nil)
         }
         
-        // Register Paste from History hotkey
-        let pasteHotkeyData = UserDefaults.standard.data(forKey: "pasteHotkey")
-        if let data = pasteHotkeyData,
-           let decodedHotkey = try? JSONDecoder().decode(Hotkey.self, from: data) {
-            HotkeysManager.shared.register(keyCode: decodedHotkey.keyCode, modifiers: decodedHotkey.modifiers) { [weak self] in
-                self?.pasteFromHistory()
-            }
+        // Register all other hotkeys
+        registerHotkey(key: "pasteHotkey") { [weak self] in
+            self?.pasteFromHistory()
         }
         
-        // Register Clear History hotkey
-        let clearHistoryHotkeyData = UserDefaults.standard.data(forKey: "clearHistoryHotkey")
-        if let data = clearHistoryHotkeyData,
-           let decodedHotkey = try? JSONDecoder().decode(Hotkey.self, from: data) {
-            HotkeysManager.shared.register(keyCode: decodedHotkey.keyCode, modifiers: decodedHotkey.modifiers) { [weak self] in
-                self?.clearHistory()
-            }
+        registerHotkey(key: "clearHistoryHotkey") { [weak self] in
+            self?.clearHistory()
         }
         
-        // Register Toggle Pin hotkey
-        let togglePinHotkeyData = UserDefaults.standard.data(forKey: "togglePinHotkey")
-        if let data = togglePinHotkeyData,
-           let decodedHotkey = try? JSONDecoder().decode(Hotkey.self, from: data) {
-            HotkeysManager.shared.register(keyCode: decodedHotkey.keyCode, modifiers: decodedHotkey.modifiers) { [weak self] in
-                self?.togglePinOnMostRecent()
-            }
+        registerHotkey(key: "togglePinHotkey") { [weak self] in
+            self?.togglePinOnMostRecent()
+        }
+        
+        // Handle the edge case where registration failed
+        let carbonManager = HotkeysManager.shared
+        if carbonManager.activeHotkeysCount == 0 && carbonManager.isEnabled {
+            // Registration failed, but we'll silently handle it
         }
     }
 
@@ -167,9 +170,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             statusBarItem.button?.performClick(nil)
             statusBarItem.menu = nil // Unset the menu so the edge window can be shown on left-click
         } else {
-            if isEdgeWindowShown {
+            // Check if the window is actually visible, regardless of the isEdgeWindowShown flag
+            let windowActuallyVisible = edgeWindow?.isVisible ?? false
+            
+            // Use both the flag and actual window state to determine what to do
+            if isEdgeWindowShown && windowActuallyVisible {
                 closeEdgeWindow()
             } else {
+                // If we think it's shown but it's not visible, correct our state
+                if isEdgeWindowShown && !windowActuallyVisible {
+                    isEdgeWindowShown = false
+                }
+                
+                print("🔄 Opening edge window")
                 // Activate the application first to ensure proper positioning
                 NSApp.activate(ignoringOtherApps: true)
                 
@@ -182,7 +195,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
     
     private func showEdgeWindow() {
-        guard let controller = windowHostingController else { return }
+        print("🔍 showEdgeWindow called")
+        guard let controller = windowHostingController else {
+            print("❌ windowHostingController is nil")
+            return
+        }
         
         // Get user preference for sidebar position (default to right)
         let sidebarPosition = UserDefaults.standard.string(forKey: "sidebarPosition") ?? "right"
@@ -190,6 +207,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         
         // Create the edge window if it doesn't exist
         if edgeWindow == nil {
+            print("⚠️ Creating new edge window")
             // For top/bottom positions, we want a window that spans the full width
             // For left/right positions, we want a window that spans the full height
             let widthOrHeight: CGFloat
@@ -211,17 +229,55 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             edgeWindow?.contentViewController = controller
             edgeWindow?.delegate = self
         } else {
+            print("📝 Reusing existing edge window")
             // Update position if the window already exists
             edgeWindow?.updatePosition(position)
         }
         
-        edgeWindow?.makeKeyAndOrderFront(nil)
+        guard let window = edgeWindow else {
+            print("❌ Failed to create or access edge window")
+            return
+        }
+        
+        print("📊 Window state before showing: isVisible=\(window.isVisible), isKeyWindow=\(window.isKeyWindow)")
+        
+        // Force window to be key and front with multiple methods
+        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
+        
+        // Ensure the app is active
+        NSApp.activate(ignoringOtherApps: true)
+        
         isEdgeWindowShown = true
+        
+        // Verify window is now showing
+        print("📊 Window state after showing: isVisible=\(window.isVisible), isKeyWindow=\(window.isKeyWindow)")
+        
+        // If the window is still not visible, try a different approach
+        if !window.isVisible {
+            print("🔴 Window still not visible after showing, trying alternative approach")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                window.makeKeyAndOrderFront(nil)
+                window.orderFrontRegardless()
+                NSApp.activate(ignoringOtherApps: true)
+                print("📊 Window state after alternative approach: isVisible=\(window.isVisible), isKeyWindow=\(window.isKeyWindow)")
+            }
+        }
     }
     
     func closeEdgeWindow() {
-        edgeWindow?.orderOut(nil)
+        // Start reloading hotkeys immediately, don't wait for window operations
+        DispatchQueue.main.async { // Use async instead of asyncAfter for immediate execution
+            self.registerHotkeys()
+        }
+        
+        guard let window = edgeWindow else {
+            isEdgeWindowShown = false
+            return
+        }
+        window.orderOut(nil)
         isEdgeWindowShown = false
+        print("📊 Window state after closing: isVisible=\(window.isVisible)")
     }
     
     func pasteFromHistory() {

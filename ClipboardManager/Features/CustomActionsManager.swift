@@ -2,6 +2,16 @@ import Foundation
 import SwiftUI
 import AppKit
 
+// MARK: - Notification Names
+extension NSNotification.Name {
+    static let pasteOperationStart = NSNotification.Name("pasteOperationStart")
+    static let pasteOperationEnd = NSNotification.Name("pasteOperationEnd")
+    static let showClipboardHistory = NSNotification.Name("showClipboardHistory")
+    static let showSearch = NSNotification.Name("showSearch")
+    static let toggleSidebar = NSNotification.Name("toggleSidebar")
+    static let pasteItemAtIndex = NSNotification.Name("pasteItemAtIndex")
+}
+
 /// Custom actions and automation system
 class CustomActionsManager: ObservableObject {
     @Published var customActions: [CustomAction] = []
@@ -224,41 +234,137 @@ enum TextTransform: String, Codable, CaseIterable {
 
 /// Global shortcuts manager
 class GlobalShortcutsManager: ObservableObject {
-    private var eventMonitor: Any?
+    private var globalEventMonitor: Any?
+    private var localEventMonitor: Any?
+    private var isTemporarilyDisabled = false
     
     init() {
         setupGlobalShortcuts()
+        
+        // Listen for paste operations that might disrupt event handling
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handlePasteOperationStart),
+            name: .pasteOperationStart,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handlePasteOperationEnd),
+            name: .pasteOperationEnd,
+            object: nil
+        )
     }
     
-    private func setupGlobalShortcuts() {
-        eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
-            self.handleGlobalKeyEvent(event)
+    @objc private func handlePasteOperationStart() {
+        print("🔄 Temporarily disabling shortcuts for paste operation")
+        isTemporarilyDisabled = true
+    }
+    
+    @objc private func handlePasteOperationEnd() {
+        print("🔄 Re-enabling shortcuts after paste operation")
+        
+        // Add a longer delay to ensure paste operation is fully complete
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.isTemporarilyDisabled = false
+            
+            // Reinitialize event monitors to ensure they're working properly
+            self.reinitializeEventMonitors()
         }
     }
     
+    private func reinitializeEventMonitors() {
+        print("🔄 Reinitializing event monitors for better reliability")
+        
+        // Remove existing monitors
+        if let monitor = globalEventMonitor {
+            NSEvent.removeMonitor(monitor)
+            globalEventMonitor = nil
+        }
+        if let monitor = localEventMonitor {
+            NSEvent.removeMonitor(monitor)
+            localEventMonitor = nil
+        }
+        
+        // Small delay to ensure cleanup is complete
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            // Re-create monitors
+            self.setupGlobalShortcuts()
+            print("✅ Event monitors reinitialized successfully")
+        }
+    }
+    
+    private func setupGlobalShortcuts() {
+        print("🔧 Setting up global shortcuts...")
+        
+        // Global monitor for when app is not in focus
+        globalEventMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
+            self.handleGlobalKeyEvent(event)
+        }
+        
+        // Local monitor for when app is in focus
+        localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            self.handleGlobalKeyEvent(event)
+            return event // Don't consume the event, let it pass through
+        }
+        
+        print("✅ Global shortcuts setup complete - global: \(globalEventMonitor != nil), local: \(localEventMonitor != nil)")
+    }
+    
     private func handleGlobalKeyEvent(_ event: NSEvent) {
+        // Skip if temporarily disabled during paste operations
+        if isTemporarilyDisabled {
+            print("⏭️ Skipping shortcut handling - disabled during paste operation")
+            return
+        }
+        
         let flags = event.modifierFlags
         let keyCode = event.keyCode
         
+        print("🔍 Global shortcut detected: keyCode=\(keyCode), flags=\(flags)")
+        
         // Cmd+Shift+V - Show clipboard history
         if flags.contains([.command, .shift]) && keyCode == 9 { // V key
+            print("📋 Triggering clipboard history")
             NotificationCenter.default.post(name: .showClipboardHistory, object: nil)
         }
         
         // Cmd+Shift+F - Show search
         if flags.contains([.command, .shift]) && keyCode == 3 { // F key
+            print("🔍 Triggering search")
             NotificationCenter.default.post(name: .showSearch, object: nil)
+        }
+        
+        // Cmd+Shift+B - Toggle sidebar
+        if flags.contains([.command, .shift]) && keyCode == 11 { // B key
+            print("📁 Triggering sidebar toggle")
+            NotificationCenter.default.post(name: .toggleSidebar, object: nil)
+        }
+        
+        // Cmd+Shift+C - Toggle sidebar (alternative)
+        if flags.contains([.command, .shift]) && keyCode == 8 { // C key
+            print("📁 Triggering sidebar toggle (C key)")
+            NotificationCenter.default.post(name: .toggleSidebar, object: nil)
         }
         
         // Cmd+Option+1-9 - Paste specific item
         if flags.contains([.command, .option]) && keyCode >= 18 && keyCode <= 26 {
             let itemIndex = Int(keyCode) - 18 // Convert to 0-based index
+            print("📋 Triggering paste item at index \(itemIndex)")
             NotificationCenter.default.post(name: .pasteItemAtIndex, object: itemIndex)
         }
     }
     
     deinit {
-        if let monitor = eventMonitor {
+        // Remove notification observers
+        NotificationCenter.default.removeObserver(self)
+        
+        // Remove event monitors
+        if let monitor = globalEventMonitor {
+            NSEvent.removeMonitor(monitor)
+        }
+        if let monitor = localEventMonitor {
             NSEvent.removeMonitor(monitor)
         }
     }
@@ -344,11 +450,4 @@ struct CustomActionRow: View {
                 .fill(Color(NSColor.windowBackgroundColor))
         )
     }
-}
-
-/// Notification extensions
-extension Notification.Name {
-    static let showClipboardHistory = Notification.Name("showClipboardHistory")
-    static let showSearch = Notification.Name("showSearch")
-    static let pasteItemAtIndex = Notification.Name("pasteItemAtIndex")
 }

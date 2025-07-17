@@ -310,6 +310,24 @@ class ClipboardManager: ObservableObject {
     func performPasteOperation(item: ClipboardItem, completion: @escaping (Bool) -> Void) {
         print("🚀 Starting paste operation for item: \(item.content?.prefix(30) ?? "Image")")
         
+        // Check initial hotkeys state
+        print("🔍 Hotkeys state check before paste operation:")
+        let carbonManager = HotkeysManager.shared
+        let appDelegate = NSApp.delegate as? AppDelegate
+        print("  • Carbon hotkeys are \(carbonManager.isEnabled ? "enabled" : "disabled")")
+        print("  • Edge window is \(appDelegate?.isEdgeWindowShown == true ? "shown" : "hidden")")
+        
+        // Notify that paste operation is starting
+        print("📢 Sending disable notifications for hotkeys")
+        NotificationCenter.default.post(name: .pasteOperationStart, object: nil, userInfo: nil)
+        NotificationCenter.default.post(name: .disableGlobalHotkeys, object: nil, userInfo: nil)
+        
+        // Verify hotkeys were disabled
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            print("🔍 Hotkeys state check after disable notification:")
+            print("  • Carbon hotkeys are \(carbonManager.isEnabled ? "enabled" : "disabled")")
+        }
+        
         // Debug: Print current pasteboard state
         debugPasteboardState()
         
@@ -334,6 +352,25 @@ class ClipboardManager: ObservableObject {
                 // Reset flag after operation with proper timing
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.isInternalPasteOperation = false
+                    
+                    // Notify that paste operation is ending - delay to ensure coordination
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        print("📢 Sending pasteOperationEnd notification")
+                        NotificationCenter.default.post(name: .pasteOperationEnd, object: nil, userInfo: nil)
+                        
+                        // Re-enable HotkeysManager after GlobalShortcutsManager is ready
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            print("📢 Sending enableGlobalHotkeys notification")
+                            NotificationCenter.default.post(name: .enableGlobalHotkeys, object: nil, userInfo: nil)
+                            
+                            // Verify hotkeys were re-enabled
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                let carbonManager = HotkeysManager.shared
+                                print("🔍 Hotkeys state check after re-enable:")
+                                print("  • Carbon hotkeys are \(carbonManager.isEnabled ? "enabled" : "disabled")")
+                            }
+                        }
+                    }
                 }
                 
                 completion(pasteSuccess)
@@ -344,6 +381,25 @@ class ClipboardManager: ObservableObject {
             // Reset flag after a short delay
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.isInternalPasteOperation = false
+                
+                // Notify that paste operation is ending - delay to ensure coordination
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    print("📢 Sending pasteOperationEnd notification")
+                    NotificationCenter.default.post(name: .pasteOperationEnd, object: nil, userInfo: nil)
+                    
+                    // Re-enable HotkeysManager after GlobalShortcutsManager is ready
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        print("📢 Sending enableGlobalHotkeys notification")
+                        NotificationCenter.default.post(name: .enableGlobalHotkeys, object: nil, userInfo: nil)
+                        
+                        // Verify hotkeys were re-enabled
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            let carbonManager = HotkeysManager.shared
+                            print("🔍 Hotkeys state check after re-enable:")
+                            print("  • Carbon hotkeys are \(carbonManager.isEnabled ? "enabled" : "disabled")")
+                        }
+                    }
+                }
             }
             
             print("✅ Item copied to pasteboard - ready for manual paste with Cmd+V")
@@ -397,10 +453,7 @@ class ClipboardManager: ObservableObject {
         print("📝 Created CGEvents - KeyDown: \(keyDown), KeyUp: \(keyUp)")
         print("📝 Command flags set: \(commandFlag)")
         
-        // Alternative posting method - try both cgSessionEventTap and cgAnnotatedSessionEventTap
-        // This is based on different patterns used in Clipy vs Maccy
-        
-        // First try cgSessionEventTap (Maccy pattern)
+        // Post events using cgSessionEventTap (Maccy pattern)
         print("📤 Posting events with cgSessionEventTap...")
         keyDown.post(tap: .cgSessionEventTap)
         
@@ -409,18 +462,7 @@ class ClipboardManager: ObservableObject {
         
         keyUp.post(tap: .cgSessionEventTap)
         
-        // Wait a bit then try alternative posting method if needed
-        usleep(10000) // 10ms delay
-        
-        // Also try cgAnnotatedSessionEventTap (Clipy pattern)
-        print("📤 Posting events with cgAnnotatedSessionEventTap as backup...")
-        keyDown.post(tap: .cgAnnotatedSessionEventTap)
-        
-        usleep(1000) // 1ms delay
-        
-        keyUp.post(tap: .cgAnnotatedSessionEventTap)
-        
-        print("✅ Programmatic paste events posted successfully with both methods")
+        print("✅ Programmatic paste events posted successfully")
         return true
     }
     
