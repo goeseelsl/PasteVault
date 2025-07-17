@@ -21,8 +21,10 @@ class OrganizationWindowController: NSWindowController, NSWindowDelegate {
         window.toolbarStyle = .unified
         window.level = .floating  // Set window level to ensure it appears above other windows
         
-        // Set content view
+        // Set content view with the proper managed object context
+        let viewContext = PersistenceController.shared.container.viewContext
         let organizationView = OrganizationWindowView()
+            .environment(\.managedObjectContext, viewContext)
         window.contentView = NSHostingView(rootView: organizationView)
         
         // Initialize with our window
@@ -59,8 +61,9 @@ class OrganizationWindowController: NSWindowController, NSWindowDelegate {
 /// SwiftUI View to show organization window content
 struct OrganizationWindowView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @ObservedObject private var folderManager = FolderManager(viewContext: PersistenceController.shared.container.viewContext)
-    @ObservedObject private var searchManager = SearchManager()
+    // Use StateObject to create a single instance that persists across view updates
+    @StateObject private var folderManager: FolderManager
+    @StateObject private var searchManager = SearchManager()
     @State private var selectedView: ViewMode = .list
     @State private var advancedSearchExpanded = false
     @State private var selectedItems: Set<UUID> = []
@@ -140,14 +143,27 @@ struct OrganizationWindowView: View {
         }
     }
     
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \ClipboardItem.createdAt, ascending: false)],
-        animation: .default
-    )
-    private var items: FetchedResults<ClipboardItem>
+    @FetchRequest private var items: FetchedResults<ClipboardItem>
+    
+    // Initialize with the correct managed object context
+    init() {
+        // Configure folder manager
+        _folderManager = StateObject(wrappedValue: FolderManager(viewContext: PersistenceController.shared.container.viewContext))
+        
+        // Configure the fetch request for clipboard items with proper sort descriptors
+        let fetchRequest = NSFetchRequest<ClipboardItem>(entityName: "ClipboardItem")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipboardItem.createdAt, ascending: false)]
+        
+        // Set the predefined fetch request
+        _items = FetchRequest<ClipboardItem>(fetchRequest: fetchRequest)
+        
+        print("DEBUG: OrganizationWindowView initialized with fetch request")
+    }
     
     var filteredItems: [ClipboardItem] {
         var result = Array(items)
+        
+        print("Total items in database: \(result.count)")
         
         // Apply content type filter
         if selectedContentTypeFilter != .all {
@@ -171,6 +187,7 @@ struct OrganizationWindowView: View {
                     return ContentHelper.isColorCode(item.content ?? "")
                 }
             }
+            print("After content type filter (\(selectedContentTypeFilter.rawValue)): \(result.count)")
         }
         
         // Apply quick filter
@@ -179,11 +196,13 @@ struct OrganizationWindowView: View {
             break // No filtering needed
         case .favorites:
             result = result.filter { $0.isFavorite }
+            print("After favorites filter: \(result.count)")
         case .today:
             result = result.filter { item in
                 guard let date = item.createdAt else { return false }
                 return Calendar.current.isDateInToday(date)
             }
+            print("After today filter: \(result.count)")
         case .thisWeek:
             result = result.filter { item in
                 guard let date = item.createdAt else { return false }
@@ -191,20 +210,25 @@ struct OrganizationWindowView: View {
                 let components = calendar.dateComponents([.weekOfYear], from: date, to: Date())
                 return components.weekOfYear ?? 2 <= 1
             }
+            print("After this week filter: \(result.count)")
         case .secure:
             result = result.filter { $0.isFavorite }
+            print("After secure filter: \(result.count)")
         }
         
         // Apply folder filter
         if let selectedFolder = folderManager.selectedFolder {
             result = result.filter { $0.folder == selectedFolder }
+            print("After folder filter: \(result.count)")
         }
         
         // Apply search
         if !searchManager.searchText.isEmpty {
             result = searchManager.fuzzySearch(items: result)
+            print("After search filter: \(result.count)")
         }
         
+        print("Final filtered count: \(result.count)")
         return result
     }
 
@@ -293,10 +317,15 @@ struct OrganizationWindowView: View {
                 Divider()
                 
                 // Main Content Area
-                if filteredItems.isEmpty {
-                    emptyStateView
-                } else {
-                    contentView
+                Group {
+                    if filteredItems.isEmpty {
+                        emptyStateView
+                    } else {
+                        contentView
+                    }
+                }
+                .onAppear {
+                    print("DEBUG: Main content area appeared with \(filteredItems.count) items")
                 }
             }
         }
@@ -351,7 +380,7 @@ struct OrganizationWindowView: View {
                 .font(.title2)
                 .foregroundColor(.primary)
             
-            Text("Try adjusting your search criteria or filters")
+            Text("Database contains \(items.count) items, but filtered list is empty")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
@@ -364,62 +393,120 @@ struct OrganizationWindowView: View {
             .buttonStyle(BorderedButtonStyle())
             .controlSize(.large)
             .padding(.top, 8)
+            
+            Button("Debug - Fetch Raw Items") {
+                // Direct Core Data fetch to debug
+                let fetchRequest: NSFetchRequest<ClipboardItem> = ClipboardItem.fetchRequest()
+                fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipboardItem.createdAt, ascending: false)]
+                do {
+                    let fetchedItems = try viewContext.fetch(fetchRequest)
+                    print("DEBUG: Direct Core Data fetch returned \(fetchedItems.count) items")
+                    for (index, item) in fetchedItems.prefix(5).enumerated() {
+                        print("Item \(index): id=\(String(describing: item.id)), content=\(String(describing: item.content?.prefix(30)))")
+                    }
+                } catch {
+                    print("DEBUG ERROR: Failed to fetch items: \(error)")
+                }
+            }
+            .buttonStyle(BorderedButtonStyle())
+            .controlSize(.large)
+            .padding(.top, 8)
+            
+            // Simple direct list to test item display
+            Text("Simple Debug List")
+                .font(.headline)
+                .padding(.top, 20)
+            
+            ScrollView {
+                LazyVStack(alignment: .leading) {
+                    ForEach(Array(items.prefix(10)), id: \.id) { item in
+                        Text(item.content ?? "No content")
+                            .font(.system(size: 12))
+                            .lineLimit(1)
+                            .padding(4)
+                    }
+                }
+                .frame(height: 200)
+                .border(Color.gray)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     var contentView: some View {
         Group {
-            switch selectedView {
-            case .list:
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(filteredItems, id: \.id) { item in
-                            OrganizationListItemView(
-                                item: item,
-                                isSelected: selectedItems.contains(item.id ?? UUID()),
-                                onSelect: { toggleSelection(item: item) }
-                            )
-                            .contextMenu {
-                                itemContextMenu(for: item)
-                            }
-                            
-                            Divider()
-                        }
-                    }
-                    .padding(.vertical, 0)
-                }
-            case .grid:
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 160, maximum: 200), spacing: 12)], spacing: 12) {
-                        ForEach(filteredItems, id: \.id) { item in
-                            OrganizationGridItemView(
-                                item: item,
-                                isSelected: selectedItems.contains(item.id ?? UUID()),
-                                onSelect: { toggleSelection(item: item) }
-                            )
-                            .contextMenu {
-                                itemContextMenu(for: item)
-                            }
-                        }
-                    }
-                    .padding()
-                }
-            case .card:
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        ForEach(filteredItems, id: \.id) { item in
-                            OrganizationCardItemView(
-                                item: item,
-                                isSelected: selectedItems.contains(item.id ?? UUID()),
-                                onSelect: { toggleSelection(item: item) }
-                            )
-                            .contextMenu {
-                                itemContextMenu(for: item)
+            VStack {
+                Text("Debug Information")
+                    .font(.headline)
+                
+                Text("Total items in database: \(items.count)")
+                    .font(.subheadline)
+                
+                Text("Filtered items: \(filteredItems.count)")
+                    .font(.subheadline)
+                
+                Divider()
+                
+                switch selectedView {
+                case .list:
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(filteredItems, id: \.id) { item in
+                                // Simple fallback view for debugging
+                                VStack(alignment: .leading) {
+                                    HStack {
+                                        Text(item.content?.prefix(50) ?? "No content")
+                                            .font(.system(size: 12))
+                                            .lineLimit(1)
+                                        Spacer()
+                                        Text(item.createdAt?.formatted(.dateTime.hour().minute()) ?? "No date")
+                                            .font(.system(size: 10))
+                                            .foregroundColor(.secondary)
+                                    }
+                                    Divider()
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.clear)
+                                .onTapGesture {
+                                    toggleSelection(item: item)
+                                }
                             }
                         }
+                        .padding(.vertical, 0)
                     }
-                    .padding()
+                case .grid:
+                    ScrollView {
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 160, maximum: 200), spacing: 12)], spacing: 12) {
+                            ForEach(filteredItems, id: \.id) { item in
+                                OrganizationGridItemView(
+                                    item: item,
+                                    isSelected: selectedItems.contains(item.id ?? UUID()),
+                                    onSelect: { toggleSelection(item: item) }
+                                )
+                                .contextMenu {
+                                    itemContextMenu(for: item)
+                                }
+                            }
+                        }
+                        .padding()
+                    }
+                case .card:
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(filteredItems, id: \.id) { item in
+                                OrganizationCardItemView(
+                                    item: item,
+                                    isSelected: selectedItems.contains(item.id ?? UUID()),
+                                    onSelect: { toggleSelection(item: item) }
+                                )
+                                .contextMenu {
+                                    itemContextMenu(for: item)
+                                }
+                            }
+                        }
+                        .padding()
+                    }
                 }
             }
         }
@@ -514,24 +601,31 @@ struct FilterButtonView: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
-            HStack {
-                Text(emoji)
-                    .font(.system(size: 16))
-                    .frame(width: 24, alignment: .center)
-                
-                Text(title)
-                    .font(.system(size: 13))
-                
-                Spacer()
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
-            .cornerRadius(6)
+        HStack {
+            Text(emoji)
+                .font(.system(size: 16))
+                .frame(width: 24, alignment: .center)
+            
+            Text(title)
+                .font(.system(size: 13))
+            
+            Spacer()
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding(.horizontal, 12)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(isSelected ? Color.accentColor.opacity(0.3) : Color.gray.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            action()
+        }
     }
 }
 
@@ -561,66 +655,78 @@ struct FolderManagementView: View {
             
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
-                    Button(action: {
+                    HStack {
+                        Image(systemName: "folder")
+                            .foregroundColor(.blue)
+                            .frame(width: 24, alignment: .center)
+                        
+                        Text("All Folders")
+                            .font(.system(size: 13))
+                        
+                        Spacer()
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(folderManager.selectedFolder == nil ? Color.accentColor.opacity(0.15) : Color.clear)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(folderManager.selectedFolder == nil ? Color.accentColor.opacity(0.3) : Color.gray.opacity(0.2), lineWidth: 1)
+                            )
+                    )
+                    .contentShape(Rectangle())
+                    .onTapGesture {
                         folderManager.selectedFolder = nil
-                    }) {
+                    }
+                    
+                    ForEach(Array(folderManager.allFolders), id: \.self) { folder in
                         HStack {
-                            Image(systemName: "folder")
+                            Image(systemName: "folder.fill")
                                 .foregroundColor(.blue)
                                 .frame(width: 24, alignment: .center)
                             
-                            Text("All Folders")
+                            Text(folder.name ?? "Untitled")
                                 .font(.system(size: 13))
+                                .lineLimit(1)
                             
                             Spacer()
+                            
+                            Text("\(folder.items?.count ?? 0)")
+                                .font(.system(size: 11))
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.secondary.opacity(0.1))
+                                )
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 6)
-                        .background(folderManager.selectedFolder == nil ? Color.accentColor.opacity(0.15) : Color.clear)
-                        .cornerRadius(6)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    ForEach(Array(folderManager.allFolders), id: \.self) { folder in
-                        Button(action: {
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(folderManager.selectedFolder == folder ? Color.accentColor.opacity(0.15) : Color.clear)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(folderManager.selectedFolder == folder ? Color.accentColor.opacity(0.3) : Color.gray.opacity(0.2), lineWidth: 1)
+                                )
+                        )
+                        .contentShape(Rectangle())
+                        .onTapGesture {
                             folderManager.selectedFolder = folder
-                        }) {
-                            HStack {
-                                Image(systemName: "folder.fill")
-                                    .foregroundColor(.blue)
-                                    .frame(width: 24, alignment: .center)
-                                
-                                Text(folder.name ?? "Untitled")
-                                    .font(.system(size: 13))
-                                    .lineLimit(1)
-                                
-                                Spacer()
-                                
-                                Text("\(folder.items?.count ?? 0)")
-                                    .font(.system(size: 11))
-                                    .foregroundColor(.secondary)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(Color.secondary.opacity(0.1))
-                                    )
+                        }
+                        .contextMenu {
+                            Button("Rename") {
+                                folderManager.editingFolder = folder
                             }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 6)
-                            .background(folderManager.selectedFolder == folder ? Color.accentColor.opacity(0.15) : Color.clear)
-                            .cornerRadius(6)
-                            .contextMenu {
-                                Button("Rename") {
-                                    folderManager.editingFolder = folder
-                                }
-                                
-                                Button("Delete", role: .destructive) {
-                                    folderManager.deleteFolder(folder)
-                                }
+                            
+                            Button("Delete", role: .destructive) {
+                                folderManager.deleteFolder(folder)
                             }
                         }
-                        .buttonStyle(PlainButtonStyle())
                     }
                 }
             }
