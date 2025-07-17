@@ -395,6 +395,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         settingsHostingController = nil
     }
     
+    // Create and show the organization window
+    @objc func openOrganizationWindow(_ sender: Any?) {
+        // Check if window already exists and just focus it
+        if let existingWindow = NSApp.windows.first(where: { $0.title == "Clipboard Organization" }) {
+            existingWindow.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+        
+        // Create a new organization window controller
+        let organizationWindowController = OrganizationWindowController()
+        organizationWindowController.showWindow(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+    
     func applicationWillFinishLaunching(_ notification: Notification) {
         applyTheme()
     }

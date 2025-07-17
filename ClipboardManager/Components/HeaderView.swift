@@ -3,17 +3,25 @@ import SwiftUI
 /// Header component for the clipboard manager
 struct HeaderView: View {
     let onSettingsPressed: () -> Void
-    let onToggleFolders: () -> Void
+    let onOrganizePressed: () -> Void
     
     var body: some View {
         HStack(spacing: 8) {
-            // Toggle folders button
-            Button(action: onToggleFolders) {
-                Image(systemName: "folder")
+            // Organize button
+            Button(action: onOrganizePressed) {
+                Image(systemName: "folder.badge.gearshape")
                     .font(.system(size: 16, weight: .medium))
                     .foregroundColor(.secondary)
             }
             .buttonStyle(PlainButtonStyle())
+            .help("Open Organization Window")
+            .onHover { hovering in
+                if hovering {
+                    NSCursor.pointingHand.push()
+                } else {
+                    NSCursor.pop()
+                }
+            }
             
             Spacer()
             

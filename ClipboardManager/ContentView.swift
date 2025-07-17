@@ -47,13 +47,6 @@ struct ContentView: View {
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 0) {
-                // Collapsible sidebar
-                if showFolderSidebar {
-                    FolderSidebarView(folderManager: folderManager)
-                        .frame(width: max(200, geometry.size.width * 0.25))
-                        .transition(.move(edge: .leading))
-                }
-                
                 // Main content area
                 VStack(spacing: 0) {
                     // Header
@@ -63,14 +56,9 @@ struct ContentView: View {
                                 appDelegate.openSettings(nil)
                             }
                         },
-                        onToggleFolders: {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                showFolderSidebar.toggle()
-                                
-                                // Clear folder selection when sidebar is closed
-                                if !showFolderSidebar {
-                                    folderManager.selectedFolder = nil
-                                }
+                        onOrganizePressed: {
+                            if let appDelegate = NSApp.delegate as? AppDelegate {
+                                appDelegate.openOrganizationWindow(nil)
                             }
                         }
                     )
@@ -179,16 +167,6 @@ struct ContentView: View {
         .onChange(of: filteredItems) { newItems in
             resetSelection(for: newItems)
         }
-        .onReceive(NotificationCenter.default.publisher(for: .toggleSidebar)) { _ in
-            withAnimation(.easeInOut(duration: 0.2)) {
-                showFolderSidebar.toggle()
-                
-                // Clear folder selection when sidebar is closed
-                if !showFolderSidebar {
-                    folderManager.selectedFolder = nil
-                }
-            }
-        }
     }
     
     private var sourceApps: [String] {
@@ -214,11 +192,6 @@ struct ContentView: View {
         
         // Apply date filter
         filtered = searchManager.filterByDate(items: filtered)
-        
-        // Apply folder filter
-        if showFolderSidebar && folderManager.selectedFolder != nil {
-            filtered = filtered.filter { $0.folder == folderManager.selectedFolder }
-        }
         
         // Apply source app filter
         if let selectedSourceApp = selectedSourceApp {

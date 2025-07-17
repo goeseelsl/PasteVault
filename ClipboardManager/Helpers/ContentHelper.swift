@@ -87,6 +87,7 @@ class ContentHelper {
         if isEmail(text) { return "Email" }
         if isNumber(text) { return "Number" }
         if isCode(text) { return "Code" }
+        if isColor(text) { return "Color" }
         return "Text"
     }
     
@@ -98,6 +99,7 @@ class ContentHelper {
         if isEmail(text) { return "✉️" }
         if isNumber(text) { return "🔢" }
         if isCode(text) { return "💻" }
+        if isColor(text) { return "🎨" }
         return "📝"
     }
     
@@ -114,8 +116,25 @@ class ContentHelper {
             return "number"
         case "Code":
             return "chevron.left.forwardslash.chevron.right"
+        case "Color":
+            return "paintpalette"
         default:
             return "doc.text"
         }
+    }
+    
+    /// Check if the content is a color code
+    /// - Parameter text: The text to analyze
+    /// - Returns: True if the text appears to be a color code
+    static func isColor(_ text: String) -> Bool {
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Check for hex color format: #RRGGBB or #RGB
+        let hexColorPattern = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+        
+        // Check for rgb()/rgba() format
+        let rgbColorPattern = "^rgb[a]?\\(\\s*\\d+\\s*,\\s*\\d+\\s*,\\s*\\d+\\s*(?:,\\s*[\\d.]+\\s*)?\\)$"
+        
+        return trimmedText.range(of: hexColorPattern, options: .regularExpression) != nil ||
+               trimmedText.range(of: rgbColorPattern, options: .regularExpression) != nil
     }
 }
