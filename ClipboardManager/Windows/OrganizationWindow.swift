@@ -19,6 +19,7 @@ class OrganizationWindowController: NSWindowController, NSWindowDelegate {
         window.minSize = NSSize(width: 1000, height: 700)
         window.isReleasedWhenClosed = false
         window.toolbarStyle = .unified
+        window.level = .floating  // Set window level to ensure it appears above other windows
         
         // Set content view
         let organizationView = OrganizationWindowView()
@@ -29,9 +30,29 @@ class OrganizationWindowController: NSWindowController, NSWindowDelegate {
         window.delegate = self
     }
     
-    // Window delegate method to handle closing
+    // Window delegate methods
     func windowWillClose(_ notification: Notification) {
         // Any cleanup needed when window is closed
+    }
+    
+    func windowDidBecomeKey(_ notification: Notification) {
+        // Ensure the app is in front when this window becomes key
+        if let window = notification.object as? NSWindow {
+            NSApp.activate(ignoringOtherApps: true)
+            window.orderFrontRegardless()
+        }
+    }
+    
+    override func showWindow(_ sender: Any?) {
+        super.showWindow(sender)
+        
+        if let window = self.window {
+            // Ensure the window is at the floating level and in front
+            window.level = .floating
+            NSApp.activate(ignoringOtherApps: true)
+            window.makeKeyAndOrderFront(nil)
+            window.orderFrontRegardless()
+        }
     }
 }
 

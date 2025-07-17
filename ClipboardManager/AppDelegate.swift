@@ -397,17 +397,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     
     // Create and show the organization window
     @objc func openOrganizationWindow(_ sender: Any?) {
+        // Close the edge window first (this will also close the sidebar)
+        closeEdgeWindow()
+        
+        // First, activate the application to ensure proper window ordering
+        NSApp.activate(ignoringOtherApps: true)
+        
         // Check if window already exists and just focus it
         if let existingWindow = NSApp.windows.first(where: { $0.title == "Clipboard Organization" }) {
             existingWindow.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
+            existingWindow.orderFrontRegardless()
             return
         }
         
         // Create a new organization window controller
         let organizationWindowController = OrganizationWindowController()
         organizationWindowController.showWindow(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        organizationWindowController.window?.orderFrontRegardless()
     }
     
     func applicationWillFinishLaunching(_ notification: Notification) {

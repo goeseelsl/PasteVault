@@ -43,6 +43,13 @@ class FolderManager: ObservableObject {
         saveContext()
     }
     
+    /// Static method to close sidebar globally
+    static func closeSidebar() {
+        // Use both notification and UserDefaults approach for maximum compatibility
+        UserDefaults.standard.set(false, forKey: "showFolderSidebar")
+        NotificationCenter.default.post(name: NSNotification.Name("CloseFolderSidebar"), object: nil)
+    }
+    
     /// Toggle favorite status of an item
     func toggleFavorite(_ item: ClipboardItem) {
         item.isFavorite.toggle()

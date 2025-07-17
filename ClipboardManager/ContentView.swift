@@ -58,6 +58,7 @@ struct ContentView: View {
                         },
                         onOrganizePressed: {
                             if let appDelegate = NSApp.delegate as? AppDelegate {
+                                // This will properly close the edge window and automatically hide the sidebar
                                 appDelegate.openOrganizationWindow(nil)
                             }
                         }
@@ -155,6 +156,25 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             setupInitialState()
+            
+            // Add notification observer for closing sidebar
+            NotificationCenter.default.addObserver(
+                forName: NSNotification.Name("CloseFolderSidebar"),
+                object: nil,
+                queue: .main
+            ) { _ in
+                if self.showFolderSidebar {
+                    self.showFolderSidebar = false
+                }
+            }
+        }
+        .onDisappear {
+            // Remove notification observer
+            NotificationCenter.default.removeObserver(
+                self,
+                name: NSNotification.Name("CloseFolderSidebar"),
+                object: nil
+            )
         }
         .onReceive(keyboardMonitor.$keyPressed) { keyPressed in
             if let (key, isPressed) = keyPressed, isPressed {
