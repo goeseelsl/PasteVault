@@ -65,7 +65,6 @@ struct ContentView: View {
                         },
                         onToggleFolders: {
                             withAnimation(.easeInOut(duration: 0.2)) {
-                                print("🔄 Toggling sidebar: \(showFolderSidebar) → \(!showFolderSidebar)")
                                 showFolderSidebar.toggle()
                                 
                                 // Clear folder selection when sidebar is closed
@@ -83,6 +82,28 @@ struct ContentView: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                     
+                    // Folder title if one is selected
+                    if showFolderSidebar && folderManager.selectedFolder != nil {
+                        HStack {
+                            Text("Folder: \(folderManager.selectedFolder?.name ?? "Unknown")")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                folderManager.selectedFolder = nil
+                            }) {
+                                Text("Show All")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.blue)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
+                    }
+                    
                     // Content
                     ScrollView {
                         LazyVStack(spacing: 8) {
@@ -99,10 +120,7 @@ struct ContentView: View {
                                         // Close sidebar when copying to clipboard - FIRST
                                         let wasSidebarOpen = showFolderSidebar
                                         if wasSidebarOpen {
-                                            print("🔄 Closing sidebar for copy button operation")
                                             showFolderSidebar = false
-                                        } else {
-                                            print("📋 Sidebar was already closed for copy button")
                                         }
                                         
                                         // Only copy to clipboard, don't paste (Copy button should only copy)
@@ -163,7 +181,6 @@ struct ContentView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .toggleSidebar)) { _ in
             withAnimation(.easeInOut(duration: 0.2)) {
-                print("🔄 Toggling sidebar via keyboard shortcut: \(showFolderSidebar) → \(!showFolderSidebar)")
                 showFolderSidebar.toggle()
                 
                 // Clear folder selection when sidebar is closed
@@ -226,15 +243,11 @@ struct ContentView: View {
         // Close sidebar when pasting - FIRST, before closing window
         let wasSidebarOpen = showFolderSidebar
         if wasSidebarOpen {
-            print("🔄 Closing sidebar for handleItemSelection paste operation")
             showFolderSidebar = false
-        } else {
-            print("📋 Sidebar was already closed for handleItemSelection")
         }
         
         // Ensure hotkeys are reloaded when window is closed - do this IMMEDIATELY
         if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-            print("🔑 Instantly reloading hotkeys for handleItemSelection operation")
             DispatchQueue.main.async { // Use async instead of asyncAfter for immediate execution
                 appDelegate.registerHotkeys()
             }
@@ -250,11 +263,7 @@ struct ContentView: View {
         // Copy to clipboard and paste
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             clipboardManager.performPasteOperation(item: item) { success in
-                if success {
-                    print("✅ Paste operation completed successfully")
-                } else {
-                    print("❌ Paste operation failed")
-                }
+                // Logging removed for performance
             }
         }
     }
@@ -285,15 +294,11 @@ struct ContentView: View {
         // Close sidebar when pasting - FIRST, before closing window
         let wasSidebarOpen = showFolderSidebar
         if wasSidebarOpen {
-            print("🔄 Closing sidebar for handleEnterKey paste operation")
             showFolderSidebar = false
-        } else {
-            print("📋 Sidebar was already closed for handleEnterKey")
         }
         
         // Ensure hotkeys are reloaded when window is closed - do this IMMEDIATELY
         if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-            print("🔑 Instantly reloading hotkeys for handleEnterKey operation")
             DispatchQueue.main.async { // Use async instead of asyncAfter for immediate execution
                 appDelegate.registerHotkeys()
             }
@@ -307,11 +312,7 @@ struct ContentView: View {
         // Copy to clipboard and paste
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             clipboardManager.performPasteOperation(item: item) { success in
-                if success {
-                    print("✅ Item pasted successfully")
-                } else {
-                    print("❌ Paste operation failed")
-                }
+                // Logging removed for performance
             }
         }
     }

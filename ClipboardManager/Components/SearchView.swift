@@ -21,7 +21,7 @@ struct SearchView: View {
                     searchText = ""
                 }) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(isHovering ? .gray : .secondary)
                         .font(.system(size: 12, weight: .medium))
                 }
                 .buttonStyle(PlainButtonStyle())

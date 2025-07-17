@@ -123,6 +123,7 @@ struct FolderSidebarView: View {
                         isSelected: folderManager.selectedFolder == nil,
                         onTap: { folderManager.selectedFolder = nil }
                     )
+                    .padding(.bottom, 4)
                     
                     // Favorites
                     FolderRowView(
@@ -133,6 +134,7 @@ struct FolderSidebarView: View {
                         isSelected: false,
                         onTap: { /* Handle favorites view */ }
                     )
+                    .padding(.bottom, 4)
                     
                     // Root folders
                     ForEach(allFolders, id: \.self) { folder in
@@ -241,12 +243,19 @@ struct FolderHierarchyView: View {
                 Text("\(folder.items?.count ?? 0)")
                     .font(.system(size: 10, weight: .medium))
                     .foregroundColor(.secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.secondary.opacity(0.1))
+                    )
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
             .background(
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(selectedFolder == folder ? Color.accentColor.opacity(0.15) : Color.clear)
+                    .fill(selectedFolder == folder ? Color.accentColor.opacity(0.2) : Color.clear)
+                    .animation(.easeInOut(duration: 0.15), value: selectedFolder == folder)
             )
             .onTapGesture(perform: onSelect)
             .contextMenu {
