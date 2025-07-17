@@ -67,6 +67,11 @@ struct ContentView: View {
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 print("🔄 Toggling sidebar: \(showFolderSidebar) → \(!showFolderSidebar)")
                                 showFolderSidebar.toggle()
+                                
+                                // Clear folder selection when sidebar is closed
+                                if !showFolderSidebar {
+                                    folderManager.selectedFolder = nil
+                                }
                             }
                         }
                     )
@@ -160,6 +165,11 @@ struct ContentView: View {
             withAnimation(.easeInOut(duration: 0.2)) {
                 print("🔄 Toggling sidebar via keyboard shortcut: \(showFolderSidebar) → \(!showFolderSidebar)")
                 showFolderSidebar.toggle()
+                
+                // Clear folder selection when sidebar is closed
+                if !showFolderSidebar {
+                    folderManager.selectedFolder = nil
+                }
             }
         }
     }
@@ -189,8 +199,8 @@ struct ContentView: View {
         filtered = searchManager.filterByDate(items: filtered)
         
         // Apply folder filter
-        if let selectedFolder = selectedFolder {
-            filtered = filtered.filter { $0.folder == selectedFolder }
+        if showFolderSidebar && folderManager.selectedFolder != nil {
+            filtered = filtered.filter { $0.folder == folderManager.selectedFolder }
         }
         
         // Apply source app filter
