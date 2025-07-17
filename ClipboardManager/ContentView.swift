@@ -199,7 +199,7 @@ struct ContentView: View {
         
         // Apply content filtering
         filtered = filtered.filter { item in
-            !contentFilterManager.shouldIgnoreContent(item.content, from: item.sourceApp)
+            !contentFilterManager.shouldIgnoreItem(item)
         }
         
         // Apply search manager filters

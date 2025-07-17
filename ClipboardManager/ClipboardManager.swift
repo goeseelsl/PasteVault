@@ -247,12 +247,75 @@ class ClipboardManager: ObservableObject {
 
     func copyToPasteboard(item: ClipboardItem) {
         print("📋 Copying item to pasteboard...")
+        print("📋 Item ID: \(item.id?.uuidString ?? "nil")")
         
         // Clear pasteboard first for clean state
         pasteboard.clearContents()
         
-        // Handle text content first (most common case)
-        if let content = item.content, !content.isEmpty {
+        // Determine what type of content we have
+        let hasTextContent = item.content != nil && !item.content!.isEmpty
+        let hasImageData = item.imageData != nil
+        
+        print("📋 Content analysis:")
+        print("   • Has text content: \(hasTextContent)")
+        print("   • Has image data: \(hasImageData)")
+        if hasTextContent {
+            print("   • Text content length: \(item.content?.count ?? 0)")
+        }
+        if hasImageData {
+            print("   • Image data size: \(item.imageData?.count ?? 0) bytes")
+        }
+        
+        // Handle image data first (priority for mixed content)
+        if hasImageData {
+            if let imageData = item.imageData, let image = NSImage(data: imageData) {
+                print("📋 Processing image data (\(imageData.count) bytes)")
+                print("📋 Image size: \(image.size)")
+                
+                // Use writeObjects for better image handling (supports multiple formats)
+                let success = pasteboard.writeObjects([image])
+                
+                if success {
+                    print("📋 Image written to pasteboard using writeObjects")
+                } else {
+                    print("❌ Failed to write image using writeObjects, trying fallback methods")
+                    
+                    // Fallback 1: Use declareTypes with multiple formats
+                    pasteboard.declareTypes([.tiff, .png, .pdf], owner: nil)
+                    
+                    // Try to get TIFF representation
+                    if let tiffData = image.tiffRepresentation {
+                        pasteboard.setData(tiffData, forType: .tiff)
+                        print("📋 Image written as TIFF data (\(tiffData.count) bytes)")
+                    } else {
+                        // Fallback 2: Write raw image data as TIFF
+                        pasteboard.setData(imageData, forType: .tiff)
+                        print("📋 Raw image data written as TIFF (\(imageData.count) bytes)")
+                    }
+                }
+                
+                // Verify image was written
+                if let retrievedImage = pasteboard.readObjects(forClasses: [NSImage.self])?.first as? NSImage {
+                    print("✅ Image verified in pasteboard - size: \(retrievedImage.size)")
+                } else if let retrievedData = pasteboard.data(forType: .tiff) {
+                    print("✅ Image TIFF data verified in pasteboard - size: \(retrievedData.count) bytes")
+                } else {
+                    print("❌ Image verification failed")
+                }
+            } else {
+                print("❌ Could not create NSImage from image data")
+                if let imageData = item.imageData {
+                    print("❌ Image data size: \(imageData.count) bytes")
+                    print("❌ Image data first 16 bytes: \(imageData.prefix(16).map { String(format: "%02x", $0) }.joined(separator: " "))")
+                }
+            }
+        }
+        // Handle text content only if no image data
+        else if hasTextContent {
+            let content = item.content!
+            
+            print("📋 Processing text content (\(content.count) characters)")
+            
             // Use declareTypes first for better compatibility (Clipy pattern)
             pasteboard.declareTypes([.string], owner: nil)
             let success = pasteboard.setString(content, forType: .string)
@@ -271,38 +334,17 @@ class ClipboardManager: ObservableObject {
             }
         }
         
-        // Handle image data with multiple formats for better compatibility
-        if let imageData = item.imageData {
-            if let image = NSImage(data: imageData) {
-                // Declare image types first
-                pasteboard.declareTypes([.tiff, .png], owner: nil)
-                
-                // Use writeObjects for better image handling (supports multiple formats)
-                let success = pasteboard.writeObjects([image])
-                
-                if success {
-                    print("📋 Image written to pasteboard using writeObjects")
-                } else {
-                    print("❌ Failed to write image using writeObjects, trying fallback")
-                    // Fallback: write raw image data as TIFF
-                    pasteboard.setData(imageData, forType: .tiff)
-                    print("📋 Raw image data written to pasteboard as TIFF")
-                }
-            } else {
-                // Fallback: write raw image data as TIFF
-                pasteboard.declareTypes([.tiff], owner: nil)
-                pasteboard.setData(imageData, forType: .tiff)
-                print("📋 Raw image data written to pasteboard as TIFF")
-            }
-        }
-        
         // Force pasteboard synchronization (important for programmatic paste)
         // Note: synchronize() was removed in newer macOS versions, but the pasteboard
         // is automatically synchronized when we set data
         let changeCount = pasteboard.changeCount
         print("📋 Pasteboard change count: \(changeCount)")
         
-        print("✅ Item copied to pasteboard: \(item.content?.prefix(50) ?? "image")")
+        if hasImageData {
+            print("✅ Image item copied to pasteboard")
+        } else {
+            print("✅ Text item copied to pasteboard: \(item.content?.prefix(50) ?? "empty")")
+        }
     }
 
     // MARK: - Paste Operations (Based on Clipy/Maccy implementations)

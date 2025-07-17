@@ -25,7 +25,10 @@ class ContentFilterManager: ObservableObject {
         }
         
         // Check content filters
-        guard let content = content else { return true }
+        guard let content = content else { 
+            // If there's no content, it might be an image item - don't filter it out
+            return false 
+        }
         
         // Check minimum length
         if content.trimmingCharacters(in: .whitespacesAndNewlines).count < minimumContentLength {
@@ -40,6 +43,22 @@ class ContentFilterManager: ObservableObject {
         }
         
         return false
+    }
+    
+    /// Check if a clipboard item should be ignored (handles both text and image items)
+    func shouldIgnoreItem(_ item: ClipboardItem) -> Bool {
+        // Check ignored apps
+        if let app = item.sourceApp, ignoredApps.contains(app) {
+            return true
+        }
+        
+        // For image items, only check app filtering (not content filtering)
+        if item.imageData != nil {
+            return false
+        }
+        
+        // For text items, apply content filtering
+        return shouldIgnoreContent(item.content, from: item.sourceApp)
     }
     
     /// Check if content is duplicate

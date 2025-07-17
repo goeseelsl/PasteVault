@@ -77,7 +77,41 @@ struct EnhancedClipboardCard: View {
             
             // Content preview
             VStack(alignment: .leading, spacing: 8) {
-                if let content = item.content, !content.isEmpty {
+                // Handle image content first
+                if let imageData = item.imageData, let nsImage = NSImage(data: imageData) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Image preview - larger and more prominent
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(maxWidth: .infinity, maxHeight: 150)
+                            .cornerRadius(8)
+                            .clipped()
+                        
+                        // Image metadata in a compact horizontal layout
+                        HStack(spacing: 12) {
+                            // Type icon
+                            Image(systemName: "photo")
+                                .font(.system(size: 12))
+                                .foregroundColor(.blue)
+                            
+                            // Dimensions
+                            Text("\(Int(nsImage.size.width))×\(Int(nsImage.size.height))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Spacer()
+                            
+                            // File size
+                            Text(formatBytes(imageData.count))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                // Handle text content if no image
+                else if let content = item.content, !content.isEmpty {
                     Text(content)
                         .font(.system(size: 13))
                         .lineLimit(3)
@@ -160,6 +194,11 @@ struct EnhancedClipboardCard: View {
     }
     
     private var typeIcon: String {
+        // Check for image data first
+        if item.imageData != nil {
+            return "photo.fill"
+        }
+        
         guard let content = item.content else { return "doc.text" }
         
         if content.hasPrefix("http") || content.hasPrefix("https") {
@@ -192,6 +231,23 @@ struct EnhancedClipboardCard: View {
         } else {
             formatter.dateFormat = "MMM d"
             return formatter.string(from: timestamp)
+        }
+    }
+    
+    private func formatBytes(_ bytes: Int) -> String {
+        let units = ["B", "KB", "MB", "GB"]
+        var value = Double(bytes)
+        var unitIndex = 0
+        
+        while value >= 1024 && unitIndex < units.count - 1 {
+            value /= 1024
+            unitIndex += 1
+        }
+        
+        if unitIndex == 0 {
+            return "\(bytes) B"
+        } else {
+            return String(format: "%.1f %@", value, units[unitIndex])
         }
     }
 }

@@ -435,78 +435,54 @@ struct OrganizationWindowView: View {
     
     var contentView: some View {
         Group {
-            VStack {
-                Text("Debug Information")
-                    .font(.headline)
-                
-                Text("Total items in database: \(items.count)")
-                    .font(.subheadline)
-                
-                Text("Filtered items: \(filteredItems.count)")
-                    .font(.subheadline)
-                
-                Divider()
-                
-                switch selectedView {
-                case .list:
-                    ScrollView {
-                        LazyVStack(spacing: 0) {
-                            ForEach(filteredItems, id: \.id) { item in
-                                // Simple fallback view for debugging
-                                VStack(alignment: .leading) {
-                                    HStack {
-                                        Text(item.content?.prefix(50) ?? "No content")
-                                            .font(.system(size: 12))
-                                            .lineLimit(1)
-                                        Spacer()
-                                        Text(item.createdAt?.formatted(.dateTime.hour().minute()) ?? "No date")
-                                            .font(.system(size: 10))
-                                            .foregroundColor(.secondary)
-                                    }
-                                    Divider()
-                                }
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.clear)
-                                .onTapGesture {
-                                    toggleSelection(item: item)
-                                }
+            switch selectedView {
+            case .list:
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(filteredItems, id: \.id) { item in
+                            OrganizationListItemView(
+                                item: item,
+                                isSelected: selectedItems.contains(item.id ?? UUID()),
+                                onSelect: { toggleSelection(item: item) }
+                            )
+                            .contextMenu {
+                                itemContextMenu(for: item)
                             }
                         }
-                        .padding(.vertical, 0)
                     }
-                case .grid:
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 160, maximum: 200), spacing: 12)], spacing: 12) {
-                            ForEach(filteredItems, id: \.id) { item in
-                                OrganizationGridItemView(
-                                    item: item,
-                                    isSelected: selectedItems.contains(item.id ?? UUID()),
-                                    onSelect: { toggleSelection(item: item) }
-                                )
-                                .contextMenu {
-                                    itemContextMenu(for: item)
-                                }
+                    .padding(.vertical, 0)
+                }
+            case .grid:
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 160, maximum: 200), spacing: 12)], spacing: 12) {
+                        ForEach(filteredItems, id: \.id) { item in
+                            OrganizationGridItemView(
+                                item: item,
+                                isSelected: selectedItems.contains(item.id ?? UUID()),
+                                onSelect: { toggleSelection(item: item) }
+                            )
+                            .contextMenu {
+                                itemContextMenu(for: item)
                             }
                         }
-                        .padding()
                     }
-                case .card:
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
-                            ForEach(filteredItems, id: \.id) { item in
-                                OrganizationCardItemView(
-                                    item: item,
-                                    isSelected: selectedItems.contains(item.id ?? UUID()),
-                                    onSelect: { toggleSelection(item: item) }
-                                )
-                                .contextMenu {
-                                    itemContextMenu(for: item)
-                                }
+                    .padding()
+                }
+            case .card:
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        ForEach(filteredItems, id: \.id) { item in
+                            OrganizationCardItemView(
+                                item: item,
+                                isSelected: selectedItems.contains(item.id ?? UUID()),
+                                onSelect: { toggleSelection(item: item) }
+                            )
+                            .contextMenu {
+                                itemContextMenu(for: item)
                             }
                         }
-                        .padding()
                     }
+                    .padding()
                 }
             }
         }
@@ -518,6 +494,18 @@ struct OrganizationWindowView: View {
             ClipboardManager.shared.copyToPasteboard(item: item)
         }) {
             Label("Copy", systemImage: "doc.on.doc")
+        }
+        
+        Button(action: {
+            ClipboardManager.shared.performPasteOperation(item: item) { success in
+                if success {
+                    print("✅ Item pasted successfully")
+                } else {
+                    print("❌ Failed to paste item")
+                }
+            }
+        }) {
+            Label("Paste", systemImage: "doc.on.clipboard")
         }
         
         Menu("Move to Folder") {
@@ -935,7 +923,13 @@ struct OrganizationListItemView: View {
                 }
                 
                 Button(action: {
-                    // Paste the item
+                    ClipboardManager.shared.performPasteOperation(item: item) { success in
+                        if success {
+                            print("✅ Item pasted successfully")
+                        } else {
+                            print("❌ Failed to paste item")
+                        }
+                    }
                 }) {
                     Label("Paste", systemImage: "doc.on.clipboard")
                 }
