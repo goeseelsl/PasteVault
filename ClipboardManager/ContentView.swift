@@ -8,224 +8,153 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject private var clipboardManager = ClipboardManager.shared
     @StateObject private var keyboardMonitor = KeyboardMonitor()
+    @StateObject private var searchManager = SearchManager()
+    @StateObject private var folderManager: FolderManager
+    @StateObject private var bulkActionsManager: BulkActionsManager
+    @StateObject private var customActionsManager = CustomActionsManager()
+    @StateObject private var contentFilterManager = ContentFilterManager()
+    @StateObject private var globalShortcutsManager = GlobalShortcutsManager()
     @AppStorage("sidebarPosition") private var sidebarPosition = "right"
-
+    
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \ClipboardItem.createdAt, ascending: false)],
-        animation: .default)
+        animation: .default
+    )
     private var items: FetchedResults<ClipboardItem>
     
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Folder.createdAt, ascending: true)],
-        animation: .default)
+        sortDescriptors: [NSSortDescriptor(keyPath: \Folder.name, ascending: true)]
+    )
     private var folders: FetchedResults<Folder>
 
-    @State private var searchText = ""
     @State private var selectedFolder: Folder?
     @State private var selectedItem: ClipboardItem?
     @State private var selectedIndex = 0
     @State private var refreshID = UUID()
     @State private var selectedSourceApp: String?
     @State private var showSourceFilter = false
+    @State private var showAdvancedSearch = false
+    @State private var showContentFilters = false
+    @State private var searchText = ""
+    @AppStorage("showFolderSidebar") private var showFolderSidebar = false
+    
+    init() {
+        let context = PersistenceController.shared.container.viewContext
+        _folderManager = StateObject(wrappedValue: FolderManager(viewContext: context))
+        _bulkActionsManager = StateObject(wrappedValue: BulkActionsManager(viewContext: context))
+    }
 
     var body: some View {
-        Group {
-            if sidebarPosition == "left" || sidebarPosition == "right" {
-                verticalLayout
-            } else {
-                horizontalLayout
-            }
-        }
-        .background(Color(NSColor.controlBackgroundColor)) // Use solid background for better readability
-        .edgesIgnoringSafeArea(.all)
-        .frame(maxWidth: .infinity, maxHeight: .infinity) // Ensure the view expands to fill available space
-    }
-    
-    private var verticalLayout: some View {
-        VStack(spacing: 0) {
-            // Header with search and source filter
-            VStack(spacing: 12) {
-                HeaderView {
-                    if let appDelegate = NSApp.delegate as? AppDelegate {
-                        appDelegate.openSettings(nil)
-                    }
+        GeometryReader { geometry in
+            HStack(spacing: 0) {
+                // Collapsible sidebar
+                if showFolderSidebar {
+                    FolderSidebarView(folderManager: folderManager)
+                        .frame(width: max(200, geometry.size.width * 0.25))
+                        .transition(.move(edge: .leading))
                 }
                 
-                SearchView(searchText: $searchText)
-                
-                // Source app filter
-                if !sourceApps.isEmpty {
-                    SourceFilterView(
-                        sourceApps: sourceApps,
-                        selectedSourceApp: $selectedSourceApp,
-                        showSourceFilter: $showSourceFilter
-                    )
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
-            .padding(.bottom, 16)
-            .background(
-                Rectangle()
-                    .fill(Color(NSColor.windowBackgroundColor))
-                    .overlay(
-                        Rectangle()
-                            .fill(Color(NSColor.separatorColor))
-                            .frame(height: 1),
-                        alignment: .bottom
-                    )
-            )
-            
-            // List of clipboard items with better spacing
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 8) {
-                        ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
-                            VStack(spacing: 0) {
-                                ClipboardNoteCard(
-                                    item: item,
-                                    isSelected: index == selectedIndex,
-                                    onTap: {
-                                        handleItemSelection(item: item, index: index)
-                                    }
-                                )
-                                .id(item.id)
-                                .contextMenu {
-                                    ContextMenuView(
-                                        item: item,
-                                        folders: Array(folders),
-                                        onSave: saveContext,
-                                        onCreateFolder: { createNewFolder(for: item) },
-                                        onDelete: {
-                                            viewContext.delete(item)
-                                            saveContext()
-                                        }
-                                    )
-                                }
-                                
-                                // Add subtle separator between items
-                                if index < filteredItems.count - 1 {
-                                    Rectangle()
-                                        .fill(Color(NSColor.separatorColor).opacity(0.2))
-                                        .frame(height: 0.5)
-                                        .padding(.horizontal, 20)
-                                        .padding(.vertical, 4)
-                                }
+                // Main content area
+                VStack(spacing: 0) {
+                    // Header
+                    HeaderView(
+                        onSettingsPressed: {
+                            if let appDelegate = NSApp.delegate as? AppDelegate {
+                                appDelegate.openSettings(nil)
+                            }
+                        },
+                        onToggleFolders: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                showFolderSidebar.toggle()
                             }
                         }
-                    }
+                    )
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
+                    .padding(.top, 16)
+                    
+                    // Search
+                    SearchView(searchText: $searchManager.searchText)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                    
+                    // Content
+                    ScrollView {
+                        LazyVStack(spacing: 8) {
+                            ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
+                                EnhancedClipboardCard(
+                                    item: item,
+                                    isSelected: bulkActionsManager.isSelectionMode ? bulkActionsManager.selectedItems.contains(item) : (index == selectedIndex),
+                                    selectionIndex: index,
+                                    onToggleFavorite: {
+                                        item.isFavorite.toggle()
+                                        try? viewContext.save()
+                                    },
+                                    onCopyToClipboard: {
+                                        // Close sidebar when copying to clipboard - FIRST
+                                        let wasSidebarOpen = showFolderSidebar
+                                        if wasSidebarOpen {
+                                            print("🔄 Closing sidebar for copy button operation")
+                                            showFolderSidebar = false
+                                        } else {
+                                            print("📋 Sidebar was already closed for copy button")
+                                        }
+                                        
+                                        ClipboardManager.shared.copyToPasteboard(item: item)
+                                    },
+                                    onDeleteItem: {
+                                        deleteItems(offsets: IndexSet([index]))
+                                    },
+                                    onToggleSelection: {
+                                        if bulkActionsManager.isSelectionMode {
+                                            bulkActionsManager.toggleSelection(for: item)
+                                        } else {
+                                            handleItemSelection(item: item, index: index)
+                                        }
+                                    },
+                                    onViewSource: {
+                                        // Handle view source
+                                    },
+                                    onUndo: {
+                                        // Handle undo
+                                    },
+                                    onEditText: {
+                                        // Handle edit text
+                                    }
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                    }
+                    
+                    // Footer
+                    if !filteredItems.isEmpty {
+                        FooterView(itemCount: filteredItems.count) {
+                            clearAllItems()
+                        }
+                    }
                 }
-                .onChange(of: selectedIndex) { newIndex in
-                    scrollToSelectedItem(proxy: proxy, index: newIndex)
-                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            
-            // Footer
-            if !filteredItems.isEmpty {
-                FooterView(itemCount: filteredItems.count) {
-                    clearAllItems()
-                }
-            }
+            .animation(.easeInOut(duration: 0.2), value: showFolderSidebar)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity) // Use maxWidth and maxHeight to fill available space
-        .id(refreshID)
-        .focusable()
+        .background(Color(NSColor.controlBackgroundColor))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             setupInitialState()
         }
-        .onDisappear {
-            keyboardMonitor.stopMonitoring()
-        }
         .onReceive(keyboardMonitor.$keyPressed) { keyPressed in
-            handleKeyPress(keyPressed)
+            if let (key, isPressed) = keyPressed, isPressed {
+                handleKeyPress(key)
+            }
         }
         .onReceive(clipboardManager.$updateTrigger) { _ in
             refreshView()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("ClipboardUpdated"))) { _ in
-            DispatchQueue.main.async {
-                refreshView()
-            }
         }
         .onChange(of: filteredItems) { newItems in
             resetSelection(for: newItems)
         }
     }
-    
-    private var horizontalLayout: some View {
-        HStack(spacing: 0) {
-            // Left side with header and search
-            sidePanel
-            
-            Divider()
-            
-            // Right side with clipboard items
-            clipboardItemsList
-        }
-    }
-    
-    private var sidePanel: some View {
-        VStack(spacing: 8) {
-            HeaderView {
-                if let appDelegate = NSApp.delegate as? AppDelegate {
-                    appDelegate.openSettings(nil)
-                }
-            }
-            
-            SearchView(searchText: $searchText)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(Color(NSColor.controlBackgroundColor))
-        .frame(width: 250)
-    }
-    
-    private var clipboardItemsList: some View {
-        ScrollViewReader { proxy in
-            clipboardScrollView(proxy: proxy)
-        }
-    }
-    
-    private func clipboardScrollView(proxy: ScrollViewProxy) -> some View {
-        ScrollView {
-            clipboardItemsStack
-                .padding(8)
-                .onAppear {
-                    if let firstItem = filteredItems.first {
-                        proxy.scrollTo(firstItem.id, anchor: .top)
-                    }
-                }
-        }
-    }
-    
-    private var clipboardItemsStack: some View {
-        LazyVStack(spacing: 4) {
-            ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
-                clipboardItemView(item: item, index: index)
-            }
-        }
-    }
-    
-    private func clipboardItemView(item: ClipboardItem, index: Int) -> some View {
-        ClipboardNoteCard(
-            item: item, 
-            isSelected: selectedItem?.id == item.id,
-            onTap: {
-                self.selectedItem = item
-                self.selectedIndex = index
-            }
-        )
-        .background(selectedItem?.id == item.id ? Color.accentColor.opacity(0.1) : Color.clear)
-        .cornerRadius(6)
-        .id(item.id)
-        .onAppear {
-            // No-op for now - will be implemented in the future
-        }
-    }
-
-    // MARK: - Computed Properties
     
     private var sourceApps: [String] {
         let apps = Set(items.compactMap { $0.sourceApp })
@@ -233,26 +162,36 @@ struct ContentView: View {
     }
     
     private var filteredItems: [ClipboardItem] {
-        let predicate = ContentPredicateBuilder.buildPredicate(
-            searchText: searchText,
-            selectedFolder: selectedFolder,
-            selectedSourceApp: selectedSourceApp
-        )
+        var filtered = Array(items)
         
-        let fetchRequest = NSFetchRequest<ClipboardItem>(entityName: "ClipboardItem")
-        fetchRequest.predicate = predicate
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipboardItem.createdAt, ascending: false)]
-        
-        do {
-            let results = try viewContext.fetch(fetchRequest)
-            return ContentPredicateBuilder.postFilterResults(results, searchText: searchText)
-        } catch {
-            print("Error fetching filtered items: \(error)")
-            return []
+        // Apply content filtering
+        filtered = filtered.filter { item in
+            !contentFilterManager.shouldIgnoreContent(item.content, from: item.sourceApp)
         }
+        
+        // Apply search manager filters
+        if !searchManager.searchText.isEmpty {
+            filtered = searchManager.fuzzySearch(items: filtered)
+        }
+        
+        // Apply type filter
+        filtered = searchManager.filterByType(items: filtered)
+        
+        // Apply date filter
+        filtered = searchManager.filterByDate(items: filtered)
+        
+        // Apply folder filter
+        if let selectedFolder = selectedFolder {
+            filtered = filtered.filter { $0.folder == selectedFolder }
+        }
+        
+        // Apply source app filter
+        if let selectedSourceApp = selectedSourceApp {
+            filtered = filtered.filter { $0.sourceApp == selectedSourceApp }
+        }
+        
+        return filtered
     }
-    
-    // MARK: - Event Handlers
     
     private func setupInitialState() {
         selectedIndex = 0
@@ -266,14 +205,20 @@ struct ContentView: View {
         selectedItem = item
         selectedIndex = index
         
-        // Close edge window first
-        if let appDelegate = NSApp.delegate as? AppDelegate {
-            appDelegate.closeEdgeWindow()
+        // Close sidebar when pasting - FIRST, before closing window
+        let wasSidebarOpen = showFolderSidebar
+        if wasSidebarOpen {
+            print("🔄 Closing sidebar for handleItemSelection paste operation")
+            showFolderSidebar = false
+        } else {
+            print("📋 Sidebar was already closed for handleItemSelection")
         }
         
-        // Paste the item directly after a brief delay using optimized method
+        // Close edge window after sidebar state change
+        NSApp.windows.first { $0.title == "ClipboardManager" }?.close()
+        
+        // Copy to clipboard and paste
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            print("🚀 Pasting selected item directly")
             clipboardManager.performPasteOperation(item: item) { success in
                 if success {
                     print("✅ Paste operation completed successfully")
@@ -284,12 +229,8 @@ struct ContentView: View {
         }
     }
     
-    private func handleKeyPress(_ keyPressed: (String, Bool)?) {
-        guard let (key, isPressed) = keyPressed, isPressed else { return }
-        
-        print("🎹 Key pressed: \(key)")
-        
-        switch key {
+    private func handleKeyPress(_ keyPressed: String) {
+        switch keyPressed {
         case "down":
             if !filteredItems.isEmpty {
                 selectedIndex = min(selectedIndex + 1, filteredItems.count - 1)
@@ -299,50 +240,38 @@ struct ContentView: View {
                 selectedIndex = max(selectedIndex - 1, 0)
             }
         case "return":
-            print("🎹 Return key detected, calling handleReturnKeyPress")
-            handleReturnKeyPress()
-        case "escape":
-            if let appDelegate = NSApp.delegate as? AppDelegate {
-                appDelegate.closeEdgeWindow()
-            }
+            handleEnterKey()
         default:
             break
         }
     }
     
-    private func handleReturnKeyPress() {
-        print("🎹 Enter key pressed - starting paste operation")
-        
+    private func handleEnterKey() {
         guard !filteredItems.isEmpty && selectedIndex < filteredItems.count else { return }
         
         let item = filteredItems[selectedIndex]
         selectedItem = item
-        print("Selected item: \(item.content?.prefix(50) ?? "Image/No content")")
         
-        // Close edge window first
-        if let appDelegate = NSApp.delegate as? AppDelegate {
-            appDelegate.closeEdgeWindow()
-            print("Edge window closed")
+        // Close sidebar when pasting - FIRST, before closing window
+        let wasSidebarOpen = showFolderSidebar
+        if wasSidebarOpen {
+            print("🔄 Closing sidebar for handleEnterKey paste operation")
+            showFolderSidebar = false
+        } else {
+            print("📋 Sidebar was already closed for handleEnterKey")
         }
         
-        // Copy the item to pasteboard - user can then paste manually with Cmd+V
+        // Close edge window after sidebar state change
+        NSApp.windows.first { $0.title == "ClipboardManager" }?.close()
+        
+        // Copy to clipboard and paste
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            print("� Copying item to pasteboard")
             clipboardManager.performPasteOperation(item: item) { success in
                 if success {
-                    print("✅ Item copied to pasteboard - ready for manual paste with Cmd+V")
+                    print("✅ Item pasted successfully")
                 } else {
-                    print("❌ Failed to copy item to pasteboard")
+                    print("❌ Paste operation failed")
                 }
-            }
-        }
-    }
-    
-    private func scrollToSelectedItem(proxy: ScrollViewProxy, index: Int) {
-        if !filteredItems.isEmpty && index < filteredItems.count {
-            let selectedItem = filteredItems[index]
-            withAnimation(.easeInOut(duration: 0.3)) {
-                proxy.scrollTo(selectedItem.id, anchor: UnitPoint.center)
             }
         }
     }
@@ -362,14 +291,12 @@ struct ContentView: View {
         }
     }
     
-    // MARK: - Core Data Operations
-    
     private func saveContext() {
         do {
             try viewContext.save()
         } catch {
             let nsError = error as NSError
-            print("Error saving context: \(nsError), \(nsError.userInfo)")
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
     
@@ -384,8 +311,7 @@ struct ContentView: View {
     }
     
     private func clearAllItems() {
-        // Delete all items individually to ensure proper UI updates
-        let fetchRequest = NSFetchRequest<ClipboardItem>(entityName: "ClipboardItem")
+        let fetchRequest: NSFetchRequest<ClipboardItem> = ClipboardItem.fetchRequest()
         
         do {
             let allItems = try viewContext.fetch(fetchRequest)
@@ -399,80 +325,36 @@ struct ContentView: View {
             selectedItem = nil
             
         } catch {
-            print("Error clearing all items: \(error)")
+            print("Error clearing items: \(error)")
         }
     }
     
-    // MARK: - Paste Operations
+    private func deleteItems(offsets: IndexSet) {
+        withAnimation {
+            offsets.map { filteredItems[$0] }.forEach(viewContext.delete)
+            do {
+                try viewContext.save()
+            } catch {
+                print("Error deleting items: \(error)")
+            }
+        }
+    }
+    
+    private func scrollToSelectedItem(proxy: ScrollViewProxy, index: Int) {
+        if index < filteredItems.count {
+            proxy.scrollTo(filteredItems[index].id, anchor: .center)
+        }
+    }
     
     private func performAutoPaste() {
-        print("🚀 Starting fallback paste operation")
-        // Use system paste instead of PasteHelper for simple paste
-        let event = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: true) // V key
-        event?.flags = .maskCommand
-        event?.post(tap: .cghidEventTap)
-        
+        // Create and dispatch key events for Command+V
+        let eventDown = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: true)
         let eventUp = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: false)
+        
+        eventDown?.flags = .maskCommand
         eventUp?.flags = .maskCommand
+        
+        eventDown?.post(tap: .cghidEventTap)
         eventUp?.post(tap: .cghidEventTap)
-    }
-}
-
-// MARK: - Context Menu Component
-
-struct ContextMenuView: View {
-    let item: ClipboardItem
-    let folders: [Folder]
-    let onSave: () -> Void
-    let onCreateFolder: () -> Void
-    let onDelete: () -> Void
-    
-    var body: some View {
-        Group {
-            Button("Copy") {
-                ClipboardManager.shared.copyToPasteboard(item: item)
-            }
-            
-            Button("Paste") {
-                ClipboardManager.shared.performPasteOperation(item: item) { success in
-                    if !success {
-                        print("❌ Context menu paste operation failed")
-                    }
-                }
-            }
-            
-            Button("Pin/Unpin") {
-                item.isPinned.toggle()
-                onSave()
-            }
-            
-            Menu("Move to Folder") {
-                Button("No Folder") {
-                    item.folder = nil
-                    onSave()
-                }
-                ForEach(folders, id: \.self) { folder in
-                    Button(folder.name ?? "Unnamed") {
-                        item.folder = folder
-                        onSave()
-                    }
-                }
-                Button("New Folder...") {
-                    onCreateFolder()
-                }
-            }
-            
-            Divider()
-            
-            Button("Delete", role: .destructive) {
-                onDelete()
-            }
-        }
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
     }
 }

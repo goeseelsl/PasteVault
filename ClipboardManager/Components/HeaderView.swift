@@ -3,16 +3,17 @@ import SwiftUI
 /// Header component for the clipboard manager
 struct HeaderView: View {
     let onSettingsPressed: () -> Void
+    let onToggleFolders: () -> Void
     
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: "doc.on.clipboard")
-                .foregroundColor(.accentColor)
-                .font(.system(size: 16, weight: .semibold, design: .default))
-            
-            Text("Clipboard Manager")
-                .font(.system(size: 14, weight: .semibold, design: .default))
-                .foregroundColor(.primary)
+            // Toggle folders button
+            Button(action: onToggleFolders) {
+                Image(systemName: "folder")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.secondary)
+            }
+            .buttonStyle(PlainButtonStyle())
             
             Spacer()
             
@@ -33,6 +34,6 @@ struct HeaderView: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, 8)
     }
 }

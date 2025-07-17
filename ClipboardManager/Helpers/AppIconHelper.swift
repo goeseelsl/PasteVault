@@ -1,6 +1,15 @@
 import Foundation
 import AppKit
 
+/// App information structure
+struct AppInfo {
+    let name: String
+    let bundleIdentifier: String
+    let isRunning: Bool
+    let lastUsed: Date?
+    let icon: NSImage?
+}
+
 /// Helper class for retrieving and caching app icons
 class AppIconHelper {
     static let shared = AppIconHelper()
@@ -33,9 +42,90 @@ class AppIconHelper {
         return defaultIcon
     }
     
-    private func getIconByAppName(_ appName: String) -> NSImage? {
-        // Map common app names to their actual bundle identifiers
-        let appNameMappings: [String: String] = [
+    /// Get app information for tooltips and interaction
+    func getAppInfo(for appName: String) -> AppInfo {
+        // Try to find running application first
+        for app in NSWorkspace.shared.runningApplications {
+            if app.localizedName == appName || app.bundleIdentifier == appName {
+                return AppInfo(
+                    name: app.localizedName ?? appName,
+                    bundleIdentifier: app.bundleIdentifier ?? appName,
+                    isRunning: true,
+                    lastUsed: Date(),
+                    icon: app.icon
+                )
+            }
+        }
+        
+        // Check app name mappings
+        if let bundleId = appNameMappings[appName] {
+            return AppInfo(
+                name: appName,
+                bundleIdentifier: bundleId,
+                isRunning: false,
+                lastUsed: nil,
+                icon: getIconByBundleIdentifier(bundleId)
+            )
+        }
+        
+        // Return generic info
+        return AppInfo(
+            name: appName,
+            bundleIdentifier: appName,
+            isRunning: false,
+            lastUsed: nil,
+            icon: getSystemIcon(for: appName)
+        )
+    }
+    
+    /// Launch app or bring to front
+    func launchApp(bundleIdentifier: String) -> Bool {
+        if let app = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == bundleIdentifier }) {
+            return app.activate(options: [])
+        }
+        
+        if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) {
+            do {
+                try NSWorkspace.shared.launchApplication(at: appURL, options: [], configuration: [:])
+                return true
+            } catch {
+                print("Failed to launch app: \(error)")
+                return false
+            }
+        }
+        
+        return false
+    }
+    
+    /// Deep link to app with content (if supported)
+    func openInApp(bundleIdentifier: String, content: String) -> Bool {
+        // Handle special cases for deep linking
+        switch bundleIdentifier {
+        case "com.apple.Safari":
+            if ContentHelper.isURL(content) {
+                if let url = URL(string: content) {
+                    return NSWorkspace.shared.open(url)
+                }
+            }
+        case "com.apple.Notes":
+            // Create new note with content
+            let noteURL = URL(string: "notes://new?content=\(content.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")")!
+            return NSWorkspace.shared.open(noteURL)
+        case "com.apple.mail":
+            if ContentHelper.isEmail(content) {
+                let mailURL = URL(string: "mailto:\(content)")!
+                return NSWorkspace.shared.open(mailURL)
+            }
+        default:
+            break
+        }
+        
+        // Fallback to regular launch
+        return launchApp(bundleIdentifier: bundleIdentifier)
+    }
+    
+    private var appNameMappings: [String: String] {
+        return [
             "Safari": "com.apple.Safari",
             "Chrome": "com.google.Chrome",
             "Firefox": "org.mozilla.firefox",
@@ -64,7 +154,9 @@ class AppIconHelper {
             "Sketch": "com.bohemiancoding.sketch3",
             "Figma": "com.figma.Desktop"
         ]
-        
+    }
+    
+    private func getIconByAppName(_ appName: String) -> NSImage? {
         // Try direct mapping first
         if let bundleId = appNameMappings[appName] {
             return getIconByBundleIdentifier(bundleId)

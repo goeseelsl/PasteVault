@@ -100,4 +100,22 @@ class ContentHelper {
         if isCode(text) { return "💻" }
         return "📝"
     }
+    
+    /// Get appropriate SF Symbol icon for content type
+    /// - Parameter contentType: The content type string
+    /// - Returns: A SF Symbol name representing the content type
+    static func getContentIcon(_ contentType: String) -> String {
+        switch contentType {
+        case "URL":
+            return "link"
+        case "Email":
+            return "envelope"
+        case "Number":
+            return "number"
+        case "Code":
+            return "chevron.left.forwardslash.chevron.right"
+        default:
+            return "doc.text"
+        }
+    }
 }
