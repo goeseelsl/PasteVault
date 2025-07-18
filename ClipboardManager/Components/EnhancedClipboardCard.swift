@@ -177,10 +177,14 @@ struct EnhancedClipboardCard: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(isSelected ? Color.blue.opacity(0.1) : Color.clear)
+                .fill(isSelected ? Color.blue.opacity(0.1) : (isHovered ? Color.gray.opacity(0.05) : Color.clear))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 1)
+                        .stroke(
+                            isSelected ? Color.blue : 
+                            (isHovered ? Color.gray.opacity(0.4) : Color.gray.opacity(0.2)), 
+                            lineWidth: isSelected ? 2 : 1
+                        )
                 )
         )
         .onHover { hovering in

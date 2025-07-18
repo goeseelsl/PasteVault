@@ -128,9 +128,9 @@ struct ClipboardNoteCard: View {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(
                         isSelected ? 
-                        Color.accentColor.opacity(0.4) : 
-                        Color(NSColor.separatorColor).opacity(0.3), 
-                        lineWidth: isSelected ? 1.5 : 0.5
+                        Color.accentColor.opacity(0.6) : 
+                        (isHovering ? Color(NSColor.separatorColor).opacity(0.6) : Color(NSColor.separatorColor).opacity(0.4)), 
+                        lineWidth: isSelected ? 2 : 1
                     )
             )
             .scaleEffect(isSelected ? 1.02 : (isHovering ? 1.005 : 1.0))
