@@ -4,9 +4,27 @@ import SwiftUI
 struct HeaderView: View {
     let onSettingsPressed: () -> Void
     let onOrganizePressed: () -> Void
+    let onToggleSidebar: () -> Void
+    let isSidebarVisible: Bool
     
     var body: some View {
         HStack(spacing: 8) {
+            // Sidebar toggle button
+            Button(action: onToggleSidebar) {
+                Image(systemName: isSidebarVisible ? "sidebar.left" : "sidebar.left.fill")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.secondary)
+            }
+            .buttonStyle(PlainButtonStyle())
+            .help(isSidebarVisible ? "Hide Sidebar" : "Show Sidebar")
+            .onHover { hovering in
+                if hovering {
+                    NSCursor.pointingHand.push()
+                } else {
+                    NSCursor.pop()
+                }
+            }
+            
             // Organize button
             Button(action: onOrganizePressed) {
                 Image(systemName: "folder.badge.gearshape")

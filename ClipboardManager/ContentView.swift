@@ -31,6 +31,7 @@ struct ContentView: View {
     @State private var selectedItem: ClipboardItem?
     @State private var selectedIndex = 0
     @State private var refreshID = UUID()
+    @State private var scrollResetTrigger = UUID()
     @State private var selectedSourceApp: String?
     @State private var showSourceFilter = false
     @State private var showAdvancedSearch = false
@@ -47,6 +48,12 @@ struct ContentView: View {
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 0) {
+                // Conditional sidebar on the left
+                if showFolderSidebar {
+                    FolderSidebarView(folderManager: folderManager)
+                        .transition(.move(edge: .leading))
+                }
+                
                 // Main content area
                 VStack(spacing: 0) {
                     // Header
@@ -61,7 +68,11 @@ struct ContentView: View {
                                 // This will properly close the edge window and automatically hide the sidebar
                                 appDelegate.openOrganizationWindow(nil)
                             }
-                        }
+                        },
+                        onToggleSidebar: {
+                            showFolderSidebar.toggle()
+                        },
+                        isSidebarVisible: showFolderSidebar
                     )
                     .padding(.horizontal, 16)
                     .padding(.top, 16)
@@ -94,51 +105,96 @@ struct ContentView: View {
                     }
                     
                     // Content
-                    ScrollView {
-                        LazyVStack(spacing: 8) {
-                            ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
-                                EnhancedClipboardCard(
-                                    item: item,
-                                    isSelected: bulkActionsManager.isSelectionMode ? bulkActionsManager.selectedItems.contains(item) : (index == selectedIndex),
-                                    selectionIndex: index,
-                                    onToggleFavorite: {
-                                        item.isFavorite.toggle()
-                                        try? viewContext.save()
-                                    },
-                                    onCopyToClipboard: {
-                                        // Close sidebar when copying to clipboard - FIRST
-                                        let wasSidebarOpen = showFolderSidebar
-                                        if wasSidebarOpen {
-                                            showFolderSidebar = false
+                    ScrollViewReader { scrollProxy in
+                        ScrollView {
+                            LazyVStack(spacing: 8) {
+                                // Invisible anchor at the top for reliable scrolling
+                                Color.clear.frame(height: 0).id("top")
+                                
+                                ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
+                                    EnhancedClipboardCard(
+                                        item: item,
+                                        isSelected: bulkActionsManager.isSelectionMode ? bulkActionsManager.selectedItems.contains(item) : (index == selectedIndex),
+                                        selectionIndex: index,
+                                        onToggleFavorite: {
+                                            item.isFavorite.toggle()
+                                            try? viewContext.save()
+                                        },
+                                        onCopyToClipboard: {
+                                            // Close sidebar when copying to clipboard - FIRST
+                                            let wasSidebarOpen = showFolderSidebar
+                                            if wasSidebarOpen {
+                                                showFolderSidebar = false
+                                            }
+                                            
+                                            // Only copy to clipboard, don't paste (Copy button should only copy)
+                                            ClipboardManager.shared.copyToPasteboard(item: item)
+                                        },
+                                        onDeleteItem: {
+                                            deleteItems(offsets: IndexSet([index]))
+                                        },
+                                        onToggleSelection: {
+                                            if bulkActionsManager.isSelectionMode {
+                                                bulkActionsManager.toggleSelection(for: item)
+                                            } else {
+                                                handleItemSelection(item: item, index: index)
+                                            }
+                                        },
+                                        onViewSource: {
+                                            // Handle view source
+                                        },
+                                        onUndo: {
+                                            // Handle undo
+                                        },
+                                        onEditText: {
+                                            // Handle edit text
                                         }
-                                        
-                                        // Only copy to clipboard, don't paste (Copy button should only copy)
-                                        ClipboardManager.shared.copyToPasteboard(item: item)
-                                    },
-                                    onDeleteItem: {
-                                        deleteItems(offsets: IndexSet([index]))
-                                    },
-                                    onToggleSelection: {
-                                        if bulkActionsManager.isSelectionMode {
-                                            bulkActionsManager.toggleSelection(for: item)
-                                        } else {
-                                            handleItemSelection(item: item, index: index)
-                                        }
-                                    },
-                                    onViewSource: {
-                                        // Handle view source
-                                    },
-                                    onUndo: {
-                                        // Handle undo
-                                    },
-                                    onEditText: {
-                                        // Handle edit text
-                                    }
-                                )
+                                    )
+                                    .id(item.id)
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                        }
+                        .id(scrollResetTrigger)
+                        .onAppear {
+                            // Auto-scroll to top and highlight first item when view appears
+                            scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                        }
+                        .onChange(of: filteredItems) { _ in
+                            // Auto-scroll to top when items change (e.g., search, filter)
+                            scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                        }
+                        .onChange(of: items.count) { _ in
+                            // Handle new items being added (dynamic updates)
+                            if showFolderSidebar {
+                                handleNewItemAdded(scrollProxy: scrollProxy)
                             }
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
+                        .onChange(of: folderManager.selectedFolder) { _ in
+                            // Auto-scroll to top when folder selection changes
+                            scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                        }
+                        .onChange(of: showFolderSidebar) { isVisible in
+                            if isVisible {
+                                // Reset sidebar state when opened (ensures clean state every time)
+                                resetSidebarState()
+                                
+                                // Auto-scroll to top when sidebar is opened
+                                // Use a delay to ensure the sidebar is fully rendered
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                    scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                                }
+                            } else {
+                                // Also reset sidebar state when closed (double insurance)
+                                resetSidebarState()
+                            }
+                        }
+                        .onReceive(keyboardMonitor.$keyPressed) { keyPressed in
+                            if let (key, isPressed) = keyPressed, isPressed {
+                                handleKeyPress(key, scrollProxy: scrollProxy)
+                            }
+                        }
                     }
                     
                     // Footer
@@ -177,9 +233,7 @@ struct ContentView: View {
             )
         }
         .onReceive(keyboardMonitor.$keyPressed) { keyPressed in
-            if let (key, isPressed) = keyPressed, isPressed {
-                handleKeyPress(key)
-            }
+            // This handler is now inside the ScrollViewReader - remove duplicate
         }
         .onReceive(clipboardManager.$updateTrigger) { _ in
             refreshView()
@@ -202,6 +256,11 @@ struct ContentView: View {
             !contentFilterManager.shouldIgnoreItem(item)
         }
         
+        // Apply folder filtering
+        if let selectedFolder = folderManager.selectedFolder {
+            filtered = filtered.filter { $0.folder == selectedFolder }
+        }
+        
         // Apply search manager filters
         if !searchManager.searchText.isEmpty {
             filtered = searchManager.fuzzySearch(items: filtered)
@@ -221,12 +280,85 @@ struct ContentView: View {
         return filtered
     }
     
+    private func scrollToTopAndHighlightFirst(scrollProxy: ScrollViewProxy) {
+        // Guard against empty list to prevent crashes
+        guard !filteredItems.isEmpty else {
+            selectedIndex = 0
+            selectedItem = nil
+            return
+        }
+        
+        // Reset to first item (newest item since sorted by createdAt descending)
+        selectedIndex = 0
+        
+        // Update selected item to first item
+        let firstItem = filteredItems[0]
+        selectedItem = firstItem
+        
+        // Ensure the first item has a valid ID
+        guard let firstItemId = firstItem.id else {
+            print("Warning: First item has no ID, scrolling to top anchor")
+            DispatchQueue.main.async {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    scrollProxy.scrollTo("top", anchor: .top)
+                }
+            }
+            return
+        }
+        
+        // Use delayed execution to ensure view is fully rendered
+        // This handles timing issues mentioned in the guide
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                scrollProxy.scrollTo(firstItemId, anchor: .top)
+            }
+        }
+    }
+    
+    /// Handle dynamic updates when new items are added
+    /// This ensures the sidebar stays up-to-date with latest items
+    private func handleNewItemAdded(scrollProxy: ScrollViewProxy) {
+        // Only auto-scroll if sidebar is open and we have items
+        guard showFolderSidebar && !filteredItems.isEmpty else { return }
+        
+        // Re-apply scroll and highlight to show the newest item
+        scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+    }
+    
     private func setupInitialState() {
         selectedIndex = 0
         if let firstItem = filteredItems.first {
             selectedItem = firstItem
         }
         keyboardMonitor.startMonitoring()
+    }
+    
+    private func resetSidebarState() {
+        // Reset search state
+        searchManager.searchText = ""
+        searchManager.selectedSearchType = .all
+        searchManager.dateRange = .all
+        searchManager.showAdvancedFilters = false
+        
+        // Reset bulk actions
+        bulkActionsManager.isSelectionMode = false
+        bulkActionsManager.selectedItems.removeAll()
+        bulkActionsManager.showBulkActions = false
+        
+        // Set initial state (following guide recommendations)
+        selectedFolder = nil
+        selectedItem = nil
+        selectedIndex = 0
+        
+        // Reset to highlight the newest item if items exist
+        // This ensures we always start with the latest item highlighted
+        if !filteredItems.isEmpty {
+            selectedItem = filteredItems[0]
+            selectedIndex = 0
+        }
+        
+        // Reset scroll position
+        scrollResetTrigger = UUID()
     }
     
     private func handleItemSelection(item: ClipboardItem, index: Int) {
@@ -261,15 +393,23 @@ struct ContentView: View {
         }
     }
     
-    private func handleKeyPress(_ keyPressed: String) {
+    private func handleKeyPress(_ keyPressed: String, scrollProxy: ScrollViewProxy) {
         switch keyPressed {
         case "down":
             if !filteredItems.isEmpty {
-                selectedIndex = min(selectedIndex + 1, filteredItems.count - 1)
+                let newIndex = min(selectedIndex + 1, filteredItems.count - 1)
+                selectedIndex = newIndex
+                selectedItem = filteredItems[newIndex]
+                // Auto-scroll to the newly selected item
+                scrollToSelectedItem(proxy: scrollProxy, index: newIndex)
             }
         case "up":
             if !filteredItems.isEmpty {
-                selectedIndex = max(selectedIndex - 1, 0)
+                let newIndex = max(selectedIndex - 1, 0)
+                selectedIndex = newIndex
+                selectedItem = filteredItems[newIndex]
+                // Auto-scroll to the newly selected item
+                scrollToSelectedItem(proxy: scrollProxy, index: newIndex)
             }
         case "return":
             handleEnterKey()
@@ -311,17 +451,28 @@ struct ContentView: View {
     }
     
     private func refreshView() {
+        // Reset to first item (following guide recommendations)
         selectedIndex = 0
-        if selectedItem == nil, let firstItem = filteredItems.first {
-            selectedItem = firstItem
+        
+        // Always update to the newest item (first item in sorted list)
+        if !filteredItems.isEmpty {
+            selectedItem = filteredItems[0]
+        } else {
+            selectedItem = nil
         }
+        
         refreshID = UUID()
     }
     
     private func resetSelection(for newItems: [ClipboardItem]) {
+        // Reset to first item (newest item since sorted by createdAt descending)
         selectedIndex = 0
-        if let firstItem = newItems.first {
-            selectedItem = firstItem
+        
+        // Select the newest item
+        if !newItems.isEmpty {
+            selectedItem = newItems[0]
+        } else {
+            selectedItem = nil
         }
     }
     
@@ -365,9 +516,37 @@ struct ContentView: View {
     
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
+            // Store the indices being deleted
+            let deletedIndices = offsets.sorted()
+            
+            // Delete the items
             offsets.map { filteredItems[$0] }.forEach(viewContext.delete)
+            
             do {
                 try viewContext.save()
+                
+                // Handle selection after deletion (following guide recommendations)
+                if deletedIndices.contains(selectedIndex) {
+                    // Selected item was deleted, select the new top item
+                    selectedIndex = 0
+                    if !filteredItems.isEmpty {
+                        selectedItem = filteredItems[0]
+                    } else {
+                        selectedItem = nil
+                    }
+                } else if let minDeletedIndex = deletedIndices.first, minDeletedIndex < selectedIndex {
+                    // Items before the selected item were deleted, adjust index
+                    let deletedBeforeSelected = deletedIndices.filter { $0 < selectedIndex }.count
+                    selectedIndex = max(0, selectedIndex - deletedBeforeSelected)
+                    
+                    // Ensure the selected item is still valid
+                    if selectedIndex < filteredItems.count {
+                        selectedItem = filteredItems[selectedIndex]
+                    } else {
+                        selectedIndex = 0
+                        selectedItem = filteredItems.first
+                    }
+                }
             } catch {
                 print("Error deleting items: \(error)")
             }
@@ -375,8 +554,18 @@ struct ContentView: View {
     }
     
     private func scrollToSelectedItem(proxy: ScrollViewProxy, index: Int) {
-        if index < filteredItems.count {
-            proxy.scrollTo(filteredItems[index].id, anchor: .center)
+        // Guard against invalid index
+        guard index >= 0 && index < filteredItems.count else { return }
+        
+        let selectedItem = filteredItems[index]
+        
+        // Ensure the item has a valid ID
+        guard let itemId = selectedItem.id else { return }
+        
+        // Scroll to the selected item with smooth animation
+        // Use .center anchor to keep the selected item in view
+        withAnimation(.easeInOut(duration: 0.2)) {
+            proxy.scrollTo(itemId, anchor: .center)
         }
     }
     

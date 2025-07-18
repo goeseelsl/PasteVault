@@ -119,48 +119,66 @@ struct FolderSidebarView: View {
             
             Divider()
             
-            ScrollView {
-                LazyVStack(spacing: 4) {
-                    // All Items
-                    FolderRowView(
-                        name: "All Items",
-                        icon: "tray.full",
-                        color: .blue,
-                        itemCount: nil,
-                        isSelected: folderManager.selectedFolder == nil,
-                        onTap: { folderManager.selectedFolder = nil }
-                    )
-                    .padding(.bottom, 4)
-                    
-                    // Favorites
-                    FolderRowView(
-                        name: "Favorites",
-                        icon: "heart.fill",
-                        color: .red,
-                        itemCount: favoriteItems.count,
-                        isSelected: false,
-                        onTap: { /* Handle favorites view */ }
-                    )
-                    .padding(.bottom, 4)
-                    
-                    // Root folders
-                    ForEach(allFolders, id: \.self) { folder in
-                        FolderHierarchyView(
-                            folder: folder,
-                            selectedFolder: folderManager.selectedFolder,
-                            onSelect: { folderManager.selectedFolder = folder },
-                            onEdit: { folderManager.editingFolder = folder },
-                            onDelete: { folderManager.deleteFolder(folder) }
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    LazyVStack(spacing: 4) {
+                        // All Items
+                        FolderRowView(
+                            name: "All Items",
+                            icon: "tray.full",
+                            color: .blue,
+                            itemCount: nil,
+                            isSelected: folderManager.selectedFolder == nil,
+                            onTap: { folderManager.selectedFolder = nil }
                         )
+                        .padding(.bottom, 4)
+                        .id("all-items") // Use a fixed ID for the first item
+                        
+                        // Favorites
+                        FolderRowView(
+                            name: "Favorites",
+                            icon: "heart.fill",
+                            color: .red,
+                            itemCount: favoriteItems.count,
+                            isSelected: false,
+                            onTap: { /* Handle favorites view */ }
+                        )
+                        .padding(.bottom, 4)
+                        
+                        // Root folders
+                        ForEach(allFolders, id: \.self) { folder in
+                            FolderHierarchyView(
+                                folder: folder,
+                                selectedFolder: folderManager.selectedFolder,
+                                onSelect: { folderManager.selectedFolder = folder },
+                                onEdit: { folderManager.editingFolder = folder },
+                                onDelete: { folderManager.deleteFolder(folder) }
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                    .onAppear {
+                        scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
                     }
                 }
-                .padding(.horizontal, 8)
             }
         }
         .frame(width: 200)
         .background(Color(NSColor.controlBackgroundColor))
         .sheet(isPresented: $folderManager.showFolderCreation) {
             FolderCreationView(folderManager: folderManager)
+        }
+    }
+    
+    private func scrollToTopAndHighlightFirst(scrollProxy: ScrollViewProxy) {
+        // Select "All Items" as default when sidebar appears
+        folderManager.selectedFolder = nil
+        
+        // Scroll to top with smooth animation
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                scrollProxy.scrollTo("all-items", anchor: .top)
+            }
         }
     }
 }

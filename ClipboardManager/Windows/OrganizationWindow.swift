@@ -437,52 +437,88 @@ struct OrganizationWindowView: View {
         Group {
             switch selectedView {
             case .list:
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(filteredItems, id: \.id) { item in
-                            OrganizationListItemView(
-                                item: item,
-                                isSelected: selectedItems.contains(item.id ?? UUID()),
-                                onSelect: { toggleSelection(item: item) }
-                            )
-                            .contextMenu {
-                                itemContextMenu(for: item)
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            // Invisible anchor at the top for reliable scrolling
+                            Color.clear.frame(height: 0).id("top")
+                            
+                            ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
+                                OrganizationListItemView(
+                                    item: item,
+                                    isSelected: selectedItems.contains(item.id ?? UUID()),
+                                    onSelect: { toggleSelection(item: item) }
+                                )
+                                .contextMenu {
+                                    itemContextMenu(for: item)
+                                }
+                                .id(item.id)
                             }
                         }
+                        .padding(.vertical, 0)
+                        .onAppear {
+                            scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                        }
+                        .onChange(of: filteredItems) { _ in
+                            scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                        }
                     }
-                    .padding(.vertical, 0)
                 }
             case .grid:
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 160, maximum: 200), spacing: 12)], spacing: 12) {
-                        ForEach(filteredItems, id: \.id) { item in
-                            OrganizationGridItemView(
-                                item: item,
-                                isSelected: selectedItems.contains(item.id ?? UUID()),
-                                onSelect: { toggleSelection(item: item) }
-                            )
-                            .contextMenu {
-                                itemContextMenu(for: item)
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 160, maximum: 200), spacing: 12)], spacing: 12) {
+                            // Invisible anchor at the top for reliable scrolling
+                            Color.clear.frame(height: 0).id("top")
+                            
+                            ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
+                                OrganizationGridItemView(
+                                    item: item,
+                                    isSelected: selectedItems.contains(item.id ?? UUID()),
+                                    onSelect: { toggleSelection(item: item) }
+                                )
+                                .contextMenu {
+                                    itemContextMenu(for: item)
+                                }
+                                .id(item.id)
                             }
                         }
+                        .padding()
+                        .onAppear {
+                            scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                        }
+                        .onChange(of: filteredItems) { _ in
+                            scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                        }
                     }
-                    .padding()
                 }
             case .card:
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        ForEach(filteredItems, id: \.id) { item in
-                            OrganizationCardItemView(
-                                item: item,
-                                isSelected: selectedItems.contains(item.id ?? UUID()),
-                                onSelect: { toggleSelection(item: item) }
-                            )
-                            .contextMenu {
-                                itemContextMenu(for: item)
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            // Invisible anchor at the top for reliable scrolling
+                            Color.clear.frame(height: 0).id("top")
+                            
+                            ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
+                                OrganizationCardItemView(
+                                    item: item,
+                                    isSelected: selectedItems.contains(item.id ?? UUID()),
+                                    onSelect: { toggleSelection(item: item) }
+                                )
+                                .contextMenu {
+                                    itemContextMenu(for: item)
+                                }
+                                .id(item.id)
                             }
                         }
+                        .padding()
+                        .onAppear {
+                            scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                        }
+                        .onChange(of: filteredItems) { _ in
+                            scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                        }
                     }
-                    .padding()
                 }
             }
         }
@@ -542,6 +578,28 @@ struct OrganizationWindowView: View {
             try? viewContext.save()
         }) {
             Label("Delete", systemImage: "trash")
+        }
+    }
+    
+    private func scrollToTopAndHighlightFirst(scrollProxy: ScrollViewProxy) {
+        // Clear current selection and highlight first item
+        selectedItems.removeAll()
+        
+        // Select first item if available
+        if let firstItem = filteredItems.first, let firstItemId = firstItem.id {
+            selectedItems.insert(firstItemId)
+        }
+        
+        // Scroll to top with smooth animation using first item's ID
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                if let firstItem = filteredItems.first, let firstItemId = firstItem.id {
+                    scrollProxy.scrollTo(firstItemId, anchor: .top)
+                } else {
+                    // If no items, scroll to top using the anchor
+                    scrollProxy.scrollTo("top", anchor: .top)
+                }
+            }
         }
     }
     
