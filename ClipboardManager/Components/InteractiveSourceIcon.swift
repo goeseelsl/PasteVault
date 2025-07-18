@@ -19,28 +19,24 @@ struct InteractiveSourceIcon: View {
                         RoundedRectangle(cornerRadius: 3)
                             .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
                     )
-                    .scaleEffect(isHovering ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 0.15), value: isHovering)
             } else {
                 Circle()
                     .fill(ColorHelper.colorForString(item.sourceApp ?? "Unknown"))
                     .frame(width: 12, height: 12)
-                    .scaleEffect(isHovering ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 0.15), value: isHovering)
             }
         }
-        .onHover { hovering in
-            isHovering = hovering
-            if hovering {
-                showTooltip = true
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    if !isHovering {
-                        showTooltip = false
-                    }
-                }
-            }
-        }
+        // .onHover { hovering in
+        //     isHovering = hovering
+        //     if hovering {
+        //         showTooltip = true
+        //     } else {
+        //         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        //             if !isHovering {
+        //                 showTooltip = false
+        //             }
+        //         }
+        //     }
+        // }
         .onTapGesture {
             handleIconTap()
         }

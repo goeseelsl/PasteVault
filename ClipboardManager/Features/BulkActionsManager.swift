@@ -147,10 +147,10 @@ class BulkActionsManager: ObservableObject {
     private func exportAsJSON(items: [ClipboardItem], to url: URL) {
         let jsonItems = items.map { item in
             [
-                "id": item.id?.uuidString ?? UUID().uuidString,
+                "id": (item.id?.uuidString ?? UUID().uuidString) as Any,
                 "content": item.content ?? "",
                 "sourceApp": item.sourceApp ?? "Unknown",
-                "createdAt": item.createdAt?.timeIntervalSince1970 ?? 0,
+                "createdAt": (item.createdAt?.timeIntervalSince1970 ?? 0) as Any,
                 "isPinned": item.isPinned,
                 "isFavorite": item.isFavorite,
                 "category": item.category ?? ""

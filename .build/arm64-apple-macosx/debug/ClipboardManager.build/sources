@@ -31,12 +31,14 @@
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PersistenceController.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Security/EncryptionManager.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AccessibilityHelper.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SettingsView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Shared/CommonComponents.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SimpleSettingsView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SyntaxHighlighter.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Tests/PasteTests.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Views/CloudKitSyncSettingsView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Windows/OrganizationWindow.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/main.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/DerivedSources/resource_bundle_accessor.swift

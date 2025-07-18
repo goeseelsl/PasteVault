@@ -13,7 +13,6 @@ class ClipboardManager: ObservableObject {
     @Published var updateTrigger = false
 
     private let viewContext = PersistenceController.shared.container.viewContext
-    private let encryptionManager = EncryptionManager.shared
     
     // Image processing constants - based on Clipy/Maccy patterns
     private let maxImageSize: CGFloat = 1024 // Maximum dimension for stored images

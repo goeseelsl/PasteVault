@@ -21,6 +21,16 @@ struct PersistenceController {
         description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         
+        // Enable CloudKit syncing
+        description.setOption(true as NSNumber, forKey: "NSPersistentHistoryTrackingKey")
+        description.setOption(true as NSNumber, forKey: "NSPersistentStoreRemoteChangeNotificationPostOptionKey")
+        
+        // Configure CloudKit container
+        if let containerIdentifier = Bundle.main.object(forInfoDictionaryKey: "CloudKitContainerIdentifier") as? String {
+            let cloudKitOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: containerIdentifier)
+            description.cloudKitContainerOptions = cloudKitOptions
+        }
+        
         // Enable file protection on macOS - use NSFileProtectionComplete equivalent
         #if os(iOS)
         description.setOption(FileProtectionType.complete as NSString, forKey: NSPersistentStoreFileProtectionKey)
@@ -48,6 +58,12 @@ struct PersistenceController {
         folderEntity.name = "Folder"
         folderEntity.managedObjectClassName = "Folder"
         
+        // CloudKit configuration for Folder
+        folderEntity.userInfo = [
+            "CloudKitRecordType": "Folder",
+            "CloudKitRecordName": "id"
+        ]
+        
         let folderIdAttr = NSAttributeDescription()
         folderIdAttr.name = "id"
         folderIdAttr.attributeType = .UUIDAttributeType
@@ -67,6 +83,12 @@ struct PersistenceController {
         let itemEntity = NSEntityDescription()
         itemEntity.name = "ClipboardItem"
         itemEntity.managedObjectClassName = "ClipboardItem"
+        
+        // CloudKit configuration for ClipboardItem
+        itemEntity.userInfo = [
+            "CloudKitRecordType": "ClipboardItem",
+            "CloudKitRecordName": "id"
+        ]
         
         let itemIdAttr = NSAttributeDescription()
         itemIdAttr.name = "id"

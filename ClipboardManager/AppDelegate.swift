@@ -2,6 +2,7 @@ import Cocoa
 import SwiftUI
 import Carbon
 import UserNotifications
+import CloudKit
 
 class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 

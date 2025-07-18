@@ -86,7 +86,11 @@ class AppIconHelper {
         
         if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) {
             do {
-                try NSWorkspace.shared.launchApplication(at: appURL, options: [], configuration: [:])
+                if #available(macOS 11.0, *) {
+                    NSWorkspace.shared.openApplication(at: appURL, configuration: NSWorkspace.OpenConfiguration()) { _, _ in }
+                } else {
+                    try NSWorkspace.shared.launchApplication(at: appURL, options: [], configuration: [:])
+                }
                 return true
             } catch {
                 print("Failed to launch app: \(error)")

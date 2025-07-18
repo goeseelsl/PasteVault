@@ -180,12 +180,21 @@ class ContentFilterManager: ObservableObject {
 
 /// Content filter model
 struct ContentFilter: Identifiable, Codable {
-    let id = UUID()
+    let id: UUID
     let name: String
     let description: String
     let type: FilterType
     let pattern: String
     var isEnabled: Bool = true
+    
+    init(id: UUID = UUID(), name: String, description: String, type: FilterType, pattern: String, isEnabled: Bool = true) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.type = type
+        self.pattern = pattern
+        self.isEnabled = isEnabled
+    }
     
     enum FilterType: String, Codable, CaseIterable {
         case regex = "Regular Expression"

@@ -157,7 +157,7 @@ class HotkeysManager {
                     hotKeyID.id = hotkeyId
                     
                     // Try to register with the same handler
-                    if let handler = hotkeyHandlers[id] {
+                    if hotkeyHandlers[id] != nil {
                         // Find the key and modifiers for this hotkey (not ideal but necessary for direct re-registration)
                         // In a production app, we'd store this info separately
                         var hotKeyRef: EventHotKeyRef?

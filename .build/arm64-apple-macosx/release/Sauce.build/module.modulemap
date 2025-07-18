@@ -1,0 +1,4 @@
+module Sauce {
+    header "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/Sauce-Swift.h"
+    requires objc
+}

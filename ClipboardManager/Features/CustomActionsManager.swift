@@ -39,12 +39,14 @@ class CustomActionsManager: ObservableObject {
                 }
             }
         case .textTransform:
-            let result = executeTextTransform(action.transformType, on: content)
+            guard let transformType = action.transformType else { return }
+            let result = executeTextTransform(transformType, on: content)
             item.content = result
             saveContext(item)
             isExecuting = false
         case .shortcut:
-            executeShortcut(action.shortcutName, with: content)
+            guard let shortcutName = action.shortcutName else { return }
+            executeShortcut(shortcutName, with: content)
             isExecuting = false
         }
     }
@@ -67,43 +69,43 @@ class CustomActionsManager: ObservableObject {
                 name: "Uppercase",
                 description: "Convert text to uppercase",
                 type: .textTransform,
-                transformType: .uppercase,
-                icon: "textformat.abc"
+                iconName: "textformat.abc",
+                transformType: .uppercase
             ),
             CustomAction(
                 name: "Lowercase",
                 description: "Convert text to lowercase",
                 type: .textTransform,
-                transformType: .lowercase,
-                icon: "textformat.abc"
+                iconName: "textformat.abc",
+                transformType: .lowercase
             ),
             CustomAction(
                 name: "Title Case",
                 description: "Convert text to title case",
                 type: .textTransform,
-                transformType: .titleCase,
-                icon: "textformat.abc"
+                iconName: "textformat.abc",
+                transformType: .titleCase
             ),
             CustomAction(
                 name: "Remove Formatting",
                 description: "Strip all formatting",
                 type: .textTransform,
-                transformType: .stripFormatting,
-                icon: "textformat.alt"
+                iconName: "textformat.alt",
+                transformType: .stripFormatting
             ),
             CustomAction(
                 name: "Extract URLs",
                 description: "Extract all URLs from text",
                 type: .textTransform,
-                transformType: .extractURLs,
-                icon: "link"
+                iconName: "link",
+                transformType: .extractURLs
             ),
             CustomAction(
                 name: "Word Count",
                 description: "Count words in text",
                 type: .textTransform,
-                transformType: .wordCount,
-                icon: "number"
+                iconName: "number",
+                transformType: .wordCount
             )
         ]
     }
@@ -185,38 +187,36 @@ class CustomActionsManager: ObservableObject {
 
 /// Custom action model
 struct CustomAction: Identifiable, Codable {
-    let id = UUID()
+    let id: UUID
     let name: String
     let description: String
     let type: ActionType
     let script: String
-    let transformType: TextTransform
-    let shortcutName: String
-    let icon: String
+    let iconName: String
+    let isEnabled: Bool
+    let shortcut: String?
+    let transformType: TextTransform?
+    let shortcutName: String?
     
-    init(name: String, description: String, type: ActionType, script: String = "", transformType: TextTransform = .uppercase, shortcutName: String = "", icon: String = "gear") {
+    init(id: UUID = UUID(), name: String, description: String, type: ActionType, script: String = "", iconName: String, isEnabled: Bool = true, shortcut: String? = nil, transformType: TextTransform? = nil, shortcutName: String? = nil) {
+        self.id = id
         self.name = name
         self.description = description
         self.type = type
         self.script = script
+        self.iconName = iconName
+        self.isEnabled = isEnabled
+        self.shortcut = shortcut
         self.transformType = transformType
         self.shortcutName = shortcutName
-        self.icon = icon
     }
-    
-    enum ActionType: String, Codable, CaseIterable {
-        case appleScript = "AppleScript"
-        case textTransform = "Text Transform"
-        case shortcut = "Shortcut"
-        
-        var icon: String {
-            switch self {
-            case .appleScript: return "applescript"
-            case .textTransform: return "textformat"
-            case .shortcut: return "shortcuts"
-            }
-        }
-    }
+}
+
+/// Action types
+enum ActionType: String, Codable, CaseIterable {
+    case appleScript = "AppleScript"
+    case textTransform = "Text Transform"
+    case shortcut = "Shortcut"
 }
 
 /// Text transformation types
@@ -322,38 +322,41 @@ class GlobalShortcutsManager: ObservableObject {
         let flags = event.modifierFlags
         let keyCode = event.keyCode
         
-        // Don't log ESC key - it should be handled by local keyboard monitor
-        if keyCode != 53 {
-            print("🔍 Global shortcut detected: keyCode=\(keyCode), flags=\(flags)")
-        }
-        
+        // Only handle specific key combinations we care about
         // Skip ESC key handling - let local monitors handle it
         if keyCode == 53 {
             return
         }
         
+        // Only log when we actually handle a shortcut
+        var handledShortcut = false
+        
         // Cmd+Shift+V - Show clipboard history
         if flags.contains([.command, .shift]) && keyCode == 9 { // V key
             print("📋 Triggering clipboard history")
             NotificationCenter.default.post(name: .showClipboardHistory, object: nil)
+            handledShortcut = true
         }
         
         // Cmd+Shift+F - Show search
         if flags.contains([.command, .shift]) && keyCode == 3 { // F key
             print("🔍 Triggering search")
             NotificationCenter.default.post(name: .showSearch, object: nil)
+            handledShortcut = true
         }
         
         // Cmd+Shift+B - Toggle sidebar
         if flags.contains([.command, .shift]) && keyCode == 11 { // B key
             print("📁 Triggering sidebar toggle")
             NotificationCenter.default.post(name: .toggleSidebar, object: nil)
+            handledShortcut = true
         }
         
         // Cmd+Shift+C - Toggle sidebar (alternative)
         if flags.contains([.command, .shift]) && keyCode == 8 { // C key
             print("📁 Triggering sidebar toggle (C key)")
             NotificationCenter.default.post(name: .toggleSidebar, object: nil)
+            handledShortcut = true
         }
         
         // Cmd+Option+1-9 - Paste specific item
@@ -361,6 +364,15 @@ class GlobalShortcutsManager: ObservableObject {
             let itemIndex = Int(keyCode) - 18 // Convert to 0-based index
             print("📋 Triggering paste item at index \(itemIndex)")
             NotificationCenter.default.post(name: .pasteItemAtIndex, object: itemIndex)
+            handledShortcut = true
+        }
+        
+        // Only log if we didn't handle the shortcut (for debugging unhandled keys)
+        if !handledShortcut && flags.rawValue != 256 { // Don't log regular typing
+            // Only log potential shortcuts (with modifier keys)
+            if flags.contains(.command) || flags.contains(.option) || flags.contains(.control) || flags.contains(.shift) {
+                print("🔍 Unhandled shortcut: keyCode=\(keyCode), flags=\(flags)")
+            }
         }
     }
     
@@ -422,7 +434,7 @@ struct CustomActionRow: View {
     
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: action.icon)
+            Image(systemName: action.iconName)
                 .font(.system(size: 12))
                 .foregroundColor(.accentColor)
                 .frame(width: 16)

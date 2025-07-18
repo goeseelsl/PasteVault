@@ -67,11 +67,17 @@ struct SimpleSettingsView: View {
                     }
                     .tag(2)
                 
+                CloudKitSyncSettingsView()
+                    .tabItem {
+                        Label("Sync", systemImage: "icloud")
+                    }
+                    .tag(3)
+                
                 SimpleAdvancedSettingsView()
                     .tabItem {
                         Label("Advanced", systemImage: "slider.horizontal.3")
                     }
-                    .tag(3)
+                    .tag(4)
             }
         }
         .frame(width: 650, height: 550)
@@ -81,6 +87,9 @@ struct SimpleSettingsView: View {
 struct SimpleGeneralSettingsView: View {
     @AppStorage("launchAtLogin") private var launchAtLogin = false
     @AppStorage("maxHistorySize") private var maxHistorySize = 100
+    @ObservedObject private var syncManager = CloudKitSyncManager.shared
+    @State private var showingEnableAlert = false
+    @State private var showingDisableAlert = false
 
     var body: some View {
         ScrollView {
@@ -117,8 +126,95 @@ struct SimpleGeneralSettingsView: View {
                         }
                     }
                 }
+                
+                SettingsSection(title: "iCloud Sync", icon: "icloud", color: .cyan) {
+                    iCloudSyncToggleView
+                }
             }
             .padding()
+        }
+        .alert("Enable iCloud Sync?", isPresented: $showingEnableAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Enable") {
+                Task {
+                    await syncManager.enableCloudKitSync()
+                }
+            }
+        } message: {
+            Text("This will sync your clipboard history to iCloud using your keychain credentials. Your data will be encrypted and available on all your devices signed in to the same iCloud account.")
+        }
+        .alert("Disable iCloud Sync?", isPresented: $showingDisableAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Disable", role: .destructive) {
+                syncManager.disableCloudKitSync()
+            }
+        } message: {
+            Text("This will stop syncing your clipboard history to iCloud. Your local data will remain intact.")
+        }
+    }
+    
+    @ViewBuilder
+    private var iCloudSyncToggleView: some View {
+        VStack(spacing: 12) {
+            SettingsRow(
+                title: "Sync to iCloud",
+                description: syncManager.userWantsCloudKitSync ? 
+                    "Clipboard history is synced across all your devices" : 
+                    "Enable to sync clipboard history across devices",
+                icon: syncManager.userWantsCloudKitSync ? "icloud.fill" : "icloud"
+            ) {
+                VStack(alignment: .trailing, spacing: 4) {
+                    Toggle("", isOn: .constant(syncManager.userWantsCloudKitSync))
+                        .toggleStyle(SwitchToggleStyle())
+                        .disabled(true)
+                        .onTapGesture {
+                            if syncManager.userWantsCloudKitSync {
+                                showingDisableAlert = true
+                            } else {
+                                showingEnableAlert = true
+                            }
+                        }
+                    
+                    if !syncManager.userWantsCloudKitSync {
+                        Button("Enable") {
+                            showingEnableAlert = true
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.mini)
+                    } else if syncManager.userWantsCloudKitSync && !syncManager.isCloudKitAvailable {
+                        Text("Setup Required")
+                            .font(.caption2)
+                            .foregroundColor(.orange)
+                    } else if syncManager.accountStatus != .available {
+                        Text("Sign in to iCloud")
+                            .font(.caption2)
+                            .foregroundColor(.red)
+                    } else {
+                        HStack {
+                            Circle()
+                                .fill(.green)
+                                .frame(width: 6, height: 6)
+                            Text("Active")
+                                .font(.caption2)
+                                .foregroundColor(.green)
+                        }
+                    }
+                }
+            }
+            
+            if syncManager.userWantsCloudKitSync {
+                HStack {
+                    Image(systemName: "info.circle")
+                        .foregroundColor(.blue)
+                        .font(.caption)
+                    
+                    Text("Visit the Sync tab for detailed configuration")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                }
+            }
         }
     }
 }

@@ -7,14 +7,28 @@ class EncryptionManager {
     
     private let keyTag = "com.clipboardmanager.encryption.key"
     private var symmetricKey: SymmetricKey?
+    private var isInitialized = false
     
     private init() {
-        setupEncryptionKey()
+        // Don't initialize encryption by default
+        // Only initialize when explicitly requested (e.g., when iCloud sync is enabled)
+        debugLog("EncryptionManager created - encryption disabled by default (no keychain access)")
     }
     
     // MARK: - Key Management
     
+    func initializeEncryption() {
+        guard !isInitialized else {
+            debugLog("Encryption already initialized")
+            return
+        }
+        
+        setupEncryptionKey()
+        isInitialized = true
+    }
+    
     private func setupEncryptionKey() {
+        debugLog("Setting up encryption key from Keychain...")
         // Try to load existing key from Keychain
         if let existingKey = loadKeyFromKeychain() {
             self.symmetricKey = existingKey
@@ -26,6 +40,12 @@ class EncryptionManager {
             self.symmetricKey = newKey
             debugLog("Generated new encryption key and saved to Keychain")
         }
+    }
+    
+    func disableEncryption() {
+        symmetricKey = nil
+        isInitialized = false
+        debugLog("Encryption disabled")
     }
     
     private func saveKeyToKeychain(_ key: SymmetricKey) {
@@ -69,10 +89,15 @@ class EncryptionManager {
     
     // MARK: - Encryption/Decryption
     
+    var isEncryptionEnabled: Bool {
+        return isInitialized && symmetricKey != nil
+    }
+    
     func encrypt(data: Data) -> Data? {
-        guard let key = symmetricKey else {
-            debugLog("No encryption key available")
-            return nil
+        // If encryption is not enabled, return original data
+        guard isEncryptionEnabled, let key = symmetricKey else {
+            debugLog("Encryption not enabled - returning original data")
+            return data
         }
         
         do {
@@ -80,22 +105,23 @@ class EncryptionManager {
             return sealedBox.combined
         } catch {
             debugLog("Encryption failed: \(error.localizedDescription)")
-            return nil
+            return data // Fallback to original data
         }
     }
     
     func decrypt(data: Data) -> Data? {
-        guard let key = symmetricKey else {
-            debugLog("No encryption key available")
-            return nil
+        // If encryption is not enabled, return original data
+        guard isEncryptionEnabled, let key = symmetricKey else {
+            debugLog("Encryption not enabled - returning original data")
+            return data
         }
         
         do {
             let sealedBox = try AES.GCM.SealedBox(combined: data)
             return try AES.GCM.open(sealedBox, using: key)
         } catch {
-            debugLog("Decryption failed: \(error.localizedDescription)")
-            return nil
+            debugLog("Decryption failed (possibly unencrypted data): \(error.localizedDescription)")
+            return data // Fallback to original data (for backwards compatibility)
         }
     }
     

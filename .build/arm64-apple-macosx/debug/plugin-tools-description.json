@@ -183,6 +183,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift"
         },
         {
@@ -204,6 +208,10 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Tests/PasteTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Views/CloudKitSyncSettingsView.swift"
         },
         {
           "kind" : "file",
@@ -271,12 +279,14 @@
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PersistenceController.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/EncryptionManager.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AccessibilityHelper.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CloudKitSyncManager.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PasteService.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SettingsView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CommonComponents.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SimpleSettingsView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SyntaxHighlighter.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PasteTests.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CloudKitSyncSettingsView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/OrganizationWindow.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/main.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/resource_bundle_accessor.swift.o"
@@ -466,6 +476,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CloudKitSyncManager.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PasteService.swift.o"
         },
         {
@@ -487,6 +501,10 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PasteTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CloudKitSyncSettingsView.swift.o"
         },
         {
           "kind" : "file",
@@ -540,12 +558,14 @@
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PersistenceController.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Security/EncryptionManager.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AccessibilityHelper.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SettingsView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Shared/CommonComponents.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SimpleSettingsView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SyntaxHighlighter.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Tests/PasteTests.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Views/CloudKitSyncSettingsView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Windows/OrganizationWindow.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/main.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/DerivedSources/resource_bundle_accessor.swift"
@@ -759,12 +779,14 @@
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PersistenceController.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Security/EncryptionManager.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AccessibilityHelper.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SettingsView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Shared/CommonComponents.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SimpleSettingsView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SyntaxHighlighter.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Tests/PasteTests.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Views/CloudKitSyncSettingsView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Windows/OrganizationWindow.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/main.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/DerivedSources/resource_bundle_accessor.swift",
@@ -1061,6 +1083,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift"
         },
         {
@@ -1082,6 +1108,10 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Tests/PasteTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Views/CloudKitSyncSettingsView.swift"
         },
         {
           "kind" : "file",
@@ -1136,6 +1166,14 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardNoteCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CloudKitSyncManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CloudKitSyncSettingsView.swift.o"
         },
         {
           "kind" : "file",

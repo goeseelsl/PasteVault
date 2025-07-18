@@ -26,7 +26,6 @@ struct ContentView: View {
     @StateObject private var bulkActionsManager: BulkActionsManager
     @StateObject private var customActionsManager = CustomActionsManager()
     @StateObject private var contentFilterManager = ContentFilterManager()
-    @StateObject private var globalShortcutsManager = GlobalShortcutsManager()
     @AppStorage("sidebarPosition") private var sidebarPosition = "right"
     
     @FetchRequest(

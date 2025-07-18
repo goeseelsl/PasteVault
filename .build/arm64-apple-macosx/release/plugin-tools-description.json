@@ -1,0 +1,1376 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+    "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager_ClipboardManager.bundle/Assets.xcassets" : {
+      "inputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Assets.xcassets"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager_ClipboardManager.bundle/Assets.xcassets"
+        }
+      ]
+    },
+    "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager_ClipboardManager.bundle/Preview Assets.xcassets" : {
+      "inputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Preview Content/Preview Assets.xcassets"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "directory",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager_ClipboardManager.bundle/Preview Assets.xcassets"
+        }
+      ]
+    }
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.ClipboardManager-arm64-apple-macosx15.0-release.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/sources",
+      "importPath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/EdgeWindow.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/BulkActionsManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/ContentFilterManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/CustomActionsManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/FolderManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/SearchManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataClass.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataProperties.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/FoldersView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ColorHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentPredicateBuilder.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/HotkeyRecorderView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/HotkeysManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/LaunchAtLogin.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Monitors/KeyboardMonitor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PasteHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PersistenceController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Security/EncryptionManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AccessibilityHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Shared/CommonComponents.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SimpleSettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SyntaxHighlighter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Tests/PasteTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Views/CloudKitSyncSettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Windows/OrganizationWindow.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/main.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/DerivedSources/resource_bundle_accessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<ClipboardManager-arm64-apple-macosx15.0-release.module-resources>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules/Sauce.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "ClipboardManager",
+      "moduleOutputPath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules/ClipboardManager.swiftmodule",
+      "objects" : [
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AppDelegate.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataClass.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataProperties.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardManager.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardNoteCard.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EnhancedClipboardCard.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FooterView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HeaderView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/InteractiveSourceIcon.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SearchView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SourceFilterView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EdgeWindow.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/BulkActionsManager.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentFilterManager.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CustomActionsManager.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FolderManager.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SearchManager.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/Folder+CoreDataClass.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/Folder+CoreDataProperties.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FoldersView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AppIconHelper.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ColorHelper.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentHelper.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentPredicateBuilder.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HotkeyRecorderView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HotkeysManager.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/LaunchAtLogin.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/KeyboardMonitor.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PasteHelper.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PersistenceController.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EncryptionManager.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AccessibilityHelper.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CloudKitSyncManager.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PasteService.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SettingsView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CommonComponents.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SimpleSettingsView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SyntaxHighlighter.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PasteTests.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CloudKitSyncSettingsView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/OrganizationWindow.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/main.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/resource_bundle_accessor.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx12.0",
+        "-O",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-module-cache-path",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "ClipboardManager_main",
+        "-color-diagnostics",
+        "-swift-version",
+        "5",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g"
+      ],
+      "outputFileMapPath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AppDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataClass.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataProperties.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardNoteCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EnhancedClipboardCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FooterView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HeaderView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/InteractiveSourceIcon.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SearchView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SourceFilterView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EdgeWindow.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/BulkActionsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentFilterManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CustomActionsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FolderManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SearchManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/Folder+CoreDataClass.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/Folder+CoreDataProperties.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FoldersView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AppIconHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ColorHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentPredicateBuilder.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HotkeyRecorderView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HotkeysManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/LaunchAtLogin.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/KeyboardMonitor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PasteHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PersistenceController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EncryptionManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AccessibilityHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CloudKitSyncManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PasteService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CommonComponents.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SimpleSettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SyntaxHighlighter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PasteTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CloudKitSyncSettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/OrganizationWindow.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/main.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules/ClipboardManager.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/EdgeWindow.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/BulkActionsManager.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/ContentFilterManager.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/CustomActionsManager.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/FolderManager.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/SearchManager.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataClass.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataProperties.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/FoldersView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ColorHelper.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentHelper.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentPredicateBuilder.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/HotkeyRecorderView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/HotkeysManager.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/LaunchAtLogin.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Monitors/KeyboardMonitor.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PasteHelper.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PersistenceController.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Security/EncryptionManager.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AccessibilityHelper.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SettingsView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Shared/CommonComponents.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SimpleSettingsView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SyntaxHighlighter.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Tests/PasteTests.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Views/CloudKitSyncSettingsView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Windows/OrganizationWindow.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/main.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/DerivedSources/resource_bundle_accessor.swift"
+      ],
+      "tempsPath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build",
+      "wholeModuleOptimization" : true
+    },
+    "C.Sauce-arm64-apple-macosx15.0-release.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/sources",
+      "importPath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/InputSource.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/Key.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/KeyboardLayout.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/ModifierTransformer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/NSMenuItem+Key.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/Sauce.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/SpecialKeyCode.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/TISInputSource+Property.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "Sauce",
+      "moduleOutputPath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules/Sauce.swiftmodule",
+      "objects" : [
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/InputSource.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/Key.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/KeyboardLayout.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/ModifierTransformer.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/NSMenuItem+Key.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/Sauce.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/SpecialKeyCode.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/TISInputSource+Property.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx10.13",
+        "-O",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-module-cache-path",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/Sauce-Swift.h",
+        "-color-diagnostics",
+        "-swift-version",
+        "5",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-suppress-warnings"
+      ],
+      "outputFileMapPath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/InputSource.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/Key.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/KeyboardLayout.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/ModifierTransformer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/NSMenuItem+Key.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/Sauce.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/SpecialKeyCode.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/TISInputSource+Property.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules/Sauce.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/InputSource.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/Key.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/KeyboardLayout.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/ModifierTransformer.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/NSMenuItem+Key.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/Sauce.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/SpecialKeyCode.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/TISInputSource+Property.swift"
+      ],
+      "tempsPath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build",
+      "wholeModuleOptimization" : true
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "ClipboardManager" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "ClipboardManager",
+      "-whole-module-optimization",
+      "-num-threads",
+      "10",
+      "-c",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/EdgeWindow.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/BulkActionsManager.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/ContentFilterManager.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/CustomActionsManager.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/FolderManager.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/SearchManager.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataClass.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataProperties.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/FoldersView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ColorHelper.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentHelper.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentPredicateBuilder.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/HotkeyRecorderView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/HotkeysManager.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/LaunchAtLogin.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Monitors/KeyboardMonitor.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PasteHelper.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PersistenceController.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Security/EncryptionManager.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AccessibilityHelper.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SettingsView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Shared/CommonComponents.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SimpleSettingsView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SyntaxHighlighter.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Tests/PasteTests.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Views/CloudKitSyncSettingsView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Windows/OrganizationWindow.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/main.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/DerivedSources/resource_bundle_accessor.swift",
+      "-I",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules",
+      "-target",
+      "arm64-apple-macosx12.0",
+      "-O",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-module-cache-path",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "ClipboardManager_main",
+      "-color-diagnostics",
+      "-swift-version",
+      "5",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "Sauce" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "Sauce",
+      "-whole-module-optimization",
+      "-num-threads",
+      "10",
+      "-c",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/InputSource.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/Key.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/KeyboardLayout.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/ModifierTransformer.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/NSMenuItem+Key.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/Sauce.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/SpecialKeyCode.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/TISInputSource+Property.swift",
+      "-I",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules",
+      "-target",
+      "arm64-apple-macosx10.13",
+      "-O",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-module-cache-path",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/Sauce-Swift.h",
+      "-color-diagnostics",
+      "-swift-version",
+      "5",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-suppress-warnings",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "ClipboardManager" : [
+      "Sauce"
+    ],
+    "Sauce" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "enableAllTraits" : false
+  },
+  "writeCommands" : {
+    "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/EdgeWindow.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/BulkActionsManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/ContentFilterManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/CustomActionsManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/FolderManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/SearchManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataClass.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Folder+CoreDataProperties.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/FoldersView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/AppIconHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ColorHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Helpers/ContentPredicateBuilder.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/HotkeyRecorderView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/HotkeysManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/LaunchAtLogin.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Monitors/KeyboardMonitor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PasteHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PersistenceController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Security/EncryptionManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AccessibilityHelper.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Shared/CommonComponents.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SimpleSettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SyntaxHighlighter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Tests/PasteTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Views/CloudKitSyncSettingsView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Windows/OrganizationWindow.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/main.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/DerivedSources/resource_bundle_accessor.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/sources"
+    },
+    "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AccessibilityHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AppDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AppIconHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/BulkActionsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataClass.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataProperties.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardNoteCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CloudKitSyncManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CloudKitSyncSettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ColorHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CommonComponents.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentFilterManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentPredicateBuilder.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ContentView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CustomActionsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EdgeWindow.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EncryptionManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EnhancedClipboardCard.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/Folder+CoreDataClass.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/Folder+CoreDataProperties.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FolderManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FoldersView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FooterView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HeaderView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HotkeyRecorderView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HotkeysManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/InteractiveSourceIcon.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/KeyboardMonitor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/LaunchAtLogin.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/OrganizationWindow.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PasteHelper.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PasteService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PasteTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/PersistenceController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SearchManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SearchView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SimpleSettingsView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SourceFilterView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/SyntaxHighlighter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/main.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/InputSource.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/Key.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/KeyboardLayout.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/ModifierTransformer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/NSMenuItem+Key.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/Sauce.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/SpecialKeyCode.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/TISInputSource+Property.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.product/Objects.LinkFileList"
+    },
+    "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/InputSource.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/Key.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/KeyboardLayout.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/ModifierTransformer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/NSMenuItem+Key.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/Sauce.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/SpecialKeyCode.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/TISInputSource+Property.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Sauce.build/sources"
+    },
+    "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}
