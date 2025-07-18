@@ -130,56 +130,56 @@ struct EnhancedClipboardCard: View {
             .padding(.bottom, 12)
             
             // Actions toolbar
-            if isHovered {
-                HStack(spacing: 8) {
-                    Button("Copy", action: onCopyToClipboard)
-                        .buttonStyle(PlainButtonStyle())
-                        .font(.caption)
+            
+            HStack(spacing: 8) {
+                // Button("Copy", action: onCopyToClipboard)
+                //     .buttonStyle(PlainButtonStyle())
+                //     .font(.caption)
+                
+                Button("Delete", action: onDeleteItem)
+                    .buttonStyle(PlainButtonStyle())
+                    .font(.caption)
+                    .foregroundColor(.red)
+                
+                // Add to folder menu
+                Menu {
+                    Button("Remove from folder") {
+                        item.folder = nil
+                        try? viewContext.save()
+                    }
+                    .disabled(item.folder == nil)
                     
-                    Button("Delete", action: onDeleteItem)
-                        .buttonStyle(PlainButtonStyle())
-                        .font(.caption)
-                        .foregroundColor(.red)
-                    
-                    // Add to folder menu
-                    Menu {
-                        Button("Remove from folder") {
-                            item.folder = nil
-                            try? viewContext.save()
-                        }
-                        .disabled(item.folder == nil)
+                    if !folders.isEmpty {
+                        Divider()
                         
-                        if !folders.isEmpty {
-                            Divider()
-                            
-                            ForEach(folders, id: \.self) { folder in
-                                Button(folder.name ?? "Unnamed Folder") {
-                                    item.folder = folder
-                                    try? viewContext.save()
-                                }
-                                .disabled(item.folder == folder)
+                        ForEach(folders, id: \.self) { folder in
+                            Button(folder.name ?? "Unnamed Folder") {
+                                item.folder = folder
+                                try? viewContext.save()
                             }
-                        }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: item.folder != nil ? "folder.fill" : "folder")
-                                .font(.system(size: 12))
-                                .foregroundColor(item.folder != nil ? .blue : .secondary)
-                            if let folderName = item.folder?.name {
-                                Text(folderName)
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(1)
-                            }
+                            .disabled(item.folder == folder)
                         }
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    Spacer()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: item.folder != nil ? "folder.fill" : "folder")
+                            .font(.system(size: 12))
+                            .foregroundColor(item.folder != nil ? .blue : .secondary)
+                        if let folderName = item.folder?.name {
+                            Text(folderName)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
                 }
-                .padding(.horizontal, 12)
-                .padding(.bottom, 8)
+                .buttonStyle(PlainButtonStyle())
+                
+                Spacer()
             }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 8)
+            
         }
         .background(
             RoundedRectangle(cornerRadius: 8)
