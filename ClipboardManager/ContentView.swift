@@ -4,6 +4,19 @@ import Foundation
 import AppKit
 import Carbon
 
+// MARK: - Constants
+private enum KeyCode {
+    static let downArrow = 125
+    static let upArrow = 126
+    static let returnKey = 36
+    static let escape = 53
+}
+
+private enum Timing {
+    static let shortDelay = 0.1
+    static let mediumDelay = 0.2
+}
+
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject private var clipboardManager = ClipboardManager.shared
@@ -118,7 +131,13 @@ struct ContentView: View {
                                         selectionIndex: index,
                                         onToggleFavorite: {
                                             item.isFavorite.toggle()
-                                            try? viewContext.save()
+                                            do {
+                                                try viewContext.save()
+                                            } catch {
+                                                debugLog("Failed to save favorite status: \(error.localizedDescription)")
+                                                // Revert the change if save failed
+                                                item.isFavorite.toggle()
+                                            }
                                         },
                                         onCopyToClipboard: {
                                             // Close sidebar when copying to clipboard - FIRST
@@ -189,7 +208,7 @@ struct ContentView: View {
                                 
                                 // Auto-scroll to top when sidebar is opened
                                 // Use a delay to ensure the sidebar is fully rendered
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + Timing.mediumDelay) {
                                     scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
                                 }
                             } else {
@@ -238,9 +257,6 @@ struct ContentView: View {
                 name: NSNotification.Name("CloseFolderSidebar"),
                 object: nil
             )
-        }
-        .onReceive(keyboardMonitor.$keyPressed) { keyPressed in
-            // This handler is now inside the ScrollViewReader - remove duplicate
         }
         .onReceive(clipboardManager.$updateTrigger) { _ in
             refreshView()
@@ -304,7 +320,7 @@ struct ContentView: View {
         
         // Ensure the first item has a valid ID
         guard let firstItemId = firstItem.id else {
-            print("Warning: First item has no ID, scrolling to top anchor")
+            debugLog("First item has no ID, scrolling to top anchor")
             DispatchQueue.main.async {
                 withAnimation(.easeInOut(duration: 0.3)) {
                     scrollProxy.scrollTo("top", anchor: .top)
@@ -315,7 +331,7 @@ struct ContentView: View {
         
         // Use delayed execution to ensure view is fully rendered
         // This handles timing issues mentioned in the guide
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Timing.shortDelay) {
             withAnimation(.easeInOut(duration: 0.3)) {
                 scrollProxy.scrollTo(firstItemId, anchor: .top)
             }
@@ -368,10 +384,9 @@ struct ContentView: View {
         scrollResetTrigger = UUID()
     }
     
-    private func handleItemSelection(item: ClipboardItem, index: Int) {
-        selectedItem = item
-        selectedIndex = index
-        
+    // MARK: - Shared Logic
+    
+    private func closeSidebarAndWindow() {
         // Close sidebar when pasting - FIRST, before closing window
         let wasSidebarOpen = showFolderSidebar
         if wasSidebarOpen {
@@ -389,11 +404,27 @@ struct ContentView: View {
         if let window = NSApp.keyWindow ?? NSApp.mainWindow {
             window.close()
         } else {
-            print("⚠️ No key or main window found to close.")
+            debugLog("No key or main window found to close")
         }
+    }
+    
+    #if DEBUG
+    private func debugLog(_ message: String) {
+        print("📊 [ClipboardManager] \(message)")
+    }
+    #else
+    private func debugLog(_ message: String) { }
+    #endif
+    
+    private func handleItemSelection(item: ClipboardItem, index: Int) {
+        selectedItem = item
+        selectedIndex = index
+        
+        // Close sidebar and window using shared logic
+        closeSidebarAndWindow()
         
         // Copy to clipboard and paste
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Timing.mediumDelay) {
             clipboardManager.performPasteOperation(item: item) { success in
                 // Logging removed for performance
             }
@@ -421,23 +452,8 @@ struct ContentView: View {
         case "return":
             handleEnterKey()
         case "escape":
-            // Close sidebar when pasting - FIRST, before closing window
-            let wasSidebarOpen = showFolderSidebar
-            if wasSidebarOpen {
-                showFolderSidebar = false
-            }
-            
-            // Ensure hotkeys are reloaded when window is closed - do this IMMEDIATELY
-            if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-                DispatchQueue.main.async { // Use async instead of asyncAfter for immediate execution
-                    appDelegate.registerHotkeys()
-                }
-            }
-            
-            // Close edge window after sidebar state change
-            if let window = NSApp.keyWindow ?? NSApp.mainWindow {
-                window.close()
-            }
+            // Close sidebar and window using shared logic
+            closeSidebarAndWindow()
         default:
             break
         }
@@ -449,26 +465,11 @@ struct ContentView: View {
         let item = filteredItems[selectedIndex]
         selectedItem = item
         
-        // Close sidebar when pasting - FIRST, before closing window
-        let wasSidebarOpen = showFolderSidebar
-        if wasSidebarOpen {
-            showFolderSidebar = false
-        }
-        
-        // Ensure hotkeys are reloaded when window is closed - do this IMMEDIATELY
-        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
-            DispatchQueue.main.async { // Use async instead of asyncAfter for immediate execution
-                appDelegate.registerHotkeys()
-            }
-        }
-        
-        // Close edge window after sidebar state change
-        if let window = NSApp.keyWindow ?? NSApp.mainWindow {
-            window.close()
-        }
+        // Close sidebar and window using shared logic
+        closeSidebarAndWindow()
         
         // Copy to clipboard and paste
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Timing.mediumDelay) {
             clipboardManager.performPasteOperation(item: item) { success in
                 // Logging removed for performance
             }
@@ -505,8 +506,8 @@ struct ContentView: View {
         do {
             try viewContext.save()
         } catch {
-            let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            debugLog("Failed to save context: \(error.localizedDescription)")
+            // Handle the error appropriately - could show user notification
         }
     }
     
@@ -535,7 +536,8 @@ struct ContentView: View {
             selectedItem = nil
             
         } catch {
-            print("Error clearing items: \(error)")
+            debugLog("Failed to clear items: \(error.localizedDescription)")
+            // Handle the error appropriately - could show user notification
         }
     }
     
@@ -573,7 +575,8 @@ struct ContentView: View {
                     }
                 }
             } catch {
-                print("Error deleting items: \(error)")
+                debugLog("Failed to delete items: \(error.localizedDescription)")
+                // Handle the error appropriately - could show user notification
             }
         }
     }

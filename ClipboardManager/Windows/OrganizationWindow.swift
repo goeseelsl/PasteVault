@@ -1,6 +1,15 @@
 import SwiftUI
 import AppKit
 
+// MARK: - Debug Logging
+#if DEBUG
+private func debugLog(_ message: String) {
+    print("📊 [OrganizationWindow] \(message)")
+}
+#else
+private func debugLog(_ message: String) { }
+#endif
+
 /// Window controller for the clipboard organization window
 class OrganizationWindowController: NSWindowController, NSWindowDelegate {
     convenience init() {
@@ -157,13 +166,13 @@ struct OrganizationWindowView: View {
         // Set the predefined fetch request
         _items = FetchRequest<ClipboardItem>(fetchRequest: fetchRequest)
         
-        print("DEBUG: OrganizationWindowView initialized with fetch request")
+        debugLog("OrganizationWindowView initialized with fetch request")
     }
     
     var filteredItems: [ClipboardItem] {
         var result = Array(items)
         
-        print("Total items in database: \(result.count)")
+        debugLog("Total items in database: \(result.count)")
         
         // Apply content type filter
         if selectedContentTypeFilter != .all {
@@ -187,7 +196,7 @@ struct OrganizationWindowView: View {
                     return ContentHelper.isColorCode(item.content ?? "")
                 }
             }
-            print("After content type filter (\(selectedContentTypeFilter.rawValue)): \(result.count)")
+            debugLog("After content type filter (\(selectedContentTypeFilter.rawValue)): \(result.count)")
         }
         
         // Apply quick filter
@@ -196,13 +205,13 @@ struct OrganizationWindowView: View {
             break // No filtering needed
         case .favorites:
             result = result.filter { $0.isFavorite }
-            print("After favorites filter: \(result.count)")
+            debugLog("After favorites filter: \(result.count)")
         case .today:
             result = result.filter { item in
                 guard let date = item.createdAt else { return false }
                 return Calendar.current.isDateInToday(date)
             }
-            print("After today filter: \(result.count)")
+            debugLog("After today filter: \(result.count)")
         case .thisWeek:
             result = result.filter { item in
                 guard let date = item.createdAt else { return false }
@@ -210,25 +219,25 @@ struct OrganizationWindowView: View {
                 let components = calendar.dateComponents([.weekOfYear], from: date, to: Date())
                 return components.weekOfYear ?? 2 <= 1
             }
-            print("After this week filter: \(result.count)")
+            debugLog("After this week filter: \(result.count)")
         case .secure:
             result = result.filter { $0.isFavorite }
-            print("After secure filter: \(result.count)")
+            debugLog("After secure filter: \(result.count)")
         }
         
         // Apply folder filter
         if let selectedFolder = folderManager.selectedFolder {
             result = result.filter { $0.folder == selectedFolder }
-            print("After folder filter: \(result.count)")
+            debugLog("After folder filter: \(result.count)")
         }
         
         // Apply search
         if !searchManager.searchText.isEmpty {
             result = searchManager.fuzzySearch(items: result)
-            print("After search filter: \(result.count)")
+            debugLog("After search filter: \(result.count)")
         }
         
-        print("Final filtered count: \(result.count)")
+        debugLog("Final filtered count: \(result.count)")
         return result
     }
 
@@ -325,7 +334,7 @@ struct OrganizationWindowView: View {
                     }
                 }
                 .onAppear {
-                    print("DEBUG: Main content area appeared with \(filteredItems.count) items")
+                    debugLog("Main content area appeared with \(filteredItems.count) items")
                 }
             }
         }
@@ -400,12 +409,12 @@ struct OrganizationWindowView: View {
                 fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipboardItem.createdAt, ascending: false)]
                 do {
                     let fetchedItems = try viewContext.fetch(fetchRequest)
-                    print("DEBUG: Direct Core Data fetch returned \(fetchedItems.count) items")
+                    debugLog("Direct Core Data fetch returned \(fetchedItems.count) items")
                     for (index, item) in fetchedItems.prefix(5).enumerated() {
-                        print("Item \(index): id=\(String(describing: item.id)), content=\(String(describing: item.content?.prefix(30)))")
+                        debugLog("Item \(index): id=\(String(describing: item.id)), content=\(String(describing: item.content?.prefix(30)))")
                     }
                 } catch {
-                    print("DEBUG ERROR: Failed to fetch items: \(error)")
+                    debugLog("Failed to fetch items: \(error.localizedDescription)")
                 }
             }
             .buttonStyle(BorderedButtonStyle())
@@ -983,9 +992,9 @@ struct OrganizationListItemView: View {
                 Button(action: {
                     ClipboardManager.shared.performPasteOperation(item: item) { success in
                         if success {
-                            print("✅ Item pasted successfully")
+                            debugLog("Item pasted successfully")
                         } else {
-                            print("❌ Failed to paste item")
+                            debugLog("Failed to paste item")
                         }
                     }
                 }) {
@@ -1239,7 +1248,7 @@ extension FolderManager {
         do {
             return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
         } catch {
-            print("Error fetching folders: \(error)")
+            debugLog("Error fetching folders: \(error.localizedDescription)")
             return []
         }
     }

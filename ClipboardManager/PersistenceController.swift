@@ -14,14 +14,20 @@ struct PersistenceController {
         }
         
         guard let description = container.persistentStoreDescriptions.first else {
-            fatalError("###\(#function): Failed to retrieve a persistent store description.")
+            // Use proper error handling instead of fatalError
+            print("❌ Failed to retrieve a persistent store description")
+            return
         }
         description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
 
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                // Log the error instead of crashing
+                print("❌ Core Data error: \(error.localizedDescription)")
+                print("User info: \(error.userInfo)")
+                // In a production app, you might want to show an alert to the user
+                // or attempt recovery
             }
         })
         

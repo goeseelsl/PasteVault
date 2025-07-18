@@ -1,6 +1,14 @@
 import Foundation
 import AppKit
 
+// MARK: - Constants
+private enum KeyCode {
+    static let downArrow = 125
+    static let upArrow = 126
+    static let returnKey = 36
+    static let escape = 53
+}
+
 /// Monitors keyboard events for navigation within the clipboard manager
 class KeyboardMonitor: ObservableObject {
     private var localEventMonitor: Any?
@@ -11,16 +19,16 @@ class KeyboardMonitor: ObservableObject {
         // Local monitor for navigation keys when app is in focus
         localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
             switch Int(event.keyCode) {
-            case 125: // Down arrow
+            case KeyCode.downArrow:
                 self.keyPressed = ("down", true)
                 return nil // Consume the event
-            case 126: // Up arrow
+            case KeyCode.upArrow:
                 self.keyPressed = ("up", true)
                 return nil // Consume the event
-            case 36: // Return/Enter
+            case KeyCode.returnKey:
                 self.keyPressed = ("return", true)
                 return nil // Consume the event
-            case 53: // Escape
+            case KeyCode.escape:
                 self.keyPressed = ("escape", true)
                 return nil // Consume the event
             default:
