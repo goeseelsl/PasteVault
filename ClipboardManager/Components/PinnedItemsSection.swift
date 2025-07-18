@@ -38,7 +38,7 @@ struct PinnedItemsSection: View {
                         .buttonStyle(PlainButtonStyle())
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 5)
                 
                 // Pinned items display
                 if pinnedItems.count <= 3 {
@@ -56,7 +56,7 @@ struct PinnedItemsSection: View {
                             )
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 5)
                 } else {
                     // Scrollable horizontal layout for more than 3 items
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -74,9 +74,9 @@ struct PinnedItemsSection: View {
                                 .frame(width: 200) // Fixed width for carousel
                             }
                         }
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 5)
                     }
-                    .frame(height: 60) // Fixed height for compact display
+                    .frame(height: 90) // Increased height by 50% (was 60, now 90)
                     
                     // Scroll indicators for many items
                     if pinnedItems.count > 4 {
@@ -85,7 +85,7 @@ struct PinnedItemsSection: View {
                             Text("Scroll for more →")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
-                                .padding(.trailing, 16)
+                                .padding(.trailing, 5)
                         }
                     }
                 }
@@ -103,13 +103,17 @@ struct PinnedItemsSection: View {
                         
                         Spacer()
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 5)
                 }
             }
-            .padding(.vertical, 12)
+            .padding(.top, 10) // Increased top padding for better spacing
+            .padding(.bottom, 5)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 5)
             .background(Color.secondary.opacity(0.05))
-            .cornerRadius(12)
-            .padding(.horizontal, 16)
+            .cornerRadius(5)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 5)
         }
     }
 }
