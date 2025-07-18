@@ -14,6 +14,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var isEdgeWindowShown = false
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        // Set the app icon from Assets
+        setAppIcon()
+        
         // Set up notification observers with higher priority for hotkey reload
         NotificationCenter.default.addObserver(
             forName: .reloadHotkeys,
@@ -448,5 +451,63 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         // Clean up resources before terminating
         closeEdgeWindow()
         closeSettingsWindow()
+    }
+    
+    private func setAppIcon() {
+        // In SPM, assets are placed in a specific bundle, but in a released app they might be in Resources
+        // Try multiple approaches to find and load the app icon
+        
+        // Method 1: Try loading from main Resources folder (for released app)
+        if let iconPath = Bundle.main.path(forResource: "AppIcon", ofType: "icns") {
+            if let appIcon = NSImage(contentsOfFile: iconPath) {
+                NSApplication.shared.applicationIconImage = appIcon
+                print("✅ App icon set from AppIcon.icns")
+                return
+            }
+        }
+        
+        if let iconPath = Bundle.main.path(forResource: "AppIcon", ofType: "png") {
+            if let appIcon = NSImage(contentsOfFile: iconPath) {
+                NSApplication.shared.applicationIconImage = appIcon
+                print("✅ App icon set from AppIcon.png")
+                return
+            }
+        }
+        
+        // Method 2: Try loading from SPM resource bundle (for development)
+        guard let bundlePath = Bundle.main.path(forResource: "ClipboardManager_ClipboardManager", ofType: "bundle"),
+              let bundle = Bundle(path: bundlePath) else {
+            print("❌ Could not find resource bundle, trying asset catalog")
+            
+            // Method 3: Try standard asset catalog approach
+            if let appIcon = NSImage(named: "AppIcon") {
+                NSApplication.shared.applicationIconImage = appIcon
+                print("✅ App icon set from NSImage named AppIcon")
+                return
+            }
+            
+            print("❌ Could not load app icon from any source")
+            return
+        }
+        
+        // Try to load the 1024px icon from SPM bundle
+        if let iconPath = bundle.path(forResource: "1024-mac", ofType: "png", inDirectory: "Assets.xcassets/AppIcon.appiconset") {
+            if let appIcon = NSImage(contentsOfFile: iconPath) {
+                NSApplication.shared.applicationIconImage = appIcon
+                print("✅ App icon set from 1024px asset")
+                return
+            }
+        }
+        
+        // Fallback to 512px if 1024px is not available
+        if let iconPath = bundle.path(forResource: "512-mac", ofType: "png", inDirectory: "Assets.xcassets/AppIcon.appiconset") {
+            if let appIcon = NSImage(contentsOfFile: iconPath) {
+                NSApplication.shared.applicationIconImage = appIcon
+                print("✅ App icon set from 512px asset")
+                return
+            }
+        }
+        
+        print("❌ Could not load app icon from any source")
     }
 }

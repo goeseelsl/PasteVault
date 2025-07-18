@@ -55,26 +55,6 @@
         },
         {
           "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift"
-        },
-        {
-          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift"
         },
         {
@@ -247,11 +227,6 @@
       "moduleOutputPath" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/Modules/ClipboardManager.swiftmodule",
       "objects" : [
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AppDelegate.swift.o",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataClass.swift.o",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataProperties.swift.o",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardManager.swift.o",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardNoteCard.swift.o",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EnhancedClipboardCard.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/FooterView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/HeaderView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/InteractiveSourceIcon.swift.o",
@@ -340,26 +315,6 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/AppDelegate.swift.o"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataClass.swift.o"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataProperties.swift.o"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardManager.swift.o"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardNoteCard.swift.o"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EnhancedClipboardCard.swift.o"
         },
         {
           "kind" : "file",
@@ -521,11 +476,6 @@
       "prepareForIndexing" : false,
       "sources" : [
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift",
@@ -739,11 +689,6 @@
       "10",
       "-c",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift",
-      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift",
-      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift",
-      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift",
-      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift",
-      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift",
@@ -925,26 +870,6 @@
         },
         {
           "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift"
-        },
-        {
-          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift"
         },
         {
@@ -1123,22 +1048,6 @@
         },
         {
           "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataClass.swift.o"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardItem+CoreDataProperties.swift.o"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardManager.swift.o"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/ClipboardNoteCard.swift.o"
-        },
-        {
-          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/CloudKitSyncManager.swift.o"
         },
         {
@@ -1180,10 +1089,6 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EncryptionManager.swift.o"
-        },
-        {
-          "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/EnhancedClipboardCard.swift.o"
         },
         {
           "kind" : "file",

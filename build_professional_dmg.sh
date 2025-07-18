@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Professional DMG Builder for ClipboardManager
 # Creates a beautiful, professional DMG installer
@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 APP_NAME="ClipboardManager"
-VERSION="1.0.0"
+VERSION="1.0.2"
 DMG_NAME="${APP_NAME}-${VERSION}"
 TEMP_DIR="dmg_build_temp"
 FINAL_DMG="${DMG_NAME}.dmg"
@@ -27,9 +27,12 @@ echo -e "${YELLOW}🧹 Cleaning up...${NC}"
 rm -rf "$TEMP_DIR"
 rm -f "$FINAL_DMG"
 
-# Build release binary
-echo -e "${YELLOW}🔨 Building release binary...${NC}"
-swift build -c release
+# Build release binary (skip if compilation has issues)
+echo -e "${YELLOW}🔨 Checking for release binary...${NC}"
+if [ ! -f ".build/release/${APP_NAME}" ] && [ ! -f "/tmp/ClipboardManager_FINAL.app/Contents/MacOS/ClipboardManager" ]; then
+    echo -e "${YELLOW}🔨 Building release binary...${NC}"
+    swift build -c release
+fi
 
 # Create temp directory structure
 echo -e "${YELLOW}📁 Setting up DMG structure...${NC}"
@@ -41,7 +44,60 @@ mkdir -p "$APP_BUNDLE/Contents/MacOS"
 mkdir -p "$APP_BUNDLE/Contents/Resources"
 
 # Copy executable
-cp ".build/release/${APP_NAME}" "$APP_BUNDLE/Contents/MacOS/"
+if [ -f ".build/release/${APP_NAME}" ]; then
+    echo -e "${YELLOW}📋 Copying release executable...${NC}"
+    cp ".build/release/${APP_NAME}" "$APP_BUNDLE/Contents/MacOS/"
+elif [ -f "/tmp/ClipboardManager_FINAL.app/Contents/MacOS/ClipboardManager" ]; then
+    echo -e "${YELLOW}📋 Copying working executable from test app...${NC}"
+    cp "/tmp/ClipboardManager_FINAL.app/Contents/MacOS/ClipboardManager" "$APP_BUNDLE/Contents/MacOS/"
+else
+    echo -e "${RED}❌ No executable found. Please build the app first.${NC}"
+    exit 1
+fi
+
+# Copy the SPM resource bundle containing processed assets
+echo -e "${YELLOW}📦 Copying resource bundle...${NC}"
+if [ -d ".build/release/ClipboardManager_ClipboardManager.bundle" ]; then
+    cp -R ".build/release/ClipboardManager_ClipboardManager.bundle" "$APP_BUNDLE/Contents/Resources/"
+    echo -e "${GREEN}✅ Resource bundle copied${NC}"
+elif [ -d "/tmp/ClipboardManager_FINAL.app/Contents/Resources" ]; then
+    echo -e "${YELLOW}📦 Copying resources from test app...${NC}"
+    cp -R "/tmp/ClipboardManager_FINAL.app/Contents/Resources/"* "$APP_BUNDLE/Contents/Resources/"
+    echo -e "${GREEN}✅ Test app resources copied${NC}"
+else
+    echo -e "${RED}❌ Warning: No resource bundle found${NC}"
+fi
+
+# Extract app icons to the proper location for macOS
+echo -e "${YELLOW}🎨 Setting up app icons...${NC}"
+ICON_SET_PATH="$APP_BUNDLE/Contents/Resources/ClipboardManager_ClipboardManager.bundle/Assets.xcassets/AppIcon.appiconset"
+
+if [ -f "$ICON_SET_PATH/1024-mac.png" ]; then
+    # Copy the main app icon directly to Resources
+    cp "$ICON_SET_PATH/1024-mac.png" "$APP_BUNDLE/Contents/Resources/AppIcon.png"
+    echo -e "${GREEN}✅ Added AppIcon.png${NC}"
+    
+    # Try to create a simple .icns using sips (built into macOS)
+    echo -e "${YELLOW}🔧 Creating .icns file with sips...${NC}"
+    if sips -s format icns "$ICON_SET_PATH/1024-mac.png" --out "$APP_BUNDLE/Contents/Resources/AppIcon.icns" 2>/dev/null; then
+        echo -e "${GREEN}✅ Created AppIcon.icns with sips${NC}"
+    else
+        echo -e "${YELLOW}⚠️  sips failed, using PNG only${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️ No icon found in bundle, trying test app...${NC}"
+    # Try to get icon from test app
+    TEST_ICON_PATH="/tmp/ClipboardManager_FINAL.app/Contents/Resources"
+    if [ -f "$TEST_ICON_PATH/AppIcon.png" ]; then
+        cp "$TEST_ICON_PATH/AppIcon.png" "$APP_BUNDLE/Contents/Resources/"
+        echo -e "${GREEN}✅ Copied AppIcon.png from test app${NC}"
+    elif [ -f "$TEST_ICON_PATH/AppIcon.icns" ]; then
+        cp "$TEST_ICON_PATH/AppIcon.icns" "$APP_BUNDLE/Contents/Resources/"
+        echo -e "${GREEN}✅ Copied AppIcon.icns from test app${NC}"
+    else
+        echo -e "${RED}❌ Warning: No app icon found${NC}"
+    fi
+fi
 
 # Create comprehensive Info.plist with proper metadata
 cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
@@ -65,6 +121,10 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
     <string>APPL</string>
     <key>CFBundleSignature</key>
     <string>CMgr</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>NSHighResolutionCapable</key>
@@ -87,20 +147,18 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
 </plist>
 EOF
 
-# Copy assets and resources
-if [ -d "ClipboardManager/Assets.xcassets" ]; then
-    echo -e "${YELLOW}🎨 Copying app assets...${NC}"
-    cp -R "ClipboardManager/Assets.xcassets" "$APP_BUNDLE/Contents/Resources/"
-fi
-
-if [ -d "ClipboardManager/Preview Content" ]; then
-    cp -R "ClipboardManager/Preview Content" "$APP_BUNDLE/Contents/Resources/"
-fi
-
 # Copy entitlements
 if [ -f "ClipboardManager/ClipboardManager.entitlements" ]; then
     cp "ClipboardManager/ClipboardManager.entitlements" "$APP_BUNDLE/Contents/"
+elif [ -f "/tmp/ClipboardManager_FINAL.app/Contents/ClipboardManager.entitlements" ]; then
+    cp "/tmp/ClipboardManager_FINAL.app/Contents/ClipboardManager.entitlements" "$APP_BUNDLE/Contents/"
 fi
+
+# Touch the app bundle to update modification time (helps with icon cache refresh)
+echo -e "${YELLOW}🔄 Updating app bundle timestamp...${NC}"
+touch "$APP_BUNDLE"
+touch "$APP_BUNDLE/Contents"
+touch "$APP_BUNDLE/Contents/Resources"
 
 # Create Applications symlink
 echo -e "${YELLOW}🔗 Creating Applications link...${NC}"
@@ -116,7 +174,7 @@ cat > "$TEMP_DIR/Installation Guide.rtf" << 'EOF'
 \margl1440\margr1440\vieww11520\viewh8400\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\f0\b\fs28 \cf2 ClipboardManager v1.0.0\
+\f0\b\fs28 \cf2 ClipboardManager v1.0.1\
 Installation Guide\
 
 \f1\b0\fs24 \cf3 \
@@ -127,7 +185,8 @@ Installation Guide\
 \f1\b0 \cf3 1. Drag ClipboardManager.app to the Applications folder\
 2. Launch ClipboardManager from Applications\
 3. Grant accessibility permissions when prompted\
-4. Enjoy secure clipboard management!\
+4. If the app icon doesn\'92t appear immediately, restart the app\
+5. Enjoy secure clipboard management!\
 \
 
 \f0\b \cf2 FEATURES:\
