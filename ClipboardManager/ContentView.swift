@@ -89,11 +89,13 @@ struct ContentView: View {
                     )
                     .padding(.horizontal, 16)
                     .padding(.top, 16)
+                    .background(Color(NSColor.controlBackgroundColor))
                     
                     // Search
                     SearchView(searchText: $searchManager.searchText)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
+                        .background(Color(NSColor.controlBackgroundColor))
                     
                     // Folder title if one is selected
                     if showFolderSidebar && folderManager.selectedFolder != nil {
@@ -115,6 +117,7 @@ struct ContentView: View {
                         }
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
+                        .background(Color(NSColor.controlBackgroundColor))
                     }
                     
                     // Content
@@ -175,6 +178,7 @@ struct ContentView: View {
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
                         }
+                        .background(Color.gray.opacity(0.05))
                         .id(scrollResetTrigger)
                         .onAppear {
                             // Auto-scroll to top and highlight first item when view appears
@@ -228,6 +232,7 @@ struct ContentView: View {
                         FooterView(itemCount: filteredItems.count) {
                             clearAllItems()
                         }
+                        .background(Color(NSColor.controlBackgroundColor))
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

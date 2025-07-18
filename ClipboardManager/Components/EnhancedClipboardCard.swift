@@ -177,7 +177,7 @@ struct EnhancedClipboardCard: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(isSelected ? Color.blue.opacity(0.1) : (isHovered ? Color.gray.opacity(0.05) : Color.clear))
+                .fill(isSelected ? Color.blue.opacity(0.1) : (isHovered ? Color(NSColor.controlBackgroundColor) : Color(NSColor.windowBackgroundColor)))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(
