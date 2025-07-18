@@ -86,6 +86,7 @@ class FolderManager: ObservableObject {
 /// Enhanced folder sidebar view
 struct FolderSidebarView: View {
     @ObservedObject var folderManager: FolderManager
+    
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Folder.createdAt, ascending: true)]
     ) var allFolders: FetchedResults<Folder>

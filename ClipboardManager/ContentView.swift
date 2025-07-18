@@ -70,17 +70,6 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     // Header
                     HeaderView(
-                        onSettingsPressed: {
-                            if let appDelegate = NSApp.delegate as? AppDelegate {
-                                appDelegate.openSettings(nil)
-                            }
-                        },
-                        onOrganizePressed: {
-                            if let appDelegate = NSApp.delegate as? AppDelegate {
-                                // This will properly close the edge window and automatically hide the sidebar
-                                appDelegate.openOrganizationWindow(nil)
-                            }
-                        },
                         onToggleSidebar: {
                             showFolderSidebar.toggle()
                         },
@@ -266,9 +255,20 @@ struct ContentView: View {
                     
                     // Footer
                     if !filteredItems.isEmpty {
-                        FooterView(itemCount: filteredItems.count) {
-                            clearAllItems()
-                        }
+                        FooterView(
+                            itemCount: filteredItems.count,
+                            onSettingsPressed: {
+                                if let appDelegate = NSApp.delegate as? AppDelegate {
+                                    appDelegate.openSettings(nil)
+                                }
+                            },
+                            onOrganizePressed: {
+                                if let appDelegate = NSApp.delegate as? AppDelegate {
+                                    appDelegate.openOrganizationWindow(nil)
+                                }
+                            },
+                            onClearPressed: { clearAllItems() }
+                        )
                         .background(Color(NSColor.controlBackgroundColor))
                     }
                 }

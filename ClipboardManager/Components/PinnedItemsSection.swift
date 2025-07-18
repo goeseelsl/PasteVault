@@ -41,7 +41,7 @@ struct PinnedItemsSection: View {
                 .padding(.horizontal, 5)
                 
                 // Pinned items display
-                if pinnedItems.count <= 3 {
+                if pinnedItems.count <= 8 {
                     // Show all items without scrolling
                     VStack(spacing: 6) {
                         ForEach(pinnedItems, id: \.id) { item in
@@ -79,7 +79,7 @@ struct PinnedItemsSection: View {
                     .frame(height: 90) // Increased height by 50% (was 60, now 90)
                     
                     // Scroll indicators for many items
-                    if pinnedItems.count > 4 {
+                    if pinnedItems.count > 9 {
                         HStack {
                             Spacer()
                             Text("Scroll for more →")
