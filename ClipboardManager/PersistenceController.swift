@@ -115,6 +115,11 @@ struct PersistenceController {
         itemIsPinnedAttr.attributeType = .booleanAttributeType
         itemIsPinnedAttr.defaultValue = false
         
+        let itemPinnedTimestampAttr = NSAttributeDescription()
+        itemPinnedTimestampAttr.name = "pinnedTimestamp"
+        itemPinnedTimestampAttr.attributeType = .dateAttributeType
+        itemPinnedTimestampAttr.isOptional = true
+        
         let itemIsFavoriteAttr = NSAttributeDescription()
         itemIsFavoriteAttr.name = "isFavorite"
         itemIsFavoriteAttr.attributeType = .booleanAttributeType
@@ -160,7 +165,7 @@ struct PersistenceController {
         folderRelationship.inverseRelationship = itemsRelationship
         
         folderEntity.properties = [folderIdAttr, folderNameAttr, folderCreatedAtAttr, itemsRelationship]
-        itemEntity.properties = [itemIdAttr, itemContentAttr, itemCreatedAtAttr, itemSourceAppAttr, itemIsPinnedAttr, itemIsFavoriteAttr, itemCategoryAttr, itemImageDataAttr, itemEncryptedContentAttr, itemEncryptedImageDataAttr, folderRelationship]
+        itemEntity.properties = [itemIdAttr, itemContentAttr, itemCreatedAtAttr, itemSourceAppAttr, itemIsPinnedAttr, itemPinnedTimestampAttr, itemIsFavoriteAttr, itemCategoryAttr, itemImageDataAttr, itemEncryptedContentAttr, itemEncryptedImageDataAttr, folderRelationship]
         
         model.entities = [folderEntity, itemEntity]
         

@@ -67,10 +67,6 @@
         },
         {
           "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift"
-        },
-        {
-          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift"
         },
         {
@@ -84,6 +80,14 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemsSection.swift"
         },
         {
           "kind" : "file",
@@ -250,11 +254,12 @@
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardItem+CoreDataClass.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardItem+CoreDataProperties.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardManager.swift.o",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardNoteCard.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/EnhancedClipboardCard.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/FooterView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/HeaderView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/InteractiveSourceIcon.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PinnedItemView.swift.o",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PinnedItemsSection.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SearchView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/SourceFilterView.swift.o",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ContentView.swift.o",
@@ -360,10 +365,6 @@
         },
         {
           "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardNoteCard.swift.o"
-        },
-        {
-          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/EnhancedClipboardCard.swift.o"
         },
         {
@@ -377,6 +378,14 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/InteractiveSourceIcon.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PinnedItemView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PinnedItemsSection.swift.o"
         },
         {
           "kind" : "file",
@@ -529,11 +538,12 @@
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift",
-        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemView.swift",
+        "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemsSection.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift",
         "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift",
@@ -750,11 +760,12 @@
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift",
-      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemView.swift",
+      "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemsSection.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift",
       "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift",
@@ -967,10 +978,6 @@
         },
         {
           "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift"
-        },
-        {
-          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift"
         },
         {
@@ -984,6 +991,14 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemsSection.swift"
         },
         {
           "kind" : "file",
@@ -1165,10 +1180,6 @@
         },
         {
           "kind" : "file",
-          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardNoteCard.swift.o"
-        },
-        {
-          "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CloudKitSyncManager.swift.o"
         },
         {
@@ -1278,6 +1289,14 @@
         {
           "kind" : "file",
           "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PersistenceController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PinnedItemView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/PinnedItemsSection.swift.o"
         },
         {
           "kind" : "file",

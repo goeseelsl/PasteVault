@@ -2,11 +2,12 @@
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift
-/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemView.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemsSection.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift

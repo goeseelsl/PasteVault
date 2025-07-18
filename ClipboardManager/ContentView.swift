@@ -19,7 +19,7 @@ private enum Timing {
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @ObservedObject private var clipboardManager = ClipboardManager.shared
+    @ObservedObject private var clipboardManager = clipboardManagerInstance
     @StateObject private var keyboardMonitor = KeyboardMonitor()
     @StateObject private var searchManager = SearchManager()
     @StateObject private var folderManager: FolderManager
@@ -149,7 +149,7 @@ struct ContentView: View {
                                             }
                                             
                                             // Only copy to clipboard, don't paste (Copy button should only copy)
-                                            ClipboardManager.shared.copyToPasteboard(item: item)
+                                            clipboardManagerInstance.copyToPasteboard(item: item)
                                         },
                                         onDeleteItem: {
                                             deleteItems(offsets: IndexSet([index]))
@@ -225,6 +225,44 @@ struct ContentView: View {
                             }
                         }
                     }
+                    
+                    // Pinned Items Section
+                    PinnedItemsSection(
+                        pinnedItems: pinnedItems,
+                        onUnpinItem: { item in
+                            item.isPinned = false
+                            item.pinnedTimestamp = nil
+                            do {
+                                try viewContext.save()
+                            } catch {
+                                debugLog("Failed to unpin item: \(error.localizedDescription)")
+                                // Revert the change if save failed
+                                item.isPinned = true
+                                item.pinnedTimestamp = Date()
+                            }
+                        },
+                        onPasteItem: { item in
+                            // Close sidebar when pasting - FIRST
+                            let wasSidebarOpen = showFolderSidebar
+                            if wasSidebarOpen {
+                                showFolderSidebar = false
+                            }
+                            
+                            // Paste the item
+                            clipboardManagerInstance.copyToPasteboard(item: item)
+                            
+                            // Trigger paste after brief delay to ensure clipboard is updated
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                let event = CGEvent(keyboardEventSource: nil, virtualKey: 9, keyDown: true) // Command+V
+                                event?.flags = .maskCommand
+                                event?.post(tap: .cghidEventTap)
+                                
+                                let keyUpEvent = CGEvent(keyboardEventSource: nil, virtualKey: 9, keyDown: false)
+                                keyUpEvent?.flags = .maskCommand
+                                keyUpEvent?.post(tap: .cghidEventTap)
+                            }
+                        }
+                    )
                     
                     // Footer
                     if !filteredItems.isEmpty {
@@ -305,6 +343,15 @@ struct ContentView: View {
         }
         
         return filtered
+    }
+    
+    private var pinnedItems: [ClipboardItem] {
+        return Array(items).filter { $0.isPinned }.sorted { 
+            guard let timestamp1 = $0.pinnedTimestamp, let timestamp2 = $1.pinnedTimestamp else {
+                return $0.pinnedTimestamp != nil // Items with timestamps come first
+            }
+            return timestamp1 > timestamp2 // Sort by pin time, newest first
+        }
     }
     
     private func scrollToTopAndHighlightFirst(scrollProxy: ScrollViewProxy) {

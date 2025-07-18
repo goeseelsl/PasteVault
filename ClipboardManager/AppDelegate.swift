@@ -75,7 +75,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             controller.view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
         
-        _ = ClipboardManager.shared
+        _ = clipboardManagerInstance
 
         // Register hotkey
         registerHotkeys()
@@ -294,7 +294,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         do {
             let items = try context.fetch(fetchRequest)
             if let mostRecentItem = items.first {
-                ClipboardManager.shared.copyToPasteboard(item: mostRecentItem)
+                clipboardManagerInstance.copyToPasteboard(item: mostRecentItem)
                 showNotification(title: "Pasted from History", message: "Most recent item pasted")
             }
         } catch {

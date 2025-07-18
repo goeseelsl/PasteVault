@@ -536,13 +536,13 @@ struct OrganizationWindowView: View {
     @ViewBuilder
     func itemContextMenu(for item: ClipboardItem) -> some View {
         Button(action: {
-            ClipboardManager.shared.copyToPasteboard(item: item)
+            clipboardManagerInstance.copyToPasteboard(item: item)
         }) {
             Label("Copy", systemImage: "doc.on.doc")
         }
         
         Button(action: {
-            ClipboardManager.shared.performPasteOperation(item: item) { success in
+            clipboardManagerInstance.performPasteOperation(item: item) { success in
                 if success {
                     print("✅ Item pasted successfully")
                 } else {
@@ -984,13 +984,13 @@ struct OrganizationListItemView: View {
             // Actions menu
             Menu {
                 Button(action: {
-                    ClipboardManager.shared.copyToPasteboard(item: item)
+                    clipboardManagerInstance.copyToPasteboard(item: item)
                 }) {
                     Label("Copy", systemImage: "doc.on.doc")
                 }
                 
                 Button(action: {
-                    ClipboardManager.shared.performPasteOperation(item: item) { success in
+                    clipboardManagerInstance.performPasteOperation(item: item) { success in
                         if success {
                             debugLog("Item pasted successfully")
                         } else {
@@ -1019,7 +1019,7 @@ struct OrganizationListItemView: View {
         .background(isSelected ? Color.accentColor.opacity(0.1) : Color.clear)
         .contentShape(Rectangle())
         .onTapGesture(count: 2) {
-            ClipboardManager.shared.copyToPasteboard(item: item)
+            clipboardManagerInstance.copyToPasteboard(item: item)
         }
     }
 }
@@ -1117,7 +1117,7 @@ struct OrganizationGridItemView: View {
                 .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         )
         .onTapGesture(count: 2) {
-            ClipboardManager.shared.copyToPasteboard(item: item)
+            clipboardManagerInstance.copyToPasteboard(item: item)
         }
     }
 }
@@ -1212,7 +1212,7 @@ struct OrganizationCardItemView: View {
             // Actions
             HStack(spacing: 12) {
                 Button(action: {
-                    ClipboardManager.shared.copyToPasteboard(item: item)
+                    clipboardManagerInstance.copyToPasteboard(item: item)
                 }) {
                     Image(systemName: "doc.on.doc")
                         .foregroundColor(.secondary)
@@ -1235,7 +1235,7 @@ struct OrganizationCardItemView: View {
                 .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         )
         .onTapGesture(count: 2) {
-            ClipboardManager.shared.copyToPasteboard(item: item)
+            clipboardManagerInstance.copyToPasteboard(item: item)
         }
     }
 }
