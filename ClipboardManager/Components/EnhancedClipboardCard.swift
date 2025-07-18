@@ -77,8 +77,8 @@ struct EnhancedClipboardCard: View {
             
             // Content preview
             VStack(alignment: .leading, spacing: 8) {
-                // Handle image content first
-                if let imageData = item.imageData, let nsImage = NSImage(data: imageData) {
+                // Handle image content first - use decrypted data
+                if let imageData = item.decryptedImageData, let nsImage = NSImage(data: imageData) {
                     VStack(alignment: .leading, spacing: 8) {
                         // Image preview - larger and more prominent
                         Image(nsImage: nsImage)
@@ -110,8 +110,8 @@ struct EnhancedClipboardCard: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                // Handle text content if no image
-                else if let content = item.content, !content.isEmpty {
+                // Handle text content if no image - use decrypted data
+                else if let content = item.decryptedContent, !content.isEmpty {
                     Text(content)
                         .font(.system(size: 13))
                         .lineLimit(3)
@@ -198,12 +198,12 @@ struct EnhancedClipboardCard: View {
     }
     
     private var typeIcon: String {
-        // Check for image data first
-        if item.imageData != nil {
+        // Check for image data first - use decrypted data
+        if item.decryptedImageData != nil {
             return "photo.fill"
         }
         
-        guard let content = item.content else { return "doc.text" }
+        guard let content = item.decryptedContent else { return "doc.text" }
         
         if content.hasPrefix("http") || content.hasPrefix("https") {
             return "link"

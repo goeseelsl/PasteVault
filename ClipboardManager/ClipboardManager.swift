@@ -13,6 +13,7 @@ class ClipboardManager: ObservableObject {
     @Published var updateTrigger = false
 
     private let viewContext = PersistenceController.shared.container.viewContext
+    private let encryptionManager = EncryptionManager.shared
     
     // Image processing constants - based on Clipy/Maccy patterns
     private let maxImageSize: CGFloat = 1024 // Maximum dimension for stored images
@@ -146,7 +147,7 @@ class ClipboardManager: ObservableObject {
     }
 
     private func addItem(content: String? = nil, image: NSImage? = nil) {
-        print("Adding new item to Core Data.")
+        print("Adding new item to Core Data with encryption.")
         
         // Ensure we're on the main thread for Core Data operations
         DispatchQueue.main.async {
@@ -156,7 +157,8 @@ class ClipboardManager: ObservableObject {
             newItem.sourceApp = NSWorkspace.shared.frontmostApplication?.localizedName
 
             if let content = content {
-                newItem.content = content
+                // Use encrypted content instead of plaintext
+                newItem.decryptedContent = content
                 newItem.category = "Text"
                 self.saveContext()
                 self.notifyUIUpdate()
@@ -165,9 +167,11 @@ class ClipboardManager: ObservableObject {
             if let image = image {
                 // Store the resized image in PNG format for better compatibility
                 if let pngData = image.pngRepresentation {
-                    newItem.imageData = pngData
+                    // Use encrypted image data instead of plaintext
+                    newItem.decryptedImageData = pngData
                 } else if let tiffData = image.tiffRepresentation {
-                    newItem.imageData = tiffData
+                    // Use encrypted image data instead of plaintext
+                    newItem.decryptedImageData = tiffData
                 }
                 
                 // Clear any cached images to ensure fresh processing
@@ -182,7 +186,7 @@ class ClipboardManager: ObservableObject {
                 //     DispatchQueue.main.async {
                 //         if let text = text, !text.isEmpty {
                 //             print("Extracted OCR text: \(text.prefix(50))...")
-                //             newItem.content = text
+                //             newItem.decryptedContent = text
                 //         }
                 //         self.saveContext()
                 //         self.notifyUIUpdate()
@@ -252,23 +256,23 @@ class ClipboardManager: ObservableObject {
         // Clear pasteboard first for clean state
         pasteboard.clearContents()
         
-        // Determine what type of content we have
-        let hasTextContent = item.content != nil && !item.content!.isEmpty
-        let hasImageData = item.imageData != nil
+        // Determine what type of content we have using decrypted data
+        let hasTextContent = item.decryptedContent != nil && !item.decryptedContent!.isEmpty
+        let hasImageData = item.decryptedImageData != nil
         
         print("📋 Content analysis:")
         print("   • Has text content: \(hasTextContent)")
         print("   • Has image data: \(hasImageData)")
         if hasTextContent {
-            print("   • Text content length: \(item.content?.count ?? 0)")
+            print("   • Text content length: \(item.decryptedContent?.count ?? 0)")
         }
         if hasImageData {
-            print("   • Image data size: \(item.imageData?.count ?? 0) bytes")
+            print("   • Image data size: \(item.decryptedImageData?.count ?? 0) bytes")
         }
         
         // Handle image data first (priority for mixed content)
         if hasImageData {
-            if let imageData = item.imageData, let image = NSImage(data: imageData) {
+            if let imageData = item.decryptedImageData, let image = NSImage(data: imageData) {
                 print("📋 Processing image data (\(imageData.count) bytes)")
                 print("📋 Image size: \(image.size)")
                 
@@ -304,7 +308,7 @@ class ClipboardManager: ObservableObject {
                 }
             } else {
                 print("❌ Could not create NSImage from image data")
-                if let imageData = item.imageData {
+                if let imageData = item.decryptedImageData {
                     print("❌ Image data size: \(imageData.count) bytes")
                     print("❌ Image data first 16 bytes: \(imageData.prefix(16).map { String(format: "%02x", $0) }.joined(separator: " "))")
                 }
@@ -312,7 +316,7 @@ class ClipboardManager: ObservableObject {
         }
         // Handle text content only if no image data
         else if hasTextContent {
-            let content = item.content!
+            let content = item.decryptedContent!
             
             print("📋 Processing text content (\(content.count) characters)")
             

@@ -20,6 +20,11 @@ struct PersistenceController {
         }
         description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+        
+        // Enable file protection on macOS - use NSFileProtectionComplete equivalent
+        #if os(iOS)
+        description.setOption(FileProtectionType.complete as NSString, forKey: NSPersistentStoreFileProtectionKey)
+        #endif
 
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
@@ -103,6 +108,17 @@ struct PersistenceController {
         itemImageDataAttr.attributeType = .binaryDataAttributeType
         itemImageDataAttr.isOptional = true
         
+        // Encrypted fields
+        let itemEncryptedContentAttr = NSAttributeDescription()
+        itemEncryptedContentAttr.name = "encryptedContent"
+        itemEncryptedContentAttr.attributeType = .stringAttributeType
+        itemEncryptedContentAttr.isOptional = true
+        
+        let itemEncryptedImageDataAttr = NSAttributeDescription()
+        itemEncryptedImageDataAttr.name = "encryptedImageData"
+        itemEncryptedImageDataAttr.attributeType = .binaryDataAttributeType
+        itemEncryptedImageDataAttr.isOptional = true
+        
         // Relationships
         let itemsRelationship = NSRelationshipDescription()
         itemsRelationship.name = "items"
@@ -122,7 +138,7 @@ struct PersistenceController {
         folderRelationship.inverseRelationship = itemsRelationship
         
         folderEntity.properties = [folderIdAttr, folderNameAttr, folderCreatedAtAttr, itemsRelationship]
-        itemEntity.properties = [itemIdAttr, itemContentAttr, itemCreatedAtAttr, itemSourceAppAttr, itemIsPinnedAttr, itemIsFavoriteAttr, itemCategoryAttr, itemImageDataAttr, folderRelationship]
+        itemEntity.properties = [itemIdAttr, itemContentAttr, itemCreatedAtAttr, itemSourceAppAttr, itemIsPinnedAttr, itemIsFavoriteAttr, itemCategoryAttr, itemImageDataAttr, itemEncryptedContentAttr, itemEncryptedImageDataAttr, folderRelationship]
         
         model.entities = [folderEntity, itemEntity]
         
