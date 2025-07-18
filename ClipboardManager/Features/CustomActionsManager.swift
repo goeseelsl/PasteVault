@@ -322,7 +322,15 @@ class GlobalShortcutsManager: ObservableObject {
         let flags = event.modifierFlags
         let keyCode = event.keyCode
         
-        print("🔍 Global shortcut detected: keyCode=\(keyCode), flags=\(flags)")
+        // Don't log ESC key - it should be handled by local keyboard monitor
+        if keyCode != 53 {
+            print("🔍 Global shortcut detected: keyCode=\(keyCode), flags=\(flags)")
+        }
+        
+        // Skip ESC key handling - let local monitors handle it
+        if keyCode == 53 {
+            return
+        }
         
         // Cmd+Shift+V - Show clipboard history
         if flags.contains([.command, .shift]) && keyCode == 9 { // V key

@@ -180,6 +180,13 @@ struct ContentView: View {
                                 // Reset sidebar state when opened (ensures clean state every time)
                                 resetSidebarState()
                                 
+                                // Ensure window has focus for keyboard events
+                                DispatchQueue.main.async {
+                                    if let window = NSApp.keyWindow ?? NSApp.mainWindow {
+                                        window.makeKeyAndOrderFront(nil)
+                                    }
+                                }
+                                
                                 // Auto-scroll to top when sidebar is opened
                                 // Use a delay to ensure the sidebar is fully rendered
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -413,6 +420,24 @@ struct ContentView: View {
             }
         case "return":
             handleEnterKey()
+        case "escape":
+            // Close sidebar when pasting - FIRST, before closing window
+            let wasSidebarOpen = showFolderSidebar
+            if wasSidebarOpen {
+                showFolderSidebar = false
+            }
+            
+            // Ensure hotkeys are reloaded when window is closed - do this IMMEDIATELY
+            if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
+                DispatchQueue.main.async { // Use async instead of asyncAfter for immediate execution
+                    appDelegate.registerHotkeys()
+                }
+            }
+            
+            // Close edge window after sidebar state change
+            if let window = NSApp.keyWindow ?? NSApp.mainWindow {
+                window.close()
+            }
         default:
             break
         }

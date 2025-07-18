@@ -3,12 +3,13 @@ import AppKit
 
 /// Monitors keyboard events for navigation within the clipboard manager
 class KeyboardMonitor: ObservableObject {
-    private var eventMonitor: Any?
+    private var localEventMonitor: Any?
     @Published var keyPressed: (String, Bool)? // (keyCode, isPressed)
     
     /// Start monitoring keyboard events
     func startMonitoring() {
-        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
+        // Local monitor for navigation keys when app is in focus
+        localEventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
             switch Int(event.keyCode) {
             case 125: // Down arrow
                 self.keyPressed = ("down", true)
@@ -26,13 +27,16 @@ class KeyboardMonitor: ObservableObject {
                 return event // Let other keys pass through
             }
         }
+        
+        // Remove global monitor - too intrusive
+        // We'll rely on the local monitor and proper window focus
     }
     
     /// Stop monitoring keyboard events
     func stopMonitoring() {
-        if let monitor = eventMonitor {
+        if let monitor = localEventMonitor {
             NSEvent.removeMonitor(monitor)
-            eventMonitor = nil
+            localEventMonitor = nil
         }
     }
     
