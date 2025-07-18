@@ -76,14 +76,14 @@ struct ContentView: View {
                         isSidebarVisible: showFolderSidebar
                     )
                     .padding(.horizontal, 16)
-                    .padding(.top, 16)
-                    .background(Color(NSColor.controlBackgroundColor))
+                    .padding(.top, 10)
+                    .background(Color.gray.opacity(0.05))
                     
                     // Search
                     SearchView(searchText: $searchManager.searchText)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color(NSColor.controlBackgroundColor))
+                        .background(Color.gray.opacity(0.05))
                     
                     // Folder title if one is selected
                     if showFolderSidebar && folderManager.selectedFolder != nil {

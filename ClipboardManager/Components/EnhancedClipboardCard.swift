@@ -16,6 +16,7 @@ struct EnhancedClipboardCard: View {
     let onEditText: () -> Void
     
     @Environment(\.managedObjectContext) private var viewContext
+    @StateObject private var appColorService = AppColorService.shared
     @State private var isHovered = false
     @State private var showSourceIcon = false
     @State private var showThumbnail = false
@@ -182,7 +183,7 @@ struct EnhancedClipboardCard: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(isSelected ? Color.blue.opacity(0.1) : (isHovered ? Color(NSColor.controlBackgroundColor) : Color(NSColor.windowBackgroundColor)))
+                .fill(backgroundFill)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(
@@ -218,6 +219,29 @@ struct EnhancedClipboardCard: View {
             return "doc.text"
         } else {
             return "textformat"
+        }
+    }
+    
+    /// Computed background color with dynamic app tinting
+    private var backgroundFill: Color {
+        if isSelected {
+            return Color.blue.opacity(0.1)
+        } else if isHovered {
+            // Blend the app color with hover state
+            let appColor = appColorService.getBackgroundColor(for: item.sourceApp)
+            if appColor != Color.clear {
+                return appColor.opacity(appColorService.tintOpacity * 1.5) // Slightly more visible on hover
+            } else {
+                return Color(NSColor.controlBackgroundColor)
+            }
+        } else {
+            // Normal state - use app color
+            let appColor = appColorService.getBackgroundColor(for: item.sourceApp)
+            if appColor != Color.clear {
+                return appColor
+            } else {
+                return Color(NSColor.windowBackgroundColor)
+            }
         }
     }
     

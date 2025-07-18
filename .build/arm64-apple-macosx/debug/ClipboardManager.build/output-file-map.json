@@ -206,6 +206,12 @@
     "swiftmodule": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AccessibilityHelper~partial.swiftmodule",
     "swift-dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AccessibilityHelper.swiftdeps"
   },
+  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AppColorService.swift": {
+    "dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppColorService.d",
+    "object": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppColorService.swift.o",
+    "swiftmodule": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppColorService~partial.swiftmodule",
+    "swift-dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/AppColorService.swiftdeps"
+  },
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift": {
     "dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CloudKitSyncManager.d",
     "object": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/CloudKitSyncManager.swift.o",

@@ -8,6 +8,7 @@ struct PinnedItemView: View {
     let onPaste: () -> Void
     
     @Environment(\.managedObjectContext) private var viewContext
+    @StateObject private var appColorService = AppColorService.shared
     @State private var isHovered = false
     
     var body: some View {
@@ -70,10 +71,10 @@ struct PinnedItemView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 6)
-                .fill(Color.blue.opacity(0.08))
+                .fill(pinnedBackgroundColor)
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                        .stroke(pinnedBorderColor, lineWidth: 1)
                 )
         )
         .onHover { hovering in
@@ -83,6 +84,29 @@ struct PinnedItemView: View {
         }
         .onTapGesture {
             onPaste()
+        }
+    }
+    
+    /// Background color for pinned items with app tinting
+    private var pinnedBackgroundColor: Color {
+        let appColor = appColorService.getBackgroundColor(for: item.sourceApp)
+        if appColor != Color.clear {
+            // Use app color but slightly more visible for pinned items
+            return appColor.opacity(appColorService.tintOpacity * 1.2)
+        } else {
+            // Fallback to blue for pinned items
+            return Color.blue.opacity(0.08)
+        }
+    }
+    
+    /// Border color for pinned items
+    private var pinnedBorderColor: Color {
+        let appColor = appColorService.getBackgroundColor(for: item.sourceApp)
+        if appColor != Color.clear {
+            // Extract the base color and make it more visible for border
+            return appColor.opacity(0.6)
+        } else {
+            return Color.blue.opacity(0.3)
         }
     }
     
