@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 APP_NAME="ClipboardManager"
-VERSION="1.0.2"
+VERSION="1.0.3"
 DMG_NAME="${APP_NAME}-${VERSION}"
 TEMP_DIR="dmg_build_temp"
 FINAL_DMG="${DMG_NAME}.dmg"
@@ -22,16 +22,23 @@ NC='\033[0m'
 echo -e "${BLUE}🎯 Building Professional ClipboardManager DMG${NC}"
 echo -e "${BLUE}=============================================${NC}"
 
-# Clean up previous builds
-echo -e "${YELLOW}🧹 Cleaning up...${NC}"
+# Clean up any old builds and temp files
+echo -e "${YELLOW}🧹 Cleaning up previous builds and temp files...${NC}"
 rm -rf "$TEMP_DIR"
 rm -f "$FINAL_DMG"
+rm -f "temp_${FINAL_DMG}"
+rm -rf .build/release  # Force fresh build
 
-# Build release binary (skip if compilation has issues)
-echo -e "${YELLOW}🔨 Checking for release binary...${NC}"
-if [ ! -f ".build/release/${APP_NAME}" ] && [ ! -f "/tmp/ClipboardManager_FINAL.app/Contents/MacOS/ClipboardManager" ]; then
-    echo -e "${YELLOW}🔨 Building release binary...${NC}"
-    swift build -c release
+# Always build fresh release binary from current source
+echo -e "${YELLOW}🔨 Building fresh release binary from current source...${NC}"
+# Clean previous builds to ensure fresh compilation
+rm -rf .build/release
+swift build -c release --verbose
+
+# Verify the build succeeded
+if [ ! -f ".build/release/${APP_NAME}" ]; then
+    echo -e "${RED}❌ Build failed. Please check for compilation errors.${NC}"
+    exit 1
 fi
 
 # Create temp directory structure
@@ -43,63 +50,55 @@ APP_BUNDLE="$TEMP_DIR/${APP_NAME}.app"
 mkdir -p "$APP_BUNDLE/Contents/MacOS"
 mkdir -p "$APP_BUNDLE/Contents/Resources"
 
-# Copy executable
-if [ -f ".build/release/${APP_NAME}" ]; then
-    echo -e "${YELLOW}📋 Copying release executable...${NC}"
-    cp ".build/release/${APP_NAME}" "$APP_BUNDLE/Contents/MacOS/"
-elif [ -f "/tmp/ClipboardManager_FINAL.app/Contents/MacOS/ClipboardManager" ]; then
-    echo -e "${YELLOW}📋 Copying working executable from test app...${NC}"
-    cp "/tmp/ClipboardManager_FINAL.app/Contents/MacOS/ClipboardManager" "$APP_BUNDLE/Contents/MacOS/"
-else
-    echo -e "${RED}❌ No executable found. Please build the app first.${NC}"
-    exit 1
-fi
+# Copy executable from fresh build
+echo -e "${YELLOW}📋 Copying fresh release executable...${NC}"
+cp ".build/release/${APP_NAME}" "$APP_BUNDLE/Contents/MacOS/"
+chmod +x "$APP_BUNDLE/Contents/MacOS/${APP_NAME}"
 
-# Copy the SPM resource bundle containing processed assets
-echo -e "${YELLOW}📦 Copying resource bundle...${NC}"
+# Copy the fresh SPM resource bundle containing processed assets
+echo -e "${YELLOW}📦 Copying fresh resource bundle...${NC}"
 if [ -d ".build/release/ClipboardManager_ClipboardManager.bundle" ]; then
     cp -R ".build/release/ClipboardManager_ClipboardManager.bundle" "$APP_BUNDLE/Contents/Resources/"
-    echo -e "${GREEN}✅ Resource bundle copied${NC}"
-elif [ -d "/tmp/ClipboardManager_FINAL.app/Contents/Resources" ]; then
-    echo -e "${YELLOW}📦 Copying resources from test app...${NC}"
-    cp -R "/tmp/ClipboardManager_FINAL.app/Contents/Resources/"* "$APP_BUNDLE/Contents/Resources/"
-    echo -e "${GREEN}✅ Test app resources copied${NC}"
+    echo -e "${GREEN}✅ Fresh resource bundle copied${NC}"
 else
-    echo -e "${RED}❌ Warning: No resource bundle found${NC}"
+    echo -e "${RED}❌ Warning: No resource bundle found in fresh build${NC}"
+    echo -e "${YELLOW}📦 Attempting to build resources manually...${NC}"
+    # Try to process resources manually if bundle is missing
+    if [ -d "ClipboardManager/Assets.xcassets" ]; then
+        mkdir -p "$APP_BUNDLE/Contents/Resources/ClipboardManager_ClipboardManager.bundle"
+        cp -R "ClipboardManager/Assets.xcassets" "$APP_BUNDLE/Contents/Resources/ClipboardManager_ClipboardManager.bundle/"
+        echo -e "${GREEN}✅ Raw assets copied${NC}"
+    fi
 fi
 
-# Extract app icons to the proper location for macOS
-echo -e "${YELLOW}🎨 Setting up app icons...${NC}"
+# Extract app icons from the fresh build
+echo -e "${YELLOW}🎨 Setting up app icons from fresh build...${NC}"
 ICON_SET_PATH="$APP_BUNDLE/Contents/Resources/ClipboardManager_ClipboardManager.bundle/Assets.xcassets/AppIcon.appiconset"
 
 if [ -f "$ICON_SET_PATH/1024-mac.png" ]; then
     # Copy the main app icon directly to Resources
     cp "$ICON_SET_PATH/1024-mac.png" "$APP_BUNDLE/Contents/Resources/AppIcon.png"
-    echo -e "${GREEN}✅ Added AppIcon.png${NC}"
+    echo -e "${GREEN}✅ Added fresh AppIcon.png${NC}"
     
     # Try to create a simple .icns using sips (built into macOS)
     echo -e "${YELLOW}🔧 Creating .icns file with sips...${NC}"
     if sips -s format icns "$ICON_SET_PATH/1024-mac.png" --out "$APP_BUNDLE/Contents/Resources/AppIcon.icns" 2>/dev/null; then
-        echo -e "${GREEN}✅ Created AppIcon.icns with sips${NC}"
+        echo -e "${GREEN}✅ Created fresh AppIcon.icns with sips${NC}"
     else
         echo -e "${YELLOW}⚠️  sips failed, using PNG only${NC}"
     fi
-else
-    echo -e "${YELLOW}⚠️ No icon found in bundle, trying test app...${NC}"
-    # Try to get icon from test app
-    TEST_ICON_PATH="/tmp/ClipboardManager_FINAL.app/Contents/Resources"
-    if [ -f "$TEST_ICON_PATH/AppIcon.png" ]; then
-        cp "$TEST_ICON_PATH/AppIcon.png" "$APP_BUNDLE/Contents/Resources/"
-        echo -e "${GREEN}✅ Copied AppIcon.png from test app${NC}"
-    elif [ -f "$TEST_ICON_PATH/AppIcon.icns" ]; then
-        cp "$TEST_ICON_PATH/AppIcon.icns" "$APP_BUNDLE/Contents/Resources/"
-        echo -e "${GREEN}✅ Copied AppIcon.icns from test app${NC}"
-    else
-        echo -e "${RED}❌ Warning: No app icon found${NC}"
+elif [ -f "ClipboardManager/Assets.xcassets/AppIcon.appiconset/1024-mac.png" ]; then
+    # Fallback to source assets
+    echo -e "${YELLOW}🎨 Using source assets for icons...${NC}"
+    cp "ClipboardManager/Assets.xcassets/AppIcon.appiconset/1024-mac.png" "$APP_BUNDLE/Contents/Resources/AppIcon.png"
+    if sips -s format icns "ClipboardManager/Assets.xcassets/AppIcon.appiconset/1024-mac.png" --out "$APP_BUNDLE/Contents/Resources/AppIcon.icns" 2>/dev/null; then
+        echo -e "${GREEN}✅ Created AppIcon.icns from source assets${NC}"
     fi
+else
+    echo -e "${RED}❌ Warning: No app icon found in fresh build or source${NC}"
 fi
 
-# Create comprehensive Info.plist with proper metadata
+# Create comprehensive Info.plist with proper metadata and permissions
 cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -133,25 +132,41 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
     <true/>
     <key>NSHumanReadableCopyright</key>
     <string>© 2025 ClipboardManager. All rights reserved.</string>
+    
+    <!-- Essential Permission Descriptions -->
     <key>NSAppleEventsUsageDescription</key>
-    <string>ClipboardManager needs to monitor clipboard changes to provide clipboard history functionality.</string>
+    <string>ClipboardManager needs AppleEvents access to send paste commands and interact with other applications for clipboard functionality.</string>
     <key>NSSystemExtensionUsageDescription</key>
-    <string>ClipboardManager needs system access to monitor clipboard changes.</string>
+    <string>ClipboardManager needs system access to monitor clipboard changes and keyboard events.</string>
+    
+    <!-- Accessibility Permission - Critical for keyboard monitoring -->
+    <key>NSAccessibilityUsageDescription</key>
+    <string>ClipboardManager requires accessibility access to monitor keyboard shortcuts (like Enter key for paste) and clipboard changes. This enables core functionality like paste-on-enter and hotkey detection.</string>
+    
+    <!-- Input Monitoring Permission - For keyboard events -->
+    <key>NSInputMonitoringUsageDescription</key>
+    <string>ClipboardManager needs to monitor keyboard input to detect paste shortcuts (Enter key) and custom hotkeys for clipboard management.</string>
+    
+    <!-- Sandbox Entitlements -->
     <key>com.apple.security.app-sandbox</key>
     <true/>
     <key>com.apple.security.files.user-selected.read-write</key>
     <true/>
     <key>com.apple.security.network.client</key>
     <true/>
+    <key>com.apple.security.automation.apple-events</key>
+    <true/>
 </dict>
 </plist>
 EOF
 
-# Copy entitlements
+# Copy entitlements from source
+echo -e "${YELLOW}📋 Copying entitlements from source...${NC}"
 if [ -f "ClipboardManager/ClipboardManager.entitlements" ]; then
     cp "ClipboardManager/ClipboardManager.entitlements" "$APP_BUNDLE/Contents/"
-elif [ -f "/tmp/ClipboardManager_FINAL.app/Contents/ClipboardManager.entitlements" ]; then
-    cp "/tmp/ClipboardManager_FINAL.app/Contents/ClipboardManager.entitlements" "$APP_BUNDLE/Contents/"
+    echo -e "${GREEN}✅ Copied entitlements from source${NC}"
+else
+    echo -e "${YELLOW}⚠️  No entitlements file found in source${NC}"
 fi
 
 # Touch the app bundle to update modification time (helps with icon cache refresh)
@@ -169,12 +184,12 @@ echo -e "${YELLOW}📖 Creating installation guide...${NC}"
 cat > "$TEMP_DIR/Installation Guide.rtf" << 'EOF'
 {\rtf1\ansi\ansicpg1252\cocoartf2639
 {\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red25\green25\blue25;}
-{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c12941\c12941\c12941;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red25\green25\blue25;\red200\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c12941\c12941\c12941;\cssrgb\c82745\c0\c0;}
 \margl1440\margr1440\vieww11520\viewh8400\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\f0\b\fs28 \cf2 ClipboardManager v1.0.1\
+\f0\b\fs28 \cf2 ClipboardManager v${VERSION}\
 Installation Guide\
 
 \f1\b0\fs24 \cf3 \
@@ -184,9 +199,43 @@ Installation Guide\
 
 \f1\b0 \cf3 1. Drag ClipboardManager.app to the Applications folder\
 2. Launch ClipboardManager from Applications\
-3. Grant accessibility permissions when prompted\
-4. If the app icon doesn\'92t appear immediately, restart the app\
-5. Enjoy secure clipboard management!\
+3. 
+
+\f0\b \cf4 IMPORTANT: Grant ALL permissions when prompted!\
+
+\f1\b0 \cf3 \
+\
+
+\f0\b \cf2 REQUIRED PERMISSIONS:\
+
+\f1\b0 \cf3 The app will request several permissions. 
+
+\f0\b You MUST approve ALL of them:\
+
+\f1\b0 \cf3 \
+\'95 
+
+\f0\b Accessibility Access
+\f1\b0 : Required for keyboard monitoring (Enter key paste)\
+\'95 
+
+\f0\b Input Monitoring
+\f1\b0 : Required for detecting keyboard shortcuts\
+\'95 
+
+\f0\b AppleEvents
+\f1\b0 : Required for sending paste commands to other apps\
+\
+If permissions are denied, the app won\'92t work properly.\
+\
+
+\f0\b \cf2 TROUBLESHOOTING:\
+
+\f1\b0 \cf3 If paste-on-enter doesn\'92t work:\
+1. Go to System Preferences > Security & Privacy > Privacy\
+2. Check \'93Accessibility\'94 - ensure ClipboardManager is listed and enabled\
+3. Check \'93Input Monitoring\'94 - ensure ClipboardManager is listed and enabled\
+4. Restart ClipboardManager after granting permissions\
 \
 
 \f0\b \cf2 FEATURES:\
@@ -196,12 +245,16 @@ Installation Guide\
 \'95 Keyboard shortcuts for quick access\
 \'95 Beautiful and intuitive interface\
 \'95 Privacy-focused design\
+\'95 Dynamic background colors matching source apps\
+\'95 Enhanced paste functionality with focus restoration\
+\'95 Paste-on-Enter functionality (requires permissions)\
 \
 
 \f0\b \cf2 REQUIREMENTS:\
 
 \f1\b0 \cf3 \'95 macOS 12.0 or later\
 \'95 Accessibility permissions for clipboard monitoring\
+\'95 Input monitoring permissions for keyboard shortcuts\
 \
 
 \f0\b \cf2 SUPPORT:\

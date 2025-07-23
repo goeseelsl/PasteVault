@@ -511,18 +511,40 @@ struct ContentView: View {
     }
     
     private func handleEnterKey() {
-        guard !filteredItems.isEmpty && selectedIndex < filteredItems.count else { return }
+        PasteHelper.log("🔑 ENTER key handler triggered in ContentView", level: .info)
+        
+        guard !filteredItems.isEmpty && selectedIndex < filteredItems.count else { 
+            PasteHelper.log("❌ Enter key pressed but no valid selection. Items: \(filteredItems.count), SelectedIndex: \(selectedIndex)", level: .warning)
+            return 
+        }
         
         let item = filteredItems[selectedIndex]
         selectedItem = item
         
+        PasteHelper.log("📋 Selected item for paste: \(item.content?.prefix(30) ?? "Image") at index \(selectedIndex)", level: .info)
+        
         // Close sidebar and window using shared logic
+        PasteHelper.log("🚪 Closing sidebar and window", level: .debug)
         closeSidebarAndWindow()
         
-        // Copy to clipboard and paste
+        // NEW FLOW: First restore focus, then paste (with faster timing)
         DispatchQueue.main.asyncAfter(deadline: .now() + Timing.mediumDelay) {
-            clipboardManager.performPasteOperation(item: item) { success in
-                // Logging removed for performance
+            PasteHelper.log("🔄 Starting focus restoration BEFORE paste", level: .info)
+            
+            // Restore focus first
+            PasteHelper.restorePreviousAppFocus()
+            
+            // Wait for focus restoration to complete, then paste (reduced delay)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                PasteHelper.log("🚀 Triggering paste operation after focus restoration", level: .info)
+                clipboardManager.performPasteOperation(item: item) { success in
+                    PasteHelper.log("📝 Paste operation callback - Success: \(success)", level: .info)
+                    
+                    if !success {
+                        PasteHelper.log("❌ Paste failed", level: .warning)
+                    }
+                    // Note: No cursor restoration - let paste happen at current cursor position
+                }
             }
         }
     }

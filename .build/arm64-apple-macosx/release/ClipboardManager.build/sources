@@ -1,7 +1,13 @@
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/InteractiveSourceIcon.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemView.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemsSection.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift
@@ -26,6 +32,7 @@
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/PersistenceController.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Security/EncryptionManager.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AccessibilityHelper.swift
+/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/AppColorService.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/CloudKitSyncManager.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Services/PasteService.swift
 /Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/SettingsView.swift

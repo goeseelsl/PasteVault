@@ -4,6 +4,7 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var appColorService = AppColorService.shared
     @Environment(\.presentationMode) var presentationMode
+    @State private var showingDebugLogs = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -53,16 +54,20 @@ struct SettingsView: View {
                             }
                             .padding(.horizontal)
                             
-                            // Opacity Slider (only shown when tinting is enabled)
+                            // Opacity Slider
                             if appColorService.isColorTintingEnabled {
                                 VStack(alignment: .leading, spacing: 8) {
                                     HStack {
                                         Text("Color Intensity")
                                             .font(.body)
+                                            .padding(.horizontal)
+                                        
                                         Spacer()
+                                        
                                         Text("\(Int(appColorService.tintOpacity * 100))%")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
+                                            .padding(.horizontal)
                                     }
                                     
                                     Slider(
@@ -72,11 +77,11 @@ struct SettingsView: View {
                                     ) {
                                         Text("Opacity")
                                     }
+                                    .padding(.horizontal)
                                     .onChange(of: appColorService.tintOpacity) { _ in
                                         appColorService.saveSettings()
                                     }
                                 }
-                                .padding(.horizontal)
                                 .transition(.opacity)
                             }
                             
@@ -128,16 +133,70 @@ struct SettingsView: View {
                         .padding(.horizontal)
                     }
                     
-                    Spacer(minLength: 20)
+                    Divider()
+                        .padding(.horizontal)
+                    
+                    // Debug & Troubleshooting Section
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Debug & Troubleshooting")
+                            .font(.headline)
+                            .padding(.horizontal)
+                            .foregroundColor(.red) // Make it more visible
+                        
+                        VStack(alignment: .leading, spacing: 12) {
+                            // Debug Logs Button
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("View Debug Logs")
+                                        .font(.body)
+                                    Text("View detailed logs for paste operations and focus management")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                Spacer()
+                                
+                                Button("View Logs") {
+                                    showingDebugLogs = true
+                                }
+                                .buttonStyle(.bordered)
+                            }
+                            .padding(.horizontal)
+                            
+                            // Clear Logs Button
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Clear Debug Logs")
+                                        .font(.body)
+                                    Text("Clear all stored debug information")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                Spacer()
+                                
+                                Button("Clear") {
+                                    PasteHelper.clearDebugLogs()
+                                }
+                                .buttonStyle(.bordered)
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                    .background(Color.yellow.opacity(0.3)) // Temporary background to make it visible
                 }
                 .padding(.vertical)
             }
         }
-        .frame(width: 500, height: 600)
+        .frame(width: 500, height: 700)
         .background(Color(NSColor.windowBackgroundColor))
+        .sheet(isPresented: $showingDebugLogs) {
+            DebugLogsView()
+        }
     }
     
-    // Preview data for different apps
+    // MARK: - Helper Functions
+    
     private var previewApps: [(name: String, color: Color)] {
         [
             ("Visual Studio Code", Color.blue.opacity(appColorService.tintOpacity)),
@@ -150,29 +209,29 @@ struct SettingsView: View {
     }
 }
 
-/// Preview card for showing app color tinting
-struct PreviewCard: View {
+/// Preview card component for demonstrating dynamic colors
+private struct PreviewCard: View {
     let appName: String
     let color: Color
     
     var body: some View {
-        HStack(spacing: 8) {
-            // App icon placeholder
-            Image(systemName: iconName)
-                .font(.system(size: 14))
-                .foregroundColor(.secondary)
-            
-            VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Image(systemName: "app.fill")
+                    .foregroundColor(.primary)
+                    .font(.caption)
+                
                 Text(appName)
                     .font(.caption)
-                    .lineLimit(1)
-                Text("Sample content...")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
+                    .fontWeight(.medium)
+                
+                Spacer()
             }
             
-            Spacer()
+            Text("Sample clipboard content from \(appName)")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .lineLimit(2)
         }
         .padding(8)
         .background(
@@ -180,31 +239,9 @@ struct PreviewCard: View {
                 .fill(color)
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                        .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
                 )
         )
+        .frame(height: 50)
     }
-    
-    private var iconName: String {
-        switch appName.lowercased() {
-        case let name where name.contains("visual studio"):
-            return "hammer"
-        case let name where name.contains("safari"):
-            return "safari"
-        case let name where name.contains("mail"):
-            return "envelope"
-        case let name where name.contains("notes"):
-            return "note.text"
-        case let name where name.contains("terminal"):
-            return "terminal"
-        case let name where name.contains("chrome"):
-            return "globe"
-        default:
-            return "app"
-        }
-    }
-}
-
-#Preview {
-    SettingsView()
 }

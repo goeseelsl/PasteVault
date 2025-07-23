@@ -56,7 +56,7 @@ class HotkeysManager {
         print("🔑 Registering hotkey: keyCode=\(keyCode), modifiers=\(modifiers)")
         
         var hotKeyID = EventHotKeyID()
-        hotKeyID.signature = FourCharCode(string: "htk1")
+        hotKeyID.signature = OSType(0x68746B31) // 'htk1' in hex
         hotKeyID.id = UInt32(hotkeys.count + disabledHotkeys.count + 1)
 
         let id = "\(hotKeyID.signature)-\(hotKeyID.id)"
@@ -138,94 +138,39 @@ class HotkeysManager {
         // Reset the flag immediately to allow new registrations
         isTemporarilyDisabled = false
         
-        // Fast path: If there are disabled hotkeys, try to re-register them directly
-        if !disabledHotkeys.isEmpty {
-            var reregistrationSuccessful = true
-            
-            // Try to directly re-register the disabled hotkeys
-            for (id, _) in disabledHotkeys {
-                // Extract signature and ID from the composite key
-                let components = id.split(separator: "-")
-                if components.count == 2,
-                   let signatureString = components.first,
-                   let idString = components.last,
-                   let hotkeyId = UInt32(idString) {
-                    
-                    // Recreate the hotkey ID
-                    var hotKeyID = EventHotKeyID()
-                    hotKeyID.signature = FourCharCode(string: String(signatureString))
-                    hotKeyID.id = hotkeyId
-                    
-                    // Try to register with the same handler
-                    if hotkeyHandlers[id] != nil {
-                        // Find the key and modifiers for this hotkey (not ideal but necessary for direct re-registration)
-                        // In a production app, we'd store this info separately
-                        var hotKeyRef: EventHotKeyRef?
-                        let status = RegisterEventHotKey(0, 0, hotKeyID, GetApplicationEventTarget(), 0, &hotKeyRef)
-                        
-                        if status != noErr {
-                            reregistrationSuccessful = false
-                            break
-                        }
-                    }
-                }
-            }
-            
-            // If direct re-registration failed, fall back to complete reload
-            if !reregistrationSuccessful {
-                print("⚠️ HotkeysManager: Direct re-registration failed, falling back to complete reload")
-                fallbackToCompleteReload()
-            } else {
-                print("✅ HotkeysManager: Hotkeys re-registered successfully")
-                return
-            }
-        } else {
-            fallbackToCompleteReload()
-        }
-    }
-    
-    private func fallbackToCompleteReload() {
-        // IMPORTANT: Rather than trying to re-enable the existing hotkeys,
-        // we'll completely unregister everything and re-register from scratch
-        // This is the most reliable approach
+        // Instead of trying to re-register existing hotkeys with incomplete info,
+        // immediately trigger a complete reload which is more reliable
+        print("🔄 HotkeysManager: Triggering complete hotkey reload for reliability")
         
-        // Clear all existing hotkeys (both active and disabled)
-        print("🔹 HotkeysManager: Unregistering \(hotkeys.count) active hotkeys")
+        // Clear all existing hotkeys
         for (_, hotKeyRef) in hotkeys {
             UnregisterEventHotKey(hotKeyRef)
         }
         hotkeys.removeAll()
         
-        print("🔹 HotkeysManager: Unregistering \(disabledHotkeys.count) disabled hotkeys")
         for (_, hotKeyRef) in disabledHotkeys {
             UnregisterEventHotKey(hotKeyRef)
         }
         disabledHotkeys.removeAll()
         
-        print("✅ HotkeysManager: All hotkeys cleared, triggering complete reload")
+        // Trigger immediate reload on main thread for best responsiveness
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .reloadHotkeys, object: nil, userInfo: nil)
+            print("✅ HotkeysManager: Hotkeys reload notification sent")
+        }
         
-        // Trigger a complete reload of all hotkeys - immediately on the main thread for speed
-        NotificationCenter.default.post(name: .reloadHotkeys, object: nil, userInfo: nil)
-        print("✅ HotkeysManager: Hotkeys reloaded notification sent")
-        
-        // Add verification step to check if hotkeys were properly registered
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { // reduced from 0.2 to 0.05
-            let appDelegate = NSApplication.shared.delegate as? AppDelegate
+        // Verification step with shorter delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             print("🔍 HotkeysManager: Verification after reload:")
             print("  • isEnabled = \(self.isEnabled)")
             print("  • Active hotkeys count = \(self.hotkeys.count)")
             print("  • Disabled hotkeys count = \(self.disabledHotkeys.count)")
             
             if self.hotkeys.isEmpty && self.isEnabled {
-                print("⚠️ HotkeysManager: Warning - no active hotkeys after reload, forcing reload again")
+                print("⚠️ HotkeysManager: Warning - no active hotkeys after reload, forcing direct reload")
+                let appDelegate = NSApplication.shared.delegate as? AppDelegate
                 appDelegate?.registerHotkeys()
             }
         }
-    }
-}
-
-extension FourCharCode {
-    init(string: String) {
-        self = string.utf16.reduce(0, {$0 << 8 + FourCharCode($1)})
     }
 }

@@ -1,7 +1,7 @@
 version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
 options: "91b140126605cb97c24cbe8c165d39b0bbfc561e1e2fdcb0a507daf603838259"
-build_start_time: [1752830785, 654071000]
-build_end_time: [1752830791, 457883000]
+build_start_time: [1753262588, 264674000]
+build_end_time: [1753262590, 67311000]
 inputs:
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/InputSource.swift": [1752668794, 692939809]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/checkouts/Sauce/Lib/Sauce/Key.swift": [1752668794, 693113933]

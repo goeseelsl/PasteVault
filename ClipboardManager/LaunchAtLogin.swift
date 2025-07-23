@@ -5,7 +5,7 @@ class LaunchAtLogin {
     static let shared = LaunchAtLogin()
 
     func setLaunchAtLogin(enabled: Bool) {
-        let identifier = "com.google.gemini.ClipboardManagerLauncher" as CFString
+        let identifier = "com.clipboardmanager.app" as CFString
         SMLoginItemSetEnabled(identifier, enabled)
     }
 }

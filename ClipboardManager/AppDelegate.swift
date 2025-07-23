@@ -4,6 +4,9 @@ import Carbon
 import UserNotifications
 import CloudKit
 
+// Global clipboard manager instance for easy access
+let clipboardManagerInstance = ClipboardManager.shared
+
 class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     var statusBarItem: NSStatusItem!
@@ -47,6 +50,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             name: .enableGlobalHotkeys,
             object: nil
         )
+        
+        // Add observer for closing clipboard manager when paste is triggered
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("CloseClipboardManager"),
+            object: nil,
+            queue: OperationQueue.main
+        ) { [weak self] _ in
+            self?.closeEdgeWindow()
+        }
         
         // Create the status bar item
         self.statusBarItem = NSStatusBar.system.statusItem(withLength: CGFloat(NSStatusItem.variableLength))
@@ -141,6 +153,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         
         // Register Open Clipboard History hotkey (prioritize this one)
         registerHotkey(key: "openHotkey", defaultKeyCode: UInt32(kVK_ANSI_C), defaultModifiers: UInt32(cmdKey | shiftKey)) { [weak self] in
+            // Store the currently active app BEFORE opening our window
+            PasteHelper.storePreviousActiveApp()
             self?.toggleEdgeWindow(nil)
         }
         
@@ -200,6 +214,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     
     private func showEdgeWindow() {
         print("🔍 showEdgeWindow called")
+        
+        // Previous app is already stored when hotkey was pressed
+        
         guard let controller = windowHostingController else {
             print("❌ windowHostingController is nil")
             return
@@ -285,6 +302,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
     
     func pasteFromHistory() {
+        // Store the currently active app before we start
+        PasteHelper.storePreviousActiveApp()
+        
         // Get the most recent clipboard item and paste it
         let context = PersistenceController.shared.container.viewContext
         let fetchRequest = NSFetchRequest<ClipboardItem>(entityName: "ClipboardItem")
@@ -294,7 +314,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         do {
             let items = try context.fetch(fetchRequest)
             if let mostRecentItem = items.first {
-                clipboardManagerInstance.copyToPasteboard(item: mostRecentItem)
+                // Use the improved paste helper instead of direct clipboard copy
+                PasteHelper.paste(item: mostRecentItem)
                 showNotification(title: "Pasted from History", message: "Most recent item pasted")
             }
         } catch {

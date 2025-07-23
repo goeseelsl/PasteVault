@@ -2,6 +2,7 @@ import SwiftUI
 import Carbon
 import UniformTypeIdentifiers
 import Foundation
+import AppKit
 
 // MARK: - Simple Settings View (Memory Safe)
 struct SimpleSettingsView: View {
@@ -36,7 +37,7 @@ struct SimpleSettingsView: View {
                 
                 Spacer()
                 
-                Text("v1.0.0")
+                Text("v1.0.3")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 8)
@@ -603,6 +604,7 @@ struct SimpleAppearanceSettingsView: View {
 struct SimpleAdvancedSettingsView: View {
     @AppStorage("debugMode") private var debugMode = false
     @AppStorage("enableAnalytics") private var enableAnalytics = false
+    @State private var showingDebugLogs = false
 
     var body: some View {
         ScrollView {
@@ -628,8 +630,37 @@ struct SimpleAdvancedSettingsView: View {
                         }
                     }
                 }
+                
+                SettingsSection(title: "Debug & Troubleshooting", icon: "wrench.and.screwdriver", color: .orange) {
+                    VStack(spacing: 12) {
+                        SettingsRow(
+                            title: "View Debug Logs",
+                            description: "View detailed logs for paste operations and focus management",
+                            icon: "doc.text"
+                        ) {
+                            Button("View Logs") {
+                                showingDebugLogs = true
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                        
+                        SettingsRow(
+                            title: "Clear Debug Logs",
+                            description: "Clear all stored debug information",
+                            icon: "trash"
+                        ) {
+                            Button("Clear") {
+                                PasteHelper.clearDebugLogs()
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                }
             }
             .padding()
+        }
+        .sheet(isPresented: $showingDebugLogs) {
+            DebugLogsView()
         }
     }
 }
@@ -753,5 +784,142 @@ struct ShortcutTableRow: View {
                 isHovered = hovering
             }
         }
+    }
+}
+
+/// Debug logs viewer window
+struct DebugLogsView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @State private var logs: [String] = []
+    @State private var refreshTimer: Timer?
+    @State private var showCopyConfirmation = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Text("Debug Logs")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                
+                Spacer()
+                
+                Button("Refresh") {
+                    loadLogs()
+                }
+                .buttonStyle(.bordered)
+                
+                Button(showCopyConfirmation ? "Copied!" : "Copy All") {
+                    copyAllLogs()
+                }
+                .buttonStyle(.bordered)
+                .disabled(logs.isEmpty)
+                .foregroundColor(showCopyConfirmation ? .green : .primary)
+                
+                Button("Clear") {
+                    PasteHelper.clearDebugLogs()
+                    loadLogs()
+                }
+                .buttonStyle(.bordered)
+                
+                Button("Close") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                .keyboardShortcut(.escape)
+            }
+            .padding()
+            
+            Divider()
+            
+            // Logs content
+            if logs.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 48))
+                        .foregroundColor(.secondary)
+                    
+                    Text("No debug logs available")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Debug logs will appear here when paste operations are performed")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 4) {
+                            ForEach(Array(logs.enumerated()), id: \.offset) { index, log in
+                                Text(log)
+                                    .font(.system(.caption, design: .monospaced))
+                                    .foregroundColor(.primary)
+                                    .textSelection(.enabled)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .fill(index % 2 == 0 ? Color.clear : Color.primary.opacity(0.05))
+                                    )
+                                    .id(index)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                    }
+                    .background(Color(NSColor.textBackgroundColor))
+                    .onChange(of: logs.count) { _ in
+                        if !logs.isEmpty {
+                            proxy.scrollTo(logs.count - 1, anchor: .bottom)
+                        }
+                    }
+                }
+            }
+        }
+        .frame(width: 800, height: 600)
+        .background(Color(NSColor.windowBackgroundColor))
+        .onAppear {
+            loadLogs()
+            startAutoRefresh()
+        }
+        .onDisappear {
+            stopAutoRefresh()
+        }
+    }
+    
+    private func loadLogs() {
+        let logsString = PasteHelper.getDebugLogs()
+        logs = logsString.isEmpty ? [] : logsString.components(separatedBy: .newlines).filter { !$0.isEmpty }
+    }
+    
+    private func copyAllLogs() {
+        let allLogsText = logs.joined(separator: "\n")
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(allLogsText, forType: .string)
+        
+        // Show confirmation feedback
+        withAnimation(.easeInOut(duration: 0.2)) {
+            showCopyConfirmation = true
+        }
+        
+        // Reset confirmation after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showCopyConfirmation = false
+            }
+        }
+    }
+    
+    private func startAutoRefresh() {
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            loadLogs()
+        }
+    }
+    
+    private func stopAutoRefresh() {
+        refreshTimer?.invalidate()
+        refreshTimer = nil
     }
 }

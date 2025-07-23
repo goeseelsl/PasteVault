@@ -17,14 +17,30 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.3</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>1.0.3</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 	<key>NSMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	
+	<!-- Essential Permission Descriptions -->
+	<key>NSAppleEventsUsageDescription</key>
+	<string>ClipboardManager needs AppleEvents access to send paste commands and interact with other applications for clipboard functionality.</string>
+	
+	<!-- Accessibility Permission - Critical for keyboard monitoring -->
+	<key>NSAccessibilityUsageDescription</key>
+	<string>ClipboardManager requires accessibility access to monitor keyboard shortcuts (like Enter key for paste) and clipboard changes. This enables core functionality like paste-on-enter and hotkey detection.</string>
+	
+	<!-- Input Monitoring Permission - For keyboard events -->
+	<key>NSInputMonitoringUsageDescription</key>
+	<string>ClipboardManager needs to monitor keyboard input to detect paste shortcuts (Enter key) and custom hotkeys for clipboard management.</string>
 </dict>
 </plist>

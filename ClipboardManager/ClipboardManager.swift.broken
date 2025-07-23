@@ -1,0 +1,832 @@
+import Cocoa
+import CoreData
+import Vision
+import Carbon
+import ApplicationServices
+
+class ClipboardManager: ObservableObject {
+    static let shared = ClipboardManager()
+    private let pasteboard = NSPasteboard.general
+    private var timer: Timer?
+    private var lastChangeCount: Int
+    
+    @Published var updateTrigger = false
+
+    private let viewContext = PersistenceController.shared.container.viewContext
+    
+    // Image processing constants - based on Clipy/Maccy patterns
+    private let maxImageSize: CGFloat = 1024 // Maximum dimension for stored images
+    private let thumbnailSize: CGFloat = 200 // Thumbnail size for UI
+    
+    // Performance optimization: Skip monitoring when we're doing internal paste operations
+    private var isInternalPasteOperation = false
+    private let pasteOperationQueue = DispatchQueue(label: "paste-operations", qos: .userInteractive)
+
+    init() {
+        self.lastChangeCount = pasteboard.changeCount
+        // Request accessibility permissions at startup like Clipy/Maccy
+        checkAndRequestAccessibilityPermissions()
+        startMonitoring()
+        
+        // Refresh permission state to handle app updates
+        performStartupPermissionRefresh()
+    }
+    
+    // MARK: - Accessibility Permissions (Smart Detection)
+    
+    private func checkAndRequestAccessibilityPermissions() {
+        print("🔐 Checking accessibility permissions at startup...")
+        
+        // First, do a silent check without any prompts
+        let accessEnabled = AXIsProcessTrusted()
+        
+        if accessEnabled {
+            print("✅ Accessibility permissions already granted and working")
+            
+            // Mark that permissions are working for future reference
+            let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+            let hadPermissionsKey = "AccessibilityPermissionsGranted_\(bundleId)"
+            UserDefaults.standard.set(true, forKey: hadPermissionsKey)
+            
+            // Clear any version-specific prompt flags since permissions are working
+            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+            let hasPromptedKey = "AccessibilityPromptShown_\(bundleId)_\(appVersion)"
+            UserDefaults.standard.removeObject(forKey: hasPromptedKey)
+            
+            return // Exit early - no need to do anything else
+        }
+        
+        print("❌ Accessibility permissions not granted")
+        
+        // Use a more persistent key that tracks across app versions
+        let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+        
+        // Check if we've ever successfully had permissions (persistent across versions)
+        let hadPermissionsKey = "AccessibilityPermissionsGranted_\(bundleId)"
+        let hadPermissionsBefore = UserDefaults.standard.bool(forKey: hadPermissionsKey)
+        
+        // Check if we've prompted in this app version
+        let hasPromptedKey = "AccessibilityPromptShown_\(bundleId)_\(appVersion)"
+        let hasPromptedThisVersion = UserDefaults.standard.bool(forKey: hasPromptedKey)
+        
+        // Special case: If user had permissions before but they're not working now,
+        // wait a moment and check again (sometimes there's a delay after app updates)
+        if hadPermissionsBefore {
+            print("ℹ️ User previously had permissions, double-checking after brief delay...")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                let recheckEnabled = AXIsProcessTrusted()
+                if recheckEnabled {
+                    print("✅ Accessibility permissions confirmed working after recheck")
+                    UserDefaults.standard.set(true, forKey: hadPermissionsKey)
+                    return
+                } else {
+                    print("⚠️ Permissions still not working after recheck - may need user intervention")
+                    // Only show a brief reminder, don't automatically trigger system prompt
+                    self.showBriefPermissionReminder()
+                }
+            }
+            return // Don't prompt immediately for returning users
+        }
+        
+        // For new users or if we haven't prompted this version yet
+        if !hasPromptedThisVersion {
+            print("ℹ️ First time requesting accessibility permissions for version \(appVersion)")
+            
+            // Only now do we request permissions with a prompt for truly new cases
+            let checkOptPrompt = kAXTrustedCheckOptionPrompt.takeUnretainedValue() as NSString
+            let options = [checkOptPrompt: true]
+            let _ = AXIsProcessTrustedWithOptions(options as CFDictionary)
+            
+            // Mark that we've prompted in this version
+            UserDefaults.standard.set(true, forKey: hasPromptedKey)
+            
+            // Show informative alert for new users
+            showAccessibilityAlert()
+        } else {
+            print("ℹ️ User has already been prompted for accessibility permissions in version \(appVersion)")
+            print("ℹ️ App will work with limited functionality until permissions are granted")
+        }
+            let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+            let hadPermissionsKey = "AccessibilityPermissionsGranted_\(bundleId)"
+            UserDefaults.standard.set(true, forKey: hadPermissionsKey)
+            
+            // Clear any version-specific prompt flags since permissions are working
+            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+            let hasPromptedKey = "AccessibilityPromptShown_\(bundleId)_\(appVersion)"
+            UserDefaults.standard.removeObject(forKey: hasPromptedKey)
+        }
+    }
+    
+    private func showAccessibilityAlert() {
+        print("📋 Showing accessibility permissions guidance alert")
+        
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "Accessibility Permissions Required"
+            alert.informativeText = """
+            ClipboardManager needs accessibility permissions to monitor keystrokes and paste clipboard items.
+            
+            This permission is only requested once and will persist across app updates.
+            
+            To grant permissions:
+            1. Open System Preferences (may have opened automatically)
+            2. Go to Security & Privacy → Privacy → Accessibility
+            3. Add ClipboardManager to the list and check it
+            4. Restart ClipboardManager
+            
+            The app will work with limited functionality until permissions are granted.
+            """
+            
+            alert.alertStyle = .informational
+            alert.addButton(withTitle: "Open System Preferences")
+            alert.addButton(withTitle: "Continue Without Permissions")
+            
+            let response = alert.runModal()
+            
+            if response == .alertFirstButtonReturn {
+                print("🔗 User chose to open System Preferences")
+                if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
+                    NSWorkspace.shared.open(url)
+                }
+            } else {
+                print("ℹ️ User chose to continue without permissions")
+            }
+        }
+    }
+    
+    private func showBriefPermissionReminder() {
+        print("📋 Showing brief permission reminder for returning user")
+        
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "Accessibility Permissions Update Required"
+            alert.informativeText = """
+            ClipboardManager had accessibility permissions before, but they may need to be refreshed after the app update.
+            
+            This is a one-time step after updates. To restore functionality:
+            
+            1. Open System Preferences → Security & Privacy → Privacy → Accessibility
+            2. If ClipboardManager is listed, remove it and re-add it
+            3. If not listed, add ClipboardManager from Applications folder
+            4. Restart ClipboardManager
+            
+            This ensures the updated app signature is properly recognized.
+            """
+            
+            alert.alertStyle = .informational
+            alert.addButton(withTitle: "Open System Preferences")
+            alert.addButton(withTitle: "I'll Do This Later")
+            
+            let response = alert.runModal()
+            
+            if response == .alertFirstButtonReturn {
+                print("🔗 User chose to open System Preferences for permission refresh")
+                if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
+                    NSWorkspace.shared.open(url)
+                }
+            } else {
+                print("ℹ️ User chose to handle permissions later")
+            }
+        }
+    }
+
+    func startMonitoring() {
+        print("Starting clipboard monitoring...")
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            self?.checkPasteboard()
+            
+            // Periodically check if accessibility permissions were granted
+            // This allows us to clean up the session flag once permissions are working
+            self?.checkPermissionStatus()
+        }
+    }
+    
+    private func checkPermissionStatus() {
+        // Only check every 30 seconds to avoid overhead
+        guard Int(Date().timeIntervalSince1970) % 30 == 0 else { return }
+        
+        let accessEnabled = AXIsProcessTrusted()
+        if accessEnabled {
+            let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+            
+            // Mark that permissions are working
+            let hadPermissionsKey = "AccessibilityPermissionsGranted_\(bundleId)"
+            let wasSetBefore = UserDefaults.standard.bool(forKey: hadPermissionsKey)
+            UserDefaults.standard.set(true, forKey: hadPermissionsKey)
+            
+            // Clear version-specific prompt flag since permissions are now working
+            let hasPromptedKey = "AccessibilityPromptShown_\(bundleId)_\(appVersion)"
+            let hadFlag = UserDefaults.standard.bool(forKey: hasPromptedKey)
+            
+            if hadFlag {
+                print("✅ Accessibility permissions detected - clearing version prompt flag")
+                UserDefaults.standard.removeObject(forKey: hasPromptedKey)
+            }
+            
+            if !wasSetBefore {
+                print("🎉 Accessibility permissions newly confirmed working - updating status")
+            }
+        }
+    }
+    
+    // MARK: - Permission State Management
+    
+    /// Force refresh permission state - useful after app updates
+    func refreshPermissionState() {
+        let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+        let accessEnabled = AXIsProcessTrusted()
+        
+        print("🔄 Refreshing permission state...")
+        logPermissionStatus()
+        
+        if accessEnabled {
+            // Permissions are working - update our records
+            let hadPermissionsKey = "AccessibilityPermissionsGranted_\(bundleId)"
+            UserDefaults.standard.set(true, forKey: hadPermissionsKey)
+            
+            // Remove any version-specific prompt flags since permissions are confirmed working
+            let hasPromptedKey = "AccessibilityPromptShown_\(bundleId)_\(appVersion)"
+            UserDefaults.standard.removeObject(forKey: hasPromptedKey)
+            
+            print("✅ Permission state refreshed - permissions confirmed working")
+        } else {
+            print("⚠️ Permission refresh found no accessibility access")
+        }
+    }
+    
+    // Call this on app launch to refresh permission understanding
+    func performStartupPermissionRefresh() {
+        // Wait a moment for the app to fully initialize
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.refreshPermissionState()
+        }
+    }
+        let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+        let accessEnabled = AXIsProcessTrusted()
+        
+        let hadPermissionsKey = "AccessibilityPermissionsGranted_\(bundleId)"
+        let hadPermissionsBefore = UserDefaults.standard.bool(forKey: hadPermissionsKey)
+        
+        let hasPromptedKey = "AccessibilityPromptShown_\(bundleId)_\(appVersion)"
+        let hasPromptedThisVersion = UserDefaults.standard.bool(forKey: hasPromptedKey)
+        
+        print("🔍 Permission Status Debug:")
+        print("  • Current permissions: \(accessEnabled ? "✅ GRANTED" : "❌ NOT GRANTED")")
+        print("  • Bundle ID: \(bundleId)")
+        print("  • App Version: \(appVersion)")
+        print("  • Had permissions before: \(hadPermissionsBefore)")
+        print("  • Prompted this version: \(hasPromptedThisVersion)")
+        print("  • UserDefaults keys:")
+        print("    - \(hadPermissionsKey): \(hadPermissionsBefore)")
+        print("    - \(hasPromptedKey): \(hasPromptedThisVersion)")
+    }
+
+    func stopMonitoring() {
+        print("Stopping clipboard monitoring.")
+        timer?.invalidate()
+        timer = nil
+    }
+
+    private func checkPasteboard() {
+        guard pasteboard.changeCount != lastChangeCount else {
+            return
+        }
+        
+        // Skip monitoring during internal paste operations to prevent duplicates
+        guard !isInternalPasteOperation else {
+            lastChangeCount = pasteboard.changeCount
+            return
+        }
+        
+        print("Pasteboard change detected. Change count: \(pasteboard.changeCount)")
+        lastChangeCount = pasteboard.changeCount
+
+        if let items = pasteboard.pasteboardItems {
+            for item in items {
+                // Check for image data first (screenshots, images)
+                if let imageData = item.data(forType: .tiff) ?? item.data(forType: .png) {
+                    print("Found image data.")
+                    // Process image asynchronously to prevent crashes
+                    processImageData(imageData)
+                } else if let string = item.string(forType: .string) {
+                    print("Found string content: \(string.prefix(50))...")
+                    addItem(content: string)
+                }
+            }
+        }
+    }
+    
+    private func processImageData(_ imageData: Data) {
+        // Process image on background queue to prevent UI blocking
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            
+            // Use autoreleasepool to manage memory efficiently
+            autoreleasepool {
+                // Quick size check to avoid processing extremely large images
+                guard imageData.count < 50_000_000 else { // 50MB limit
+                    print("Image too large, skipping: \(imageData.count) bytes")
+                    return
+                }
+                
+                // Create image with memory-efficient approach
+                guard let image = NSImage(data: imageData) else {
+                    print("Failed to create NSImage from data")
+                    return
+                }
+                
+                // Early exit if image is too large
+                let originalSize = image.size
+                guard originalSize.width > 0 && originalSize.height > 0 else {
+                    print("Invalid image dimensions")
+                    return
+                }
+                
+                // Resize image to prevent memory issues - use smaller max size for better performance
+                let resizedImage = image.resized(to: min(self.maxImageSize, 800))
+                
+                // Store the resized image
+                self.addItem(image: resizedImage)
+            }
+        }
+    }
+
+    private func addItem(content: String? = nil, image: NSImage? = nil) {
+        print("Adding new item to Core Data with encryption.")
+        
+        // Ensure we're on the main thread for Core Data operations
+        DispatchQueue.main.async {
+            let newItem = ClipboardItem(context: self.viewContext)
+            newItem.id = UUID()
+            newItem.createdAt = Date()
+            newItem.sourceApp = NSWorkspace.shared.frontmostApplication?.localizedName
+
+            if let content = content {
+                // Use encrypted content instead of plaintext
+                newItem.decryptedContent = content
+                newItem.category = "Text"
+                self.saveContext()
+                self.notifyUIUpdate()
+            }
+
+            if let image = image {
+                // Store the resized image in PNG format for better compatibility
+                if let pngData = image.pngRepresentation {
+                    // Use encrypted image data instead of plaintext
+                    newItem.decryptedImageData = pngData
+                } else if let tiffData = image.tiffRepresentation {
+                    // Use encrypted image data instead of plaintext
+                    newItem.decryptedImageData = tiffData
+                }
+                
+                newItem.category = "Image"
+                
+                // Skip OCR for now to improve performance - can be enabled later if needed
+                // Extract text from image using OCR (use thumbnail for OCR to save memory)
+                // let imageForOCR = thumbnail ?? image
+                // self.extractText(from: imageForOCR) { text in
+                //     DispatchQueue.main.async {
+                //         if let text = text, !text.isEmpty {
+                //             print("Extracted OCR text: \(text.prefix(50))...")
+                //             newItem.decryptedContent = text
+                //         }
+                //         self.saveContext()
+                //         self.notifyUIUpdate()
+                //     }
+                // }
+                
+                self.saveContext()
+                self.notifyUIUpdate()
+            }
+            
+            self.cullHistory()
+        }
+    }
+    
+    private func cullHistory() {
+        let maxHistory = UserDefaults.standard.integer(forKey: "maxHistorySize")
+        if maxHistory == 0 { return } // 0 means unlimited
+
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = ClipboardItem.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipboardItem.createdAt, ascending: true)]
+        
+        do {
+            let items = try viewContext.fetch(fetchRequest) as! [ClipboardItem]
+            if items.count > maxHistory {
+                let itemsToDelete = items.prefix(items.count - maxHistory)
+                for item in itemsToDelete {
+                    viewContext.delete(item)
+                }
+                saveContext()
+            }
+        } catch {
+            print("Error culling history: \(error)")
+        }
+    }
+    
+    private func extractText(from image: NSImage, completion: @escaping (String?) -> Void) {
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            completion(nil)
+            return
+        }
+
+        let requestHandler = VNImageRequestHandler(cgImage: cgImage)
+        let request = VNRecognizeTextRequest { request, error in
+            guard let observations = request.results as? [VNRecognizedTextObservation],
+                  error == nil else {
+                completion(nil)
+                return
+            }
+            let text = observations.compactMap {
+                $0.topCandidates(1).first?.string
+            }.joined(separator: "\n")
+            completion(text)
+        }
+        
+        do {
+            try requestHandler.perform([request])
+        } catch {
+            print("Error performing text recognition: \(error)")
+            completion(nil)
+        }
+    }
+
+    func copyToPasteboard(item: ClipboardItem) {
+        print("📋 Copying item to pasteboard...")
+        print("📋 Item ID: \(item.id?.uuidString ?? "nil")")
+        
+        // Clear pasteboard first for clean state
+        pasteboard.clearContents()
+        
+        // Determine what type of content we have using decrypted data
+        let hasTextContent = item.decryptedContent != nil && !item.decryptedContent!.isEmpty
+        let hasImageData = item.decryptedImageData != nil
+        
+        print("📋 Content analysis:")
+        print("   • Has text content: \(hasTextContent)")
+        print("   • Has image data: \(hasImageData)")
+        if hasTextContent {
+            print("   • Text content length: \(item.decryptedContent?.count ?? 0)")
+        }
+        if hasImageData {
+            print("   • Image data size: \(item.decryptedImageData?.count ?? 0) bytes")
+        }
+        
+        // Handle image data first (priority for mixed content)
+        if hasImageData {
+            if let imageData = item.decryptedImageData, let image = NSImage(data: imageData) {
+                print("📋 Processing image data (\(imageData.count) bytes)")
+                print("📋 Image size: \(image.size)")
+                
+                // Use writeObjects for better image handling (supports multiple formats)
+                let success = pasteboard.writeObjects([image])
+                
+                if success {
+                    print("📋 Image written to pasteboard using writeObjects")
+                } else {
+                    print("❌ Failed to write image using writeObjects, trying fallback methods")
+                    
+                    // Fallback 1: Use declareTypes with multiple formats
+                    pasteboard.declareTypes([.tiff, .png, .pdf], owner: nil)
+                    
+                    // Try to get TIFF representation
+                    if let tiffData = image.tiffRepresentation {
+                        pasteboard.setData(tiffData, forType: .tiff)
+                        print("📋 Image written as TIFF data (\(tiffData.count) bytes)")
+                    } else {
+                        // Fallback 2: Write raw image data as TIFF
+                        pasteboard.setData(imageData, forType: .tiff)
+                        print("📋 Raw image data written as TIFF (\(imageData.count) bytes)")
+                    }
+                }
+                
+                // Verify image was written
+                if let retrievedImage = pasteboard.readObjects(forClasses: [NSImage.self])?.first as? NSImage {
+                    print("✅ Image verified in pasteboard - size: \(retrievedImage.size)")
+                } else if let retrievedData = pasteboard.data(forType: .tiff) {
+                    print("✅ Image TIFF data verified in pasteboard - size: \(retrievedData.count) bytes")
+                } else {
+                    print("❌ Image verification failed")
+                }
+            } else {
+                print("❌ Could not create NSImage from image data")
+                if let imageData = item.decryptedImageData {
+                    print("❌ Image data size: \(imageData.count) bytes")
+                    print("❌ Image data first 16 bytes: \(imageData.prefix(16).map { String(format: "%02x", $0) }.joined(separator: " "))")
+                }
+            }
+        }
+        // Handle text content only if no image data
+        else if hasTextContent {
+            let content = item.decryptedContent!
+            
+            print("📋 Processing text content (\(content.count) characters)")
+            
+            // Use declareTypes first for better compatibility (Clipy pattern)
+            pasteboard.declareTypes([.string], owner: nil)
+            let success = pasteboard.setString(content, forType: .string)
+            
+            if success {
+                print("📋 Text written to pasteboard: \(content.prefix(50))...")
+            } else {
+                print("❌ Failed to write text to pasteboard")
+            }
+            
+            // Verify the content was written correctly
+            if let pasteboardContent = pasteboard.string(forType: .string) {
+                print("✅ Pasteboard verification: \(pasteboardContent.prefix(50))...")
+            } else {
+                print("❌ Pasteboard verification failed")
+            }
+        }
+        
+        // Force pasteboard synchronization (important for programmatic paste)
+        // Note: synchronize() was removed in newer macOS versions, but the pasteboard
+        // is automatically synchronized when we set data
+        let changeCount = pasteboard.changeCount
+        print("📋 Pasteboard change count: \(changeCount)")
+        
+        if hasImageData {
+            print("✅ Image item copied to pasteboard")
+        } else {
+            print("✅ Text item copied to pasteboard: \(item.content?.prefix(50) ?? "empty")")
+        }
+    }
+
+    // MARK: - Paste Operations (Based on Clipy/Maccy implementations)
+    
+    func performPasteOperation(item: ClipboardItem, completion: @escaping (Bool) -> Void) {
+        print("🚀 Starting paste operation for item: \(item.content?.prefix(30) ?? "Image")")
+        
+        // Check initial hotkeys state
+        print("🔍 Hotkeys state check before paste operation:")
+        let carbonManager = HotkeysManager.shared
+        let appDelegate = NSApp.delegate as? AppDelegate
+        print("  • Carbon hotkeys are \(carbonManager.isEnabled ? "enabled" : "disabled")")
+        print("  • Edge window is \(appDelegate?.isEdgeWindowShown == true ? "shown" : "hidden")")
+        
+        // Notify that paste operation is starting
+        print("📢 Sending disable notifications for hotkeys")
+        NotificationCenter.default.post(name: .pasteOperationStart, object: nil, userInfo: nil)
+        NotificationCenter.default.post(name: .disableGlobalHotkeys, object: nil, userInfo: nil)
+        
+        // Verify hotkeys were disabled
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            print("🔍 Hotkeys state check after disable notification:")
+            print("  • Carbon hotkeys are \(carbonManager.isEnabled ? "enabled" : "disabled")")
+        }
+        
+        // Debug: Print current pasteboard state
+        debugPasteboardState()
+        
+        // Set flag to prevent monitoring during paste
+        isInternalPasteOperation = true
+        
+        // Always copy to pasteboard first
+        copyToPasteboard(item: item)
+        
+        // Debug: Print pasteboard state after copying
+        print("📋 After copyToPasteboard:")
+        debugPasteboardState()
+        
+        // Check accessibility permissions for programmatic pasting
+        if AXIsProcessTrusted() {
+            print("✅ Accessibility permissions available - using programmatic paste")
+            
+            // Simplified timing - paste immediately after copying
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                let pasteSuccess = self.performProgrammaticPaste()
+                
+                // Quick cleanup with coordinated hotkey re-enabling
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self.isInternalPasteOperation = false
+                    
+                    // Send coordinated notifications to re-enable everything
+                    print("📢 Sending paste operation end notifications")
+                    NotificationCenter.default.post(name: .pasteOperationEnd, object: nil, userInfo: nil)
+                    NotificationCenter.default.post(name: .enableGlobalHotkeys, object: nil, userInfo: nil)
+                    
+                    // Verify hotkeys were re-enabled
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        print("🔍 Final hotkeys state check:")
+                        print("  • Carbon hotkeys are \(carbonManager.isEnabled ? "enabled" : "disabled")")
+                        print("  • Active hotkeys count: \(carbonManager.activeHotkeysCount)")
+                        
+                        // Force reload if hotkeys didn't re-enable properly
+                        if !carbonManager.isEnabled || carbonManager.activeHotkeysCount == 0 {
+                            print("⚠️ Hotkeys not properly re-enabled, forcing reload")
+                            appDelegate?.registerHotkeys()
+                        }
+                    }
+                    
+                    completion(pasteSuccess)
+                }
+            }
+        } else {
+            print("❌ No accessibility permissions - using manual paste mode")
+            
+            // Quick cleanup for manual paste mode
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.isInternalPasteOperation = false
+                
+                // Send coordinated notifications to re-enable everything
+                print("📢 Sending paste operation end notifications (manual mode)")
+                NotificationCenter.default.post(name: .pasteOperationEnd, object: nil, userInfo: nil)
+                NotificationCenter.default.post(name: .enableGlobalHotkeys, object: nil, userInfo: nil)
+                
+                // Verify hotkeys were re-enabled
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    print("� Final hotkeys state check (manual mode):")
+                    print("  • Carbon hotkeys are \(carbonManager.isEnabled ? "enabled" : "disabled")")
+                    print("  • Active hotkeys count: \(carbonManager.activeHotkeysCount)")
+                    
+                    // Force reload if hotkeys didn't re-enable properly
+                    if !carbonManager.isEnabled || carbonManager.activeHotkeysCount == 0 {
+                        print("⚠️ Hotkeys not properly re-enabled, forcing reload")
+                        appDelegate?.registerHotkeys()
+                    }
+                }
+            }
+            
+            print("✅ Item copied to pasteboard - ready for manual paste with Cmd+V")
+            completion(true)
+        }
+    }
+    
+    private func performProgrammaticPaste() -> Bool {
+        print("🤖 Performing programmatic paste using improved Clipy/Maccy pattern...")
+        
+        // Ensure we're on the main thread
+        guard Thread.isMainThread else {
+            print("❌ performProgrammaticPaste must be called on main thread")
+            return false
+        }
+        
+        // Additional check: ensure accessibility is still enabled
+        guard AXIsProcessTrusted() else {
+            print("❌ Accessibility permissions lost during paste operation")
+            return false
+        }
+        
+        // Give the system a moment to process the pasteboard change
+        Thread.sleep(forTimeInterval: 0.05)
+        
+        // Get the V key code using the same method as Maccy
+        let vKeyCode: CGKeyCode = 0x09 // V key - this is correct
+        
+        // Create event source (same as Maccy)
+        let source = CGEventSource(stateID: .combinedSessionState)
+        
+        // Set up event filtering like Clipy does
+        source?.setLocalEventsFilterDuringSuppressionState(
+            [.permitLocalMouseEvents, .permitSystemDefinedEvents],
+            state: .eventSuppressionStateSuppressionInterval
+        )
+        
+        // Create events with proper error handling
+        guard let keyDown = CGEvent(keyboardEventSource: source, virtualKey: vKeyCode, keyDown: true),
+              let keyUp = CGEvent(keyboardEventSource: source, virtualKey: vKeyCode, keyDown: false) else {
+            print("❌ Failed to create CGEvents")
+            return false
+        }
+        
+        // Set command modifier flags (Cmd+V) - critical for paste
+        let commandFlag = CGEventFlags.maskCommand
+        keyDown.flags = commandFlag
+        keyUp.flags = commandFlag
+        
+        // Verify the events were created correctly
+        print("📝 Created CGEvents - KeyDown: \(keyDown), KeyUp: \(keyUp)")
+        print("📝 Command flags set: \(commandFlag)")
+        
+        // Post events using cgSessionEventTap (Maccy pattern)
+        print("📤 Posting events with cgSessionEventTap...")
+        keyDown.post(tap: .cgSessionEventTap)
+        
+        // Small delay between key down and key up (more reliable)
+        usleep(1000) // 1ms delay
+        
+        keyUp.post(tap: .cgSessionEventTap)
+        
+        print("✅ Programmatic paste events posted successfully")
+        return true
+    }
+    
+    // MARK: - Existing Methods
+
+    private func saveContext() {
+        do {
+            try viewContext.save()
+            print("Context saved successfully")
+            
+            // Post notification that context was saved
+            NotificationCenter.default.post(name: .NSManagedObjectContextDidSave, object: viewContext)
+        } catch {
+            let nsError = error as NSError
+            print("Failed to save context: \(nsError), \(nsError.userInfo)")
+        }
+    }
+    
+    private func notifyUIUpdate() {
+        // Trigger UI update by toggling the published property
+        DispatchQueue.main.async {
+            self.updateTrigger.toggle()
+            
+            // Also post a custom notification for immediate UI updates
+            NotificationCenter.default.post(name: NSNotification.Name("ClipboardItemAdded"), object: nil)
+        }
+    }
+}
+
+extension NSImage {
+    var pngRepresentation: Data? {
+        guard let tiffData = tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: tiffData) else {
+            return nil
+        }
+        return bitmap.representation(using: .png, properties: [:])
+    }
+    
+    func resized(to maxSize: CGFloat) -> NSImage {
+        let originalSize = self.size
+        
+        // If image is already smaller than max size, return as-is
+        if originalSize.width <= maxSize && originalSize.height <= maxSize {
+            return self
+        }
+        
+        // Calculate new size maintaining aspect ratio
+        let scale = min(maxSize / originalSize.width, maxSize / originalSize.height)
+        let newSize = NSSize(width: originalSize.width * scale, height: originalSize.height * scale)
+        
+        // Use more efficient image context for better performance
+        let newImage = NSImage(size: newSize)
+        newImage.cacheMode = .never // Prevent unnecessary caching
+        
+        newImage.lockFocus()
+        defer { newImage.unlockFocus() }
+        
+        // Use high-quality interpolation for better results
+        let context = NSGraphicsContext.current
+        context?.imageInterpolation = .high
+        
+        // Draw original image scaled to new size
+        let rect = NSRect(origin: .zero, size: newSize)
+        self.draw(in: rect, from: NSRect(origin: .zero, size: originalSize), operation: .copy, fraction: 1.0)
+        
+        return newImage
+    }
+    
+    // Create thumbnail with fixed size for consistent UI - optimized version
+    func thumbnail(size: CGFloat) -> NSImage {
+        let thumbnailSize = NSSize(width: size, height: size)
+        let thumbnail = NSImage(size: thumbnailSize)
+        thumbnail.cacheMode = .never
+        
+        thumbnail.lockFocus()
+        defer { thumbnail.unlockFocus() }
+        
+        // Set high-quality rendering
+        let context = NSGraphicsContext.current
+        context?.imageInterpolation = .high
+        context?.shouldAntialias = true
+        
+        // Calculate the rect to draw the image centered and scaled
+        let imageSize = self.size
+        let scale = min(size / imageSize.width, size / imageSize.height)
+        let scaledSize = NSSize(width: imageSize.width * scale, height: imageSize.height * scale)
+        
+        let x = (size - scaledSize.width) / 2
+        let y = (size - scaledSize.height) / 2
+        let rect = NSRect(x: x, y: y, width: scaledSize.width, height: scaledSize.height)
+        
+        self.draw(in: rect, from: NSRect(origin: .zero, size: imageSize), operation: .copy, fraction: 1.0)
+        
+        return thumbnail
+    }
+}
+
+extension ClipboardManager {
+    private func debugPasteboardState() {
+        print("📋 === PASTEBOARD DEBUG STATE ===")
+        let pasteboard = NSPasteboard.general
+        print("📋 Change count: \(pasteboard.changeCount)")
+        print("📋 Available types: \(pasteboard.types?.map { $0.rawValue } ?? ["none"])")
+        
+        if let string = pasteboard.string(forType: .string) {
+            print("📋 String content: '\(string)'")
+            print("📋 String length: \(string.count)")
+            print("📋 String isEmpty: \(string.isEmpty)")
+        } else {
+            print("📋 No string content found")
+        }
+        print("📋 === END PASTEBOARD DEBUG ===")
+    }
+}
+
+// Global variable to provide access to ClipboardManager instance, avoiding module name conflicts
+let clipboardManagerInstance = ClipboardManager.shared

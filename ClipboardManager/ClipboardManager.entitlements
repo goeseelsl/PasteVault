@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Non-sandboxed app - Maximum compatibility and permissions -->
+    
+    <!-- AppleEvents for paste operations (still needed for some automation) -->
+    <key>com.apple.security.automation.apple-events</key>
+    <true/>
+    
+    <!-- Explicitly disable camera and microphone (good practice) -->
+    <key>com.apple.security.device.camera</key>
+    <false/>
+    <key>com.apple.security.device.microphone</key>
+    <false/>
+    
+    <!-- Accessibility and Input Monitoring permissions handled via Privacy prompts in non-sandboxed apps -->
+</dict>
+</plist>
