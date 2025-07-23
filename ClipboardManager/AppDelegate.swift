@@ -183,6 +183,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             let menu = NSMenu()
             menu.addItem(NSMenuItem(title: "Settings...", action: #selector(openSettings(_:)), keyEquivalent: ","))
             menu.addItem(NSMenuItem.separator())
+            menu.addItem(NSMenuItem(title: "Reset Permissions", action: #selector(resetPermissions(_:)), keyEquivalent: ""))
+            menu.addItem(NSMenuItem.separator())
             menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
             statusBarItem.menu = menu
             statusBarItem.button?.performClick(nil)
@@ -404,6 +406,40 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
         window.orderFrontRegardless()
+    }
+    
+    @objc func resetPermissions(_ sender: AnyObject?) {
+        print("🔄 Manual permission reset requested by user")
+        
+        let alert = NSAlert()
+        alert.messageText = "Reset All Permissions"
+        alert.informativeText = """
+            This will clear all cached permissions and force fresh permission prompts.
+            
+            ClipboardManager will:
+            • Clear all permission caches
+            • Reset accessibility permission status
+            • Request fresh permissions on next operation
+            
+            This is useful if permissions seem stuck or corrupted.
+            """
+        alert.addButton(withTitle: "Reset Permissions")
+        alert.addButton(withTitle: "Cancel")
+        alert.alertStyle = .informational
+        
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            // User confirmed - reset permissions
+            clipboardManagerInstance.resetAllPermissions()
+            
+            // Show confirmation
+            let confirmAlert = NSAlert()
+            confirmAlert.messageText = "Permissions Reset Complete"
+            confirmAlert.informativeText = "All permission caches have been cleared. ClipboardManager will request fresh permissions when needed."
+            confirmAlert.addButton(withTitle: "OK")
+            confirmAlert.alertStyle = .informational
+            confirmAlert.runModal()
+        }
     }
     
     private func closeSettingsWindow() {

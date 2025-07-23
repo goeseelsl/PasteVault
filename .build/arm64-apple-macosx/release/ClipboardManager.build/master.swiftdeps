@@ -1,14 +1,14 @@
 version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
 options: "28f0deb9328ad56e0da818d98647ce6f0e2001b0398c7d4b15ed8feffd24f6cd"
-build_start_time: [1753273267, 162383000]
-build_end_time: [1753273282, 492606000]
+build_start_time: [1753274140, 693330000]
+build_end_time: [1753274154, 873526000]
 inputs:
   ? "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/DerivedSources/resource_bundle_accessor.swift"
   : [1752830785, 346140890]
-  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift": [1753268252, 285856339]
+  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift": [1753273744, 684593137]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift": [1752842740, 779830086]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift": [1752842740, 779809794]
-  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift": [1753271927, 790856407]
+  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift": [1753273793, 203284753]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift": [1752848660, 393428839]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift": [1752846717, 4250891]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift": [1752846717, 4893968]
@@ -17,7 +17,7 @@ inputs:
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/PinnedItemsSection.swift": [1752845546, 462276913]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SearchView.swift": [1752747703, 604536579]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/SourceFilterView.swift": [1752676742, 525199117]
-  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift": [1753273234, 729114720]
+  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ContentView.swift": [1753273459, 18791970]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/EdgeWindow.swift": [1752672982, 274065120]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/BulkActionsManager.swift": [1752833852, 589125976]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Features/ContentFilterManager.swift": [1752833852, 581240689]

@@ -26,6 +26,9 @@ class ClipboardManager: ObservableObject {
         self.lastChangeCount = pasteboard.changeCount
         print("🚀 ClipboardManager initializing with change count: \(lastChangeCount)")
         
+        // Check if this is a fresh installation and reset permissions if needed
+        checkForFreshInstallationAndResetPermissions()
+        
         // Single permission check at startup for non-sandboxed app
         checkAndRequestAccessibilityPermissions()
         startMonitoring()
@@ -37,6 +40,76 @@ class ClipboardManager: ObservableObject {
         }
         
         print("✅ ClipboardManager initialization complete")
+    }
+    
+    // MARK: - Permission Reset for Fresh Installation
+    
+    private func checkForFreshInstallationAndResetPermissions() {
+        let appVersionKey = "ClipboardManager_AppVersion"
+        let permissionResetKey = "ClipboardManager_PermissionsReset"
+        let currentVersion = "1.1.6"
+        
+        let savedVersion = UserDefaults.standard.string(forKey: appVersionKey)
+        let permissionsAlreadyReset = UserDefaults.standard.bool(forKey: permissionResetKey)
+        
+        // Reset permissions if:
+        // 1. This is a completely fresh installation (no saved version)
+        // 2. The version has changed (app update)
+        // 3. Permissions haven't been reset for this version yet
+        if savedVersion == nil || savedVersion != currentVersion || !permissionsAlreadyReset {
+            print("🔄 Fresh installation or version change detected - resetting all permissions...")
+            resetAllPermissions()
+            
+            // Mark this version as having reset permissions
+            UserDefaults.standard.set(currentVersion, forKey: appVersionKey)
+            UserDefaults.standard.set(true, forKey: permissionResetKey)
+            UserDefaults.standard.synchronize()
+            
+            print("✅ Permission reset complete for version \(currentVersion)")
+        } else {
+            print("ℹ️ Existing installation detected - keeping current permission state")
+        }
+    }
+    
+    public func resetAllPermissions() {
+        print("🧹 Resetting all permission caches and preferences...")
+        
+        // Reset internal permission cache
+        accessibilityPermissionGranted = false
+        permissionCheckPerformed = false
+        
+        // Clear all permission-related UserDefaults
+        let permissionKeys = [
+            "ClipboardManager_AccessibilityGranted",
+            "ClipboardManager_PermissionCheckPerformed", 
+            "ClipboardManager_SkipPermissionPrompts",
+            "ClipboardManager_AutoGrantPermissions",
+            "NSApplicationCrashOnExceptions",
+            "AppleLanguages",
+            "AppleLocale"
+        ]
+        
+        for key in permissionKeys {
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+        
+        // Clear any cached system permission states
+        UserDefaults.standard.removeObject(forKey: "TrustedAccessibilityApps")
+        UserDefaults.standard.synchronize()
+        
+        print("🔄 Permission caches cleared - fresh permission prompts will be shown")
+        
+        // Force immediate re-check of permissions
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.forcePermissionRecheck()
+        }
+    }
+    
+    private func forcePermissionRecheck() {
+        print("🔍 Forcing fresh permission check...")
+        accessibilityPermissionGranted = false
+        permissionCheckPerformed = false
+        checkAndRequestAccessibilityPermissions()
     }
     
     // MARK: - Accessibility Permissions (Non-Sandboxed Simple Detection)
