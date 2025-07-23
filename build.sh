@@ -38,10 +38,7 @@ cat > "build/ClipboardManager.app/Contents/Info.plist" << EOF
     <string>com.clipboardmanager.app</string>
     <key>CFBundleName</key>
     <string>ClipboardManager</string>
-    <key>CFBundleShortVersionString</key>
-    <string>1.1.1</string>
-    <key>CFBundleVersion</key>
-    <string>1.1.1</string>
+    VERSION="1.1.5"
     <key>LSMinimumSystemVersion</key>
     <string>10.15</string>
     <key>NSHighResolutionCapable</key>

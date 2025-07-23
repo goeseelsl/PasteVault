@@ -231,24 +231,20 @@ struct ContentView: View {
                             }
                         },
                         onPasteItem: { item in
+                            PasteHelper.log("🔄 PinnedItemsSection onPasteItem triggered", level: .info)
+                            
                             // Close sidebar when pasting - FIRST
                             let wasSidebarOpen = showFolderSidebar
                             if wasSidebarOpen {
                                 showFolderSidebar = false
                             }
                             
-                            // Paste the item
-                            clipboardManagerInstance.copyToPasteboard(item: item)
-                            
-                            // Trigger paste after brief delay to ensure clipboard is updated
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                let event = CGEvent(keyboardEventSource: nil, virtualKey: 9, keyDown: true) // Command+V
-                                event?.flags = .maskCommand
-                                event?.post(tap: .cghidEventTap)
-                                
-                                let keyUpEvent = CGEvent(keyboardEventSource: nil, virtualKey: 9, keyDown: false)
-                                keyUpEvent?.flags = .maskCommand
-                                keyUpEvent?.post(tap: .cghidEventTap)
+                            // Use the proper paste operation (same as Enter key)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + Timing.mediumDelay) {
+                                PasteHelper.log("🚀 PinnedItemsSection triggering performPasteOperation", level: .info)
+                                clipboardManager.performPasteOperation(item: item) { success in
+                                    PasteHelper.log("📝 PinnedItemsSection paste callback - Success: \(success)", level: .info)
+                                }
                             }
                         }
                     )
@@ -668,17 +664,5 @@ struct ContentView: View {
         withAnimation(.easeInOut(duration: 0.2)) {
             proxy.scrollTo(itemId, anchor: .center)
         }
-    }
-    
-    private func performAutoPaste() {
-        // Create and dispatch key events for Command+V
-        let eventDown = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: true)
-        let eventUp = CGEvent(keyboardEventSource: nil, virtualKey: 0x09, keyDown: false)
-        
-        eventDown?.flags = .maskCommand
-        eventUp?.flags = .maskCommand
-        
-        eventDown?.post(tap: .cghidEventTap)
-        eventUp?.post(tap: .cghidEventTap)
     }
 }

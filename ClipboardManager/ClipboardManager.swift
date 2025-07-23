@@ -24,9 +24,19 @@ class ClipboardManager: ObservableObject {
 
     private init() {
         self.lastChangeCount = pasteboard.changeCount
+        print("🚀 ClipboardManager initializing with change count: \(lastChangeCount)")
+        
         // Single permission check at startup for non-sandboxed app
         checkAndRequestAccessibilityPermissions()
         startMonitoring()
+        
+        // Test Core Data by adding a test item
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            print("🧪 Adding test item to verify Core Data...")
+            self.addItem(content: "Test startup item - \(Date())")
+        }
+        
+        print("✅ ClipboardManager initialization complete")
     }
     
     // MARK: - Accessibility Permissions (Non-Sandboxed Simple Detection)
@@ -111,10 +121,11 @@ class ClipboardManager: ObservableObject {
     // MARK: - Clipboard Monitoring
 
     func startMonitoring() {
-        print("Starting clipboard monitoring...")
+        print("🔄 Starting clipboard monitoring...")
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.checkPasteboard()
         }
+        print("⏰ Clipboard monitoring timer started (interval: 0.5s)")
     }
 
     func stopMonitoring() {
@@ -124,33 +135,41 @@ class ClipboardManager: ObservableObject {
     }
 
     private func checkPasteboard() {
-        guard pasteboard.changeCount != lastChangeCount else {
+        let currentChangeCount = pasteboard.changeCount
+        guard currentChangeCount != lastChangeCount else {
             return
         }
+        
+        print("📋 Pasteboard change detected! Count: \(lastChangeCount) → \(currentChangeCount)")
         
         // Skip monitoring during internal paste operations to prevent duplicates
         guard !isInternalPasteOperation else {
-            lastChangeCount = pasteboard.changeCount
+            print("⏭️  Skipping - internal paste operation in progress")
+            lastChangeCount = currentChangeCount
             return
         }
         
-        print("Pasteboard change detected. Change count: \(pasteboard.changeCount)")
-        lastChangeCount = pasteboard.changeCount
+        lastChangeCount = currentChangeCount
 
         if let items = pasteboard.pasteboardItems {
-            for item in items {
+            print("📦 Found \(items.count) pasteboard item(s)")
+            for (index, item) in items.enumerated() {
+                print("📄 Item \(index): types = \(item.types)")
+                
                 // Check for image data first (screenshots, images)
                 if let imageData = item.data(forType: .tiff) ?? item.data(forType: .png) {
-                    print("Found image data.")
+                    print("🖼️  Found image data (\(imageData.count) bytes)")
                     // Process image asynchronously to prevent crashes
                     processImageData(imageData)
                 } else if let string = item.string(forType: .string) {
-                    print("Found string content: \(string.prefix(50))...")
+                    print("📝 Found string content: \(string.prefix(50))...")
                     addItem(content: string)
                 } else {
-                    print("Found pasteboard item with unknown content types: \(item.types)")
+                    print("❓ Found pasteboard item with unknown content types: \(item.types)")
                 }
             }
+        } else {
+            print("⚠️  No pasteboard items found")
         }
     }
     
@@ -182,6 +201,8 @@ class ClipboardManager: ObservableObject {
     }
     
     private func addItem(content: String? = nil, imageData: Data? = nil) {
+        print("💾 Adding item to clipboard history...")
+        
         // Ensure we're on the main thread for Core Data operations
         DispatchQueue.main.async {
             let newItem = ClipboardItem(context: self.viewContext)
@@ -189,6 +210,7 @@ class ClipboardManager: ObservableObject {
             newItem.createdAt = Date()
             
             if let content = content {
+                print("📝 Adding text item: \(content.prefix(50))...")
                 // Text content
                 newItem.decryptedContent = content
                 newItem.category = "Text"
@@ -197,25 +219,17 @@ class ClipboardManager: ObservableObject {
             }
             
             if let imageData = imageData {
+                print("🖼️  Adding image item (\(imageData.count) bytes)")
                 // Image content
                 newItem.imageData = imageData
                 newItem.category = "Image"
-                
-                // Try to extract text from image using Vision framework
-                // self.extractTextFromImage(imageData) { extractedText in
-                //     if !extractedText.isEmpty {
-                //         newItem.decryptedContent = extractedText
-                //         DispatchQueue.main.async {
-                //             self.saveContext()
-                //         }
-                //     }
-                // }
                 
                 self.saveContext()
                 self.notifyUIUpdate()
             }
             
             self.cullHistory()
+            print("✅ Item added successfully")
         }
     }
     
@@ -240,18 +254,8 @@ class ClipboardManager: ObservableObject {
     
     // MARK: - Core Data
     
-    private lazy var _persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "ClipboardDataModel")
-        container.loadPersistentStores { _, error in
-            if let error = error {
-                fatalError("Core Data error: \(error)")
-            }
-        }
-        return container
-    }()
-    
     var persistentContainer: NSPersistentContainer {
-        return _persistentContainer
+        return PersistenceController.shared.container
     }
     
     var viewContext: NSManagedObjectContext {
@@ -360,19 +364,23 @@ class ClipboardManager: ObservableObject {
         print("📋 After copyToPasteboard:")
         debugPasteboardState()
         
-        // Check accessibility permissions for programmatic pasting (use cached status)
-        let accessEnabled = hasAccessibilityPermissions()
+        // Check accessibility permissions for programmatic pasting (direct check for paste operations)
+        let accessEnabled = AXIsProcessTrusted()
+        print("🔐 Direct permission check for paste: \(accessEnabled ? "GRANTED" : "NOT GRANTED")")
         
         if accessEnabled {
             print("✅ Accessibility enabled - performing programmatic paste")
             // Simplified timing - paste immediately after copying
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                print("🎯 About to call performProgrammaticPaste()")
                 let pasteSuccess = self.performProgrammaticPaste()
+                print("📝 Paste operation result: \(pasteSuccess)")
                 
                 // Quick cleanup with coordinated hotkey re-enabling
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     self.isInternalPasteOperation = false
                     
+                    print("🔄 Cleanup: isInternalPasteOperation set to false")
                     // Send coordinated notifications to re-enable everything
                     NotificationCenter.default.post(
                         name: NSNotification.Name("PasteOperationCompleted"),
@@ -422,8 +430,10 @@ class ClipboardManager: ObservableObject {
     }
     
     private func performProgrammaticPaste() -> Bool {
+        print("🎯 performProgrammaticPaste() called - delegating to PasteHelper")
         // Use PasteHelper for consistent paste behavior
         PasteHelper.paste()
+        print("✅ PasteHelper.paste() completed")
         return true
     }
     
