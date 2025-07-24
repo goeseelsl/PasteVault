@@ -44,6 +44,7 @@ struct ContentView: View {
     @State private var selectedIndex = 0
     @State private var refreshID = UUID()
     @State private var scrollResetTrigger = UUID()
+    @State private var autoScrollToTopTrigger = UUID()
     @State private var selectedSourceApp: String?
     @State private var showSourceFilter = false
     @State private var showAdvancedSearch = false
@@ -176,11 +177,22 @@ struct ContentView: View {
                             // Auto-scroll to top when items change (e.g., search, filter)
                             scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
                         }
-                        .onChange(of: items.count) { _ in
+                        .onChange(of: items.count) { newCount in
                             // Handle new items being added (dynamic updates)
                             if showFolderSidebar {
-                                handleNewItemAdded(scrollProxy: scrollProxy)
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                    handleNewItemAdded(scrollProxy: scrollProxy)
+                                }
                             }
+                        }
+                        .onReceive(clipboardManager.$updateTrigger) { _ in
+                            // Enhanced: Auto-scroll to top when clipboard manager updates
+                            if showFolderSidebar {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                                }
+                            }
+                            refreshView()
                         }
                         .onChange(of: folderManager.selectedFolder) { _ in
                             // Auto-scroll to top when folder selection changes
@@ -206,6 +218,14 @@ struct ContentView: View {
                             } else {
                                 // Also reset sidebar state when closed (double insurance)
                                 resetSidebarState()
+                            }
+                        }
+                        .onChange(of: autoScrollToTopTrigger) { _ in
+                            // Auto-scroll to top when triggered by new clipboard items
+                            if showFolderSidebar {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                    scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+                                }
                             }
                         }
                         .onReceive(keyboardMonitor.$keyPressed) { keyPressed in
@@ -298,6 +318,8 @@ struct ContentView: View {
         }
         .onReceive(clipboardManager.$updateTrigger) { _ in
             refreshView()
+            // Trigger auto-scroll to top for new clipboard items
+            autoScrollToTopTrigger = UUID()
         }
         .onChange(of: filteredItems) { newItems in
             resetSelection(for: newItems)
@@ -365,22 +387,19 @@ struct ContentView: View {
         let firstItem = filteredItems[0]
         selectedItem = firstItem
         
-        // Ensure the first item has a valid ID
-        guard let firstItemId = firstItem.id else {
-            debugLog("First item has no ID, scrolling to top anchor")
-            DispatchQueue.main.async {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    scrollProxy.scrollTo("top", anchor: .top)
-                }
+        // Always scroll to top anchor first for reliability
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                scrollProxy.scrollTo("top", anchor: .top)
             }
-            return
         }
         
-        // Use delayed execution to ensure view is fully rendered
-        // This handles timing issues mentioned in the guide
-        DispatchQueue.main.asyncAfter(deadline: .now() + Timing.shortDelay) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                scrollProxy.scrollTo(firstItemId, anchor: .top)
+        // Then scroll to the first item if it has a valid ID
+        if let firstItemId = firstItem.id {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    scrollProxy.scrollTo(firstItemId, anchor: .top)
+                }
             }
         }
     }
@@ -391,8 +410,11 @@ struct ContentView: View {
         // Only auto-scroll if sidebar is open and we have items
         guard showFolderSidebar && !filteredItems.isEmpty else { return }
         
-        // Re-apply scroll and highlight to show the newest item
-        scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+        // Use a slight delay to ensure the new item is fully rendered
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            // Re-apply scroll and highlight to show the newest item
+            self.scrollToTopAndHighlightFirst(scrollProxy: scrollProxy)
+        }
     }
     
     private func setupInitialState() {
