@@ -34,12 +34,6 @@ class ClipboardManager: ObservableObject {
         
         startMonitoring()
         
-        // Test Core Data by adding a test item
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            print("🧪 Adding test item to verify Core Data...")
-            self.addItem(content: "Test startup item - \(Date())")
-        }
-        
         print("✅ ClipboardManager initialization complete")
     }
     

@@ -1,14 +1,14 @@
 version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
 options: "28f0deb9328ad56e0da818d98647ce6f0e2001b0398c7d4b15ed8feffd24f6cd"
-build_start_time: [1753343730, 887148000]
-build_end_time: [1753343745, 832317000]
+build_start_time: [1753344982, 611563000]
+build_end_time: [1753344998, 321928000]
 inputs:
   ? "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/release/ClipboardManager.build/DerivedSources/resource_bundle_accessor.swift"
   : [1752830785, 346140890]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/AppDelegate.swift": [1753338919, 404140545]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataClass.swift": [1752842740, 779830086]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardItem+CoreDataProperties.swift": [1752842740, 779809794]
-  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift": [1753343423, 787523431]
+  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/ClipboardManager.swift": [1753344908, 212021349]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift": [1752848660, 393428839]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/FooterView.swift": [1752846717, 4250891]
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/HeaderView.swift": [1752846717, 4893968]
