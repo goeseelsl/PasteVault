@@ -26,6 +26,12 @@
     "swiftmodule": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardManager~partial.swiftmodule",
     "swift-dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardManager.swiftdeps"
   },
+  "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/ClipboardNoteCard.swift": {
+    "dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardNoteCard.d",
+    "object": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardNoteCard.swift.o",
+    "swiftmodule": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardNoteCard~partial.swiftmodule",
+    "swift-dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/ClipboardNoteCard.swiftdeps"
+  },
   "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/ClipboardManager/Components/EnhancedClipboardCard.swift": {
     "dependencies": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/EnhancedClipboardCard.d",
     "object": "/Users/lawrencegoeseels/Documents/AI/ClipboardManager/.build/arm64-apple-macosx/debug/ClipboardManager.build/EnhancedClipboardCard.swift.o",
